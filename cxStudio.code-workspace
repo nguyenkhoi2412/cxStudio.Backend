@@ -1,10 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"path": "../cxStudio.Frondend"
 		},
 		{
-			"path": "../cxStudio.Frondend"
+			"path": "."
 		}
 	],
 	"settings": {}
