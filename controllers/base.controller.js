@@ -41,11 +41,9 @@ export default {
     } else {
       // filter with query
       const query = encrypt.aes.decrypt(req.params.query);
-      if (Helpers.checkIsNotNull(query)) {
-        await DataModel.find()
-          .findByFilter(query)
-          .exec((err, rs) => response.DEFAULT(res, err, rs));
-      }
+      await DataModel.find()
+        .findByFilter(query)
+        .exec((err, rs) => response.DEFAULT(res, err, rs));
     }
   }),
 
@@ -115,7 +113,7 @@ export default {
           $in: ids, // [10, 88, 2, 5, 8]
         },
       };
-      
+
       await DataModel.find(filter).exec((errData, rsData) => {
         //delete
         DataModel.deleteMany(filter).exec((err, rsDelete) => {

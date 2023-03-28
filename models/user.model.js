@@ -21,7 +21,12 @@ var userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: {
-        values: [ROLE.ADMIN.name, ROLE.USER.name, ROLE.VISITOR.name],
+        values: [
+          ROLE.ADMIN.name,
+          ROLE.SUPERVISOR.name,
+          ROLE.USER.name,
+          ROLE.VISITOR.name,
+        ],
         message: "{VALUE} is not supported.",
       },
       required: true,
@@ -37,6 +42,11 @@ var userSchema = new mongoose.Schema(
     },
     secret_2fa: {
       type: String,
+    },
+    detailInfos: {
+      type: Object,
+      firstname: { type: String },
+      lastname: { type: String },
     },
     site_ref: { type: String, ref: "sites" },
   },

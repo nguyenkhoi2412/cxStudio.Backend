@@ -36,7 +36,7 @@ export default {
           return res.status(200).json({
             code: 200,
             ok: false,
-            message: "Authentication failed. Incorrect password",
+            message: "Authentication failed. Incorrect username/password",
             rs: [],
           });
         }

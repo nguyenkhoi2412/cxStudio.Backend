@@ -27,7 +27,7 @@ export class Helpers {
 
   //#region check
   static checkIsNotNull(data) {
-    return !objectExtension.isEmpty(data);
+    return data !== null && data !== undefined && !objectExtension.isEmpty(data);
   }
 
   static acceptFileExtension(file, filetypes = /jpeg|jpg|png/) {

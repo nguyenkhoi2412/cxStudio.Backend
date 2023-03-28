@@ -95,17 +95,28 @@ export default {
   //saveUser function to save new user
   REGISTER_USER: asyncHandler(async (req, res) => {
     // Create an instance of model SomeModel
-    const { username, password, role, oneTimePassword, phone } = req.body;
+    const { username, password, role, oneTimePassword, phone, detailInfos } =
+      req.body;
 
     var userData = new User({
       _id: Helpers.uuidv4(),
       username: username,
       password: password,
-      role: role === undefined ? ROLE.USER.name : role,
+      role: Helpers.checkIsNotNull(role) ? role : ROLE.USER.name,
       email: username,
-      phone: phone === undefined ? 0 : phone,
-      oneTimePassword: oneTimePassword === undefined ? false : oneTimePassword,
+      phone: Helpers.checkIsNotNull(phone) ? phone : 0,
+      oneTimePassword: Helpers.checkIsNotNull(oneTimePassword)
+        ? oneTimePassword
+        : false,
       secret_2fa: encryptHelper.aes.encrypt(encryptHelper.totp.generateKey()),
+      detailInfos: {
+        firstname: Helpers.checkIsNotNull(detailInfos.firstname)
+          ? detailInfos.firstname
+          : "noname",
+        lastname: Helpers.checkIsNotNull(detailInfos.lastname)
+          ? detailInfos.lastname
+          : "noname",
+      },
     });
 
     // Save the new model instance, passing a callback
@@ -120,6 +131,10 @@ export default {
           password: result.password,
           role: result.role,
           secret_2fa: result.secret_2fa,
+          firstname: result.detailInfos.firstname,
+          lastname: result.detailInfos.lastname,
+          fullname:
+            result.detailInfos.firstname + " " + result.detailInfos.lastname,
         });
       }
     });
