@@ -6,12 +6,44 @@ import { Helpers } from "../utils/helpers.js";
 import { TEMPLATES } from "../shared/templates.js";
 import encryptHelper from "../utils/encrypt.helper.js";
 import transportHelper from "../utils/transport.helper.js";
+import response from "../utils/response.helper.js";
 import jwt from "jsonwebtoken";
 
 const expired = 60 * 60; // 1 hours
 
 export default {
   //#region AUTHENTICATION
+  FIND_BY_USER: asyncHandler(async (req, res) => {
+    var username = encryptHelper.rsa.decrypt(req.body.username);
+    // get user by username
+    User.findOne()
+      .findByUsername(username)
+      .exec((err, user) => {
+        if (err) {
+          return res.status(401).json({
+            code: 401,
+            ok: false,
+            message: err.message,
+          });
+        }
+
+        if (!user) {
+          return res.status(200).json({
+            code: 200,
+            ok: false,
+            message: "User not found",
+            rs: [],
+          });
+        }
+
+        res.status(200).json({
+          code: 200,
+          ok: true,
+          message: "User is existing in system",
+          rs: [],
+        });
+      });
+  }),
   //validate function to retrieve user by username & password
   VALIDATE_USER: asyncHandler(async (req, res) => {
     var username = encryptHelper.rsa.decrypt(req.body.username);
@@ -78,17 +110,11 @@ export default {
         delete userResponse.secret_2fa;
 
         // sessionHandler.setCookie(res, "access_token", "abcdrf#@$@#$");
-
-        res.status(200).json({
-          code: 200,
-          ok: true,
-          message: "ok",
-          rs: {
-            verified_token: !user.oneTimePassword,
-            currentUser: userResponse,
-            access_token: jwtToken,
-            refresh_token: jwtRefreshToken,
-          },
+        response.DEFAULT(res, err, {
+          verified_token: !user.oneTimePassword,
+          currentUser: userResponse,
+          access_token: jwtToken,
+          refresh_token: jwtRefreshToken,
         });
       });
   }),
@@ -98,46 +124,67 @@ export default {
     const { username, password, role, oneTimePassword, phone, detailInfos } =
       req.body;
 
-    var userData = new User({
-      _id: Helpers.uuidv4(),
-      username: username,
-      password: password,
-      role: Helpers.checkIsNotNull(role) ? role : ROLE.USER.name,
-      email: username,
-      phone: Helpers.checkIsNotNull(phone) ? phone : 0,
-      oneTimePassword: Helpers.checkIsNotNull(oneTimePassword)
-        ? oneTimePassword
-        : false,
-      secret_2fa: encryptHelper.aes.encrypt(encryptHelper.totp.generateKey()),
-      detailInfos: {
-        firstname: Helpers.checkIsNotNull(detailInfos.firstname)
-          ? detailInfos.firstname
-          : "noname",
-        lastname: Helpers.checkIsNotNull(detailInfos.lastname)
-          ? detailInfos.lastname
-          : "noname",
-      },
-    });
+    const findByUserName = encryptHelper.rsa.decrypt(req.body.username);
 
-    // Save the new model instance, passing a callback
-    userData.save(function (err, result) {
-      if (err) res.json({ message: err.message });
+    // get user by username
+    User.findOne()
+      .findByUsername(findByUserName)
+      .exec((err, user) => {
+        if (err) {
+          return res.status(401).json({
+            code: 401,
+            ok: false,
+            message: err.message,
+          });
+        }
 
-      // saved!
-      if (result) {
-        res.json({
-          _id: result._id,
-          username: result.username,
-          password: result.password,
-          role: result.role,
-          secret_2fa: result.secret_2fa,
-          firstname: result.detailInfos.firstname,
-          lastname: result.detailInfos.lastname,
-          fullname:
-            result.detailInfos.firstname + " " + result.detailInfos.lastname,
+        if (user) {
+          return res.status(200).json({
+            code: 200,
+            ok: false,
+            message: findByUserName + " is existing in the system.",
+            rs: [],
+          });
+        }
+
+        var userData = new User({
+          _id: Helpers.uuidv4(),
+          username: username,
+          password: password,
+          role: Helpers.checkIsNotNull(role) ? role : ROLE.USER.name,
+          email: username,
+          phone: Helpers.checkIsNotNull(phone) ? phone : 0,
+          oneTimePassword: Helpers.checkIsNotNull(oneTimePassword)
+            ? oneTimePassword
+            : false,
+          secret_2fa: encryptHelper.aes.encrypt(
+            encryptHelper.totp.generateKey()
+          ),
+          detailInfos: {
+            firstname: Helpers.checkIsNotNull(detailInfos.firstname)
+              ? detailInfos.firstname
+              : "",
+            lastname: Helpers.checkIsNotNull(detailInfos.lastname)
+              ? detailInfos.lastname
+              : "",
+          },
         });
-      }
-    });
+
+        // Save the new model instance, passing a callback
+        userData.save(function (err, result) {
+          response.DEFAULT(res, err, {
+            _id: result._id,
+            username: result.username,
+            password: result.password,
+            role: result.role,
+            secret_2fa: result.secret_2fa,
+            firstname: result.detailInfos.firstname,
+            lastname: result.detailInfos.lastname,
+            fullname:
+              result.detailInfos.firstname + " " + result.detailInfos.lastname,
+          });
+        });
+      });
   }),
   // refreshtoken function to retrieve new token
   REFRESH_TOKEN: asyncHandler(async (req, res) => {

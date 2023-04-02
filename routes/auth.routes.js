@@ -4,6 +4,9 @@ import verifyTokenJWT from "../middleware/authJwt.js";
 const routerAuth = express.Router();
 
 //#region USERS
+// GET: api/auth/findByUser
+routerAuth.route("/findbyuser/").get(auth.FIND_BY_USER);
+
 // GET: api/auth/refreshtoken
 routerAuth.route("/refreshtoken/").get(auth.REFRESH_TOKEN);
 
