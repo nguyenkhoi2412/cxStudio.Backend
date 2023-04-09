@@ -11,7 +11,7 @@ routerUser.route("/findbyuser/").get(user.FIND_BY_USER);
 routerUser.route("/refreshtoken/").get(user.REFRESH_TOKEN);
 
 // POST: api/user/validate
-routerUser.route("/validate/").post(user.VALIDATE_USER);
+routerUser.route("/validate/:username&:password").get(user.VALIDATE_USER);
 
 // POST: api/user/register
 routerUser.route("/register/").post(user.REGISTER_USER);
@@ -22,7 +22,9 @@ routerUser
   .get(verifyTokenJWT, user.SECURE_2FA_GENERATE_TOKEN);
 
 // POST: api/user/secure_2fa/code
-routerUser.route("/secure_2fa/validate").post(verifyTokenJWT, user.VALIDATE_SECURE_2FA);
+routerUser
+  .route("/secure_2fa/validate")
+  .post(verifyTokenJWT, user.VALIDATE_SECURE_2FA);
 //#endregion
 
 export default routerUser;

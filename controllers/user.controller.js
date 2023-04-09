@@ -8,6 +8,7 @@ import encryptHelper from "../utils/encrypt.helper.js";
 import transportHelper from "../utils/transport.helper.js";
 import response from "../utils/response.helper.js";
 import jwt from "jsonwebtoken";
+import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 
 const expired = 60 * 60; // 1 hours
 
@@ -20,24 +21,24 @@ export default {
       .findByUsername(username)
       .exec((err, user) => {
         if (err) {
-          return res.status(401).json({
-            code: 401,
+          return res.status(statusCodes.UNAUTHORIZED).json({
+            code: statusCodes.UNAUTHORIZED,
             ok: false,
             message: err.message,
           });
         }
 
         if (!user) {
-          return res.status(200).json({
-            code: 200,
+          return res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
             ok: false,
             message: "User not found",
             rs: [],
           });
         }
 
-        res.status(200).json({
-          code: 200,
+        res.status(statusCodes.OK).json({
+          code: statusCodes.OK,
           ok: true,
           message: "User is existing in system",
           rs: [],
@@ -46,22 +47,22 @@ export default {
   }),
   //validate function to retrieve user by username & password
   VALIDATE_USER: asyncHandler(async (req, res) => {
-    var username = encryptHelper.rsa.decrypt(req.body.username);
+    var username = encryptHelper.rsa.decrypt(req.params.username);
     // get user by username
     User.findOne()
       .findByUsername(username)
       .exec((err, user) => {
         if (err) {
-          return res.status(401).json({
-            code: 401,
+          return res.status(statusCodes.UNAUTHORIZED).json({
+            code: statusCodes.UNAUTHORIZED,
             ok: false,
             message: err.message,
           });
         }
 
         if (!user) {
-          return res.status(200).json({
-            code: 200,
+          return res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
             ok: false,
             message: "User not found",
             rs: [],
@@ -69,9 +70,9 @@ export default {
         }
 
         // verify password with crypto & bcrypt
-        if (!user.verifyPassword(req.body.password)) {
-          return res.status(200).json({
-            code: 200,
+        if (!user.verifyPassword(req.params.password)) {
+          return res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
             ok: false,
             message: "Authentication failed. Incorrect password",
             rs: {},
@@ -131,16 +132,16 @@ export default {
       .findByUsername(findByUserName)
       .exec((err, user) => {
         if (err) {
-          return res.status(401).json({
-            code: 401,
+          return res.status(statusCodes.UNAUTHORIZED).json({
+            code: statusCodes.UNAUTHORIZED,
             ok: false,
             message: err.message,
           });
         }
 
         if (user) {
-          return res.status(200).json({
-            code: 200,
+          return res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
             ok: false,
             message: findByUserName + " is existing in the system.",
             rs: [],
@@ -196,8 +197,8 @@ export default {
         process.env.JWT_REFRESH_TOKEN,
         (error, decoded) => {
           if (error) {
-            return res.status(401).send({
-              code: 401,
+            return res.status(statusCodes.UNAUTHORIZED).send({
+              code: statusCodes.UNAUTHORIZED,
               ok: false,
               message: "Unauthorized!",
             });
@@ -212,8 +213,8 @@ export default {
             }
           );
 
-          res.status(200).json({
-            code: 200,
+          res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
             ok: true,
             message: "ok",
             rs: {
@@ -241,16 +242,16 @@ export default {
       .findById(id)
       .exec((err, user) => {
         if (err) {
-          return res.status(401).json({
-            code: 401,
+          return res.status(statusCodes.UNAUTHORIZED).json({
+            code: statusCodes.UNAUTHORIZED,
             ok: false,
             message: err.message,
           });
         }
 
         if (!user) {
-          return res.status(200).json({
-            code: 200,
+          return res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
             ok: false,
             message: "User not found",
             rs: [],
@@ -280,8 +281,8 @@ export default {
             }
           );
 
-          res.status(200).json({
-            code: 200,
+          res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
             ok: verified,
             message: "ok",
             rs: {
@@ -290,8 +291,8 @@ export default {
             },
           });
         } else {
-          res.status(200).json({
-            code: 200,
+          res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
             ok: false,
             message: "Your token is invalid or expires.",
             rs: [],
@@ -309,16 +310,16 @@ export default {
       .findById(id)
       .exec((err, user) => {
         if (err) {
-          return res.status(401).json({
-            code: 401,
+          return res.status(statusCodes.UNAUTHORIZED).json({
+            code: statusCodes.UNAUTHORIZED,
             ok: false,
             message: err.message,
           });
         }
 
         if (!user) {
-          return res.status(200).json({
-            code: 200,
+          return res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
             ok: false,
             message: "User not found",
             rs: [],
@@ -342,8 +343,8 @@ export default {
             .replace(/{{yourBand}}/gi, yourBand),
         });
 
-        res.status(200).json({
-          code: 200,
+        res.status(statusCodes.OK).json({
+          code: statusCodes.OK,
           ok: true,
           message: "Code is sent to email: " + user.email,
         });

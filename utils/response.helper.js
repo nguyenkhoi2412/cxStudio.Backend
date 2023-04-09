@@ -1,6 +1,8 @@
+import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
+
 export default {
   DEFAULT: (res, err, data, additionalData = {}) => {
-    const code = 200;
+    const code = statusCodes.OK;
     const method = res.req.method;
     const dataLength =
       data === null || data === undefined || data.length === undefined
@@ -60,7 +62,7 @@ export default {
     res.status(code).json(mergedData);
   },
   UPLOAD_FILE: (res, err, data) => {
-    let code = 200;
+    let code = statusCodes.OK;
     // let protocol = res.req.protocol || "http";
     // let HOST = res.req.headers["host"];
     const method = res.req.method;
@@ -83,7 +85,7 @@ export default {
 
     // error
     if (err) {
-      code = 400;
+      code = statusCodes.UNAUTHORIZED;
       switch (err.code) {
         default:
           return res.status(code).json({
@@ -96,7 +98,7 @@ export default {
 
     // not found
     if (!data) {
-      code = 400;
+      code = statusCodes.BAD_REQUEST;
       return res.status(code).json({
         code: code,
         ok: false,
