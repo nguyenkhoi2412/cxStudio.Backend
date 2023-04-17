@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import { extensionsHelper } from "../utils/extensionsHelper.js";
+import { helpersExtension } from "../utils/helpersExtension.js";
 
 //Define collection and schema for Business
 var roleSchema = new mongoose.Schema(
   {
-    _id: { type: String, default: extensionsHelper.uuidv4() },
+    _id: { type: String, default: helpersExtension.uuidv4() },
     name: {
       type: String,
       required: true,

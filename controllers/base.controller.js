@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import response from "../utils/response.helper.js";
 import encrypt from "../utils/encrypt.helper.js";
-import { extensionsHelper } from "../utils/extensionsHelper.js";
+import { helpersExtension } from "../utils/helpersExtension.js";
 
 export default {
   GET_BY_PAGING: asyncHandler(async (req, res, DataModel) => {
@@ -10,13 +10,13 @@ export default {
       req.params.query
     );
 
-    const skip = !extensionsHelper.checkIsNotNull(pageno) ? 1 : parseInt(pageno) - 1; // pageno
-    const limit = !extensionsHelper.checkIsNotNull(pagesize) ? 1000 : parseInt(pagesize); // pagesize
-    const sortInfos = extensionsHelper.checkIsNotNull(sortCriteria)
+    const skip = !helpersExtension.checkIsNotNull(pageno) ? 1 : parseInt(pageno) - 1; // pageno
+    const limit = !helpersExtension.checkIsNotNull(pagesize) ? 1000 : parseInt(pagesize); // pagesize
+    const sortInfos = helpersExtension.checkIsNotNull(sortCriteria)
       ? sortCriteria
       : { created_at: -1 }; //default with sort created_at asc: 1/desc: -1
 
-    const filterInfos = extensionsHelper.checkIsNotNull(filterCriteria)
+    const filterInfos = helpersExtension.checkIsNotNull(filterCriteria)
       ? filterCriteria
       : {};
 
@@ -34,7 +34,7 @@ export default {
   GET_BY_FILTER: asyncHandler(async (req, res, DataModel) => {
     // findById
     const id = req.params.id;
-    if (extensionsHelper.checkIsNotNull(id)) {
+    if (helpersExtension.checkIsNotNull(id)) {
       await DataModel.findById(id).exec((err, rs) =>
         response.DEFAULT(res, err, rs)
       );
@@ -53,7 +53,7 @@ export default {
     // await dbService.db.connection.collection("categories").insertOne(model, (err, rs) => {
     //   response.DEFAULT(res, err, rs.ops[0]);
     // });
-    model._id = extensionsHelper.uuidv4();
+    model._id = helpersExtension.uuidv4();
 
     // Save the new model instance, passing a callback
     await model.save((err, rs) => {

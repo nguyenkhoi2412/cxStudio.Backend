@@ -1,5 +1,5 @@
 import util from "util";
-import { extensionsHelper, stringExtension } from "../utils/extensionsHelper.js";
+import { helpersExtension, stringExtension } from "../utils/helpersExtension.js";
 import variables from "../shared/variables.js";
 import multer from "multer";
 import * as mime from "mime-types";
@@ -15,7 +15,7 @@ let multerStorage = multer.diskStorage({
     cb(null, uploadFolder);
   },
   filename: (req, file, cb) => {
-    let filename = variables.DIR_UPLOADS + "/" + extensionsHelper.generateKey(
+    let filename = variables.DIR_UPLOADS + "/" + helpersExtension.generateKey(
       new Date().toISOString().replace(/[:-]/gi, "")
     );
     let ext = mime.extension(file.mimetype);
@@ -28,7 +28,7 @@ const multerFileFilter = (req, file, cb) => {
   var filetypes = /jpeg|jpg|png|mp4/;
   var acceptUpload = true;
 
-  if (!extensionsHelper.acceptFileExtension(file, filetypes)) {
+  if (!helpersExtension.acceptFileExtension(file, filetypes)) {
     acceptUpload = false;
     cb("File upload only supports the following filetypes - " + filetypes);
   }

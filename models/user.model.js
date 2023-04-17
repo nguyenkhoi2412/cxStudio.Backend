@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 import encryptHelper from "../utils/encrypt.helper.js";
 import { ROLE } from "../shared/enums.js";
-import { extensionsHelper } from "../utils/extensionsHelper.js";
+import { helpersExtension } from "../utils/helpersExtension.js";
 import bcrypt from "bcrypt";
 
 //Define collection and schema for Business
 var userSchema = new mongoose.Schema(
   {
-    _id: { type: String, default: extensionsHelper.uuidv4() },
+    _id: { type: String, default: helpersExtension.uuidv4() },
     username: {
       type: String,
       required: true,

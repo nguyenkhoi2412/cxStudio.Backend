@@ -1,5 +1,5 @@
 import express from "express";
-import { extensionsHelper } from "./../utils/extensionsHelper.js";
+import { helpersExtension } from "./../utils/helpersExtension.js";
 import encryptHelper from "./../utils/encrypt.helper.js";
 import captcha from "./../utils/captcha.js";
 import variables from "./../shared/variables.js";
@@ -19,7 +19,7 @@ export default (app) => {
   app.get("/api/captcha/test/:width?/:height?/:colortext?/", (req, res) => {
     const width = parseInt(req.params.width) || 150;
     const height = parseInt(req.params.height) || 50;
-    const colortext = extensionsHelper.checkIsNotNull(req.params.colortext)
+    const colortext = helpersExtension.checkIsNotNull(req.params.colortext)
       ? req.params.colortext
       : "#000";
 

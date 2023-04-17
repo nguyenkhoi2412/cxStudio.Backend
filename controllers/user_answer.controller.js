@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import UserAnswer from "../models/user_answer.model.js";
 import moment from "moment";
 import gVariables from "../shared/variables.js";
-import { extensionsHelper } from "../utils/extensionsHelper.js";
+import { helpersExtension } from "../utils/helpersExtension.js";
 import jwt from "jsonwebtoken";
 
 export default {
@@ -23,7 +23,7 @@ export default {
         if (!user) {
           // Insert new user
           var model = new UserAnswer(req.body);
-          model._id = extensionsHelper.uuidv4();
+          model._id = helpersExtension.uuidv4();
           model.birthday = moment(model.birthday).format(gVariables.dateFormat);
 
           // Save the new model instance, passing a callback
