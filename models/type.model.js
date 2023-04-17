@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Helpers } from "../utils/helpers.js";
+import { extensionsHelper } from "../utils/extensionsHelper.js";
 
 //Define collection and schema for Business
 var typeSchema = new mongoose.Schema(

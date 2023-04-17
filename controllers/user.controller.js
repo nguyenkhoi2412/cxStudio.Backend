@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import sessionHandler from "../middleware/sessionHandler.js";
 import { ROLE } from "../shared/enums.js";
 import User from "../models/user.model.js";
-import { Helpers } from "../utils/helpers.js";
+import { extensionsHelper } from "../utils/extensionsHelper.js";
 import { TEMPLATES } from "../shared/templates.js";
 import encryptHelper from "../utils/encrypt.helper.js";
 import transportHelper from "../utils/transport.helper.js";
@@ -149,23 +149,23 @@ export default {
         }
 
         var userData = new User({
-          _id: Helpers.uuidv4(),
+          _id: extensionsHelper.uuidv4(),
           username: username,
           password: password,
-          role: Helpers.checkIsNotNull(role) ? role : ROLE.USER.name,
+          role: extensionsHelper.checkIsNotNull(role) ? role : ROLE.USER.name,
           email: username,
-          phone: Helpers.checkIsNotNull(phone) ? phone : 0,
-          oneTimePassword: Helpers.checkIsNotNull(oneTimePassword)
+          phone: extensionsHelper.checkIsNotNull(phone) ? phone : 0,
+          oneTimePassword: extensionsHelper.checkIsNotNull(oneTimePassword)
             ? oneTimePassword
             : false,
           secret_2fa: encryptHelper.aes.encrypt(
             encryptHelper.totp.generateKey()
           ),
           detailInfos: {
-            firstname: Helpers.checkIsNotNull(detailInfos.firstname)
+            firstname: extensionsHelper.checkIsNotNull(detailInfos.firstname)
               ? detailInfos.firstname
               : "",
-            lastname: Helpers.checkIsNotNull(detailInfos.lastname)
+            lastname: extensionsHelper.checkIsNotNull(detailInfos.lastname)
               ? detailInfos.lastname
               : "",
           },

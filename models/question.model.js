@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Helpers } from "../utils/helpers.js";
+import { extensionsHelper } from "../utils/extensionsHelper.js";
 
 var Schema = mongoose.Schema;
 
@@ -20,7 +20,7 @@ var questionSchema = new Schema(
     numberOfAnswers: { type: Number },
     answers: [
       {
-        _id: { type: String, default: Helpers.uuidv4() },
+        _id: { type: String, default: extensionsHelper.uuidv4() },
         text: { type: Object },
         correct: { type: Boolean, default: false },
         desc: { type: Object },

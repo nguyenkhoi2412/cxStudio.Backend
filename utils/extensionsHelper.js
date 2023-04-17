@@ -1,6 +1,6 @@
 import path from "path";
 
-export class Helpers {
+export class extensionsHelper {
   //#region generate
   static generateKey = (pre) => {
     return `${this.checkIsNotNull(pre) ? pre + "_" : ""}${
@@ -190,9 +190,9 @@ export class arrayExtension {
 //#region string
 export class stringExtension {
   static render = (value, langCode = "", defaultValue = "Noname") => {
-    return Helpers.checkIsNotNull(value)
+    return extensionsHelper.checkIsNotNull(value)
       ? langCode !== ""
-        ? Helpers.checkIsNotNull(value[langCode])
+        ? extensionsHelper.checkIsNotNull(value[langCode])
           ? value[langCode]
           : defaultValue
         : value
