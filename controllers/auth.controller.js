@@ -125,11 +125,11 @@ export default {
     const { username, password, role, oneTimePassword, phone, detailInfos } =
       req.body;
 
-    const findByUserName = encryptHelper.rsa.decrypt(req.body.username);
+    const usernameDecrypt = encryptHelper.rsa.decrypt(req.body.username);
 
     // get user by username
     User.findOne()
-      .findByUsername(findByUserName)
+      .findByUsername(usernameDecrypt)
       .exec((err, user) => {
         if (err) {
           return res.status(statusCodes.UNAUTHORIZED).json({
@@ -143,14 +143,14 @@ export default {
           return res.status(statusCodes.OK).json({
             code: statusCodes.OK,
             ok: false,
-            message: findByUserName + " is existing in the system.",
+            message: usernameDecrypt + " is existing in the system.",
             rs: [],
           });
         }
 
         var userData = new User({
           _id: helpersExtension.uuidv4(),
-          username: username,
+          username: usernameDecrypt,
           password: password,
           role: helpersExtension.checkIsNotNull(role) ? role : ROLE.USER.name,
           email: username,
