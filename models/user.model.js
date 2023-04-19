@@ -76,7 +76,6 @@ userSchema.methods.verifyPassword = function (
 ) {
   // decrypt password using cryptoJs
   const pwd = decryptCryptoJs ? encryptHelper.rsa.decrypt(password) : password;
-
   //encrypt password to get data
   return bcrypt.compareSync(pwd, this.password);
 };
@@ -85,7 +84,8 @@ userSchema.methods.verifyPassword = function (
 //hashing a password before saving it to the database
 userSchema.pre("save", function (next) {
   var user = this;
-  bcrypt.hash(user.password, 10, function (err, hash) {
+  var password = encryptHelper.rsa.decrypt(user.password);
+  bcrypt.hash(password, 10, function (err, hash) {
     if (err) {
       return next(err);
     }

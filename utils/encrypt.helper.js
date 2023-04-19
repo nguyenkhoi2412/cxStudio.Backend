@@ -111,7 +111,7 @@ export default {
       });
     },
     //* generate ascii, hex, base32, otpauth_url
-    generateKey: (issuer = 'EGOStore') => {
+    generateKey: (issuer = 'INC') => {
       return speakeasy.generateSecret({ issuer: issuer, google_auth_qr: true, qr_codes: true });
     },
     // abc: (secret, token, encoding = "base32") => {

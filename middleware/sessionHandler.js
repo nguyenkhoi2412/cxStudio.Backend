@@ -15,7 +15,6 @@ export default {
   },
   // returns an object with the cookies' name as keys
   getCookie: (req) => {
-    console.log("abc 3423", req.headers.cookie);
     // We extract the raw cookies from the request headers
     const rawCookies = req.headers.cookie.split("; ");
     // rawCookies = ['myapp=secretcookie, 'analytics_cookie=beacon;']

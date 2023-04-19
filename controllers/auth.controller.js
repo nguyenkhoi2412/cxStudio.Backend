@@ -48,6 +48,7 @@ export default {
   //validate function to retrieve user by username & password
   VALIDATE_USER: asyncHandler(async (req, res) => {
     var username = encryptHelper.rsa.decrypt(req.params.username);
+    var password = req.params.password;
     // get user by username
     User.findOne()
       .findByUsername(username)
@@ -70,7 +71,7 @@ export default {
         }
 
         // verify password with crypto & bcrypt
-        if (!user.verifyPassword(req.params.password)) {
+        if (!user.verifyPassword(password)) {
           return res.status(statusCodes.OK).json({
             code: statusCodes.OK,
             ok: false,
@@ -91,7 +92,7 @@ export default {
           process.env.JWT_TOKEN,
           {
             expiresIn: dataJwtToken.verified_token
-              ? parseInt(process.env.TOKEN_EXPIRESIN) * expired // 4 hours
+              ? parseInt(process.env.TOKEN_EXPIRESIN) * expired // 6 hours
               : 900, // 15 min use for login
           }
         );
@@ -101,7 +102,7 @@ export default {
           { data: JSON.stringify(dataJwtToken) },
           process.env.JWT_REFRESH_TOKEN,
           {
-            expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired * 6, // 24 hours
+            expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired * 6, // 26 hours
           }
         );
 
@@ -125,7 +126,7 @@ export default {
     const { username, password, role, oneTimePassword, phone, detailInfos } =
       req.body;
 
-    const usernameDecrypt = encryptHelper.rsa.decrypt(req.body.username);
+    const usernameDecrypt = encryptHelper.rsa.decrypt(username);
 
     // get user by username
     User.findOne()
@@ -148,8 +149,9 @@ export default {
           });
         }
 
+        var userId = helpersExtension.uuidv4();
         var userData = new User({
-          _id: helpersExtension.uuidv4(),
+          _id: userId,
           username: usernameDecrypt,
           password: password,
           role: helpersExtension.checkIsNotNull(role) ? role : ROLE.USER.name,
@@ -159,7 +161,7 @@ export default {
             ? oneTimePassword
             : false,
           secret_2fa: encryptHelper.aes.encrypt(
-            encryptHelper.totp.generateKey()
+            encryptHelper.totp.generateKey(usernameDecrypt)
           ),
           detailInfos: {
             firstname: helpersExtension.checkIsNotNull(detailInfos.firstname)
@@ -209,7 +211,7 @@ export default {
             { data: decoded.data },
             process.env.JWT_TOKEN,
             {
-              expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired, // 4 hours
+              expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired, // 6 hours
             }
           );
 
@@ -235,7 +237,7 @@ export default {
   //#region SECURE 2FA
   // validate token from 2FA
   VALIDATE_SECURE_2FA: asyncHandler(async (req, res) => {
-    var { id, token } = req.body;
+    var { id, code } = req.body;
 
     // get user by id
     User.findOne()
@@ -258,10 +260,10 @@ export default {
           });
         }
 
-        // validate token from 2fa
+        // validate code from 2fa
         const verified = encryptHelper.totp.verified(
           encryptHelper.aes.decrypt(user.secret_2fa),
-          token
+          code
         );
 
         //* verified success
@@ -277,7 +279,7 @@ export default {
             { data: JSON.stringify(dataJwtToken) },
             process.env.JWT_TOKEN,
             {
-              expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired, // 4 hours
+              expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired, // 6 hours
             }
           );
 
@@ -329,8 +331,7 @@ export default {
         // generateToken from 2fa
         const secret = encryptHelper.aes.decrypt(user.secret_2fa);
         const token_2fa = encryptHelper.totp.generateToken(secret);
-
-        const yourBand = `E-GO Stores 🌠`;
+        const yourBand = `cxStudio 🌠`;
         const htmlTemplate = TEMPLATES.EMAIL.VERIFICATION_CODE;
 
         transportHelper.mail.smtp({
