@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-import smtpTransport from "nodemailer-smtp-transport";
 
 export default {
   //#region sent mail
@@ -9,21 +8,22 @@ export default {
         //* Enable these links below
         //* https://accounts.google.com/DisplayUnlockCaptcha
         //* https://myaccount.google.com/lesssecureapps
-        smtpTransport({
+        {
           // config mail server
-          service: process.env.SMTP_SERVICE,
+          // service: process.env.SMTP_SERVICE,
           host: process.env.SMTP_HOST,
+          port: process.env.SMTP_PORT,
+          secure: false,
           auth: {
             user: process.env.SMTP_EMAIL,
             pass: process.env.SMTP_PASSWORD,
           },
-        })
+        }
       );
 
       var options = {
         // thiết lập đối tượng, nội dung gửi mail
-        from:
-          mailOptions.from || `cxStudio 🌠<` + process.env.SMTP_EMAIL + `>`,
+        from: mailOptions.from || `cxStudio 🌠<` + process.env.SMTP_EMAIL + `>`,
         to: mailOptions.to,
         subject: mailOptions.subject,
         text: mailOptions.text || "",
@@ -39,7 +39,7 @@ export default {
           //   message: err,
           // };
         } else {
-          console.log('Message sent: ' + info.response);
+          console.log("Message sent: " + info.response);
           // return {
           //   code: 250,
           //   ok: true,

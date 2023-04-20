@@ -102,7 +102,7 @@ export default {
           { data: JSON.stringify(dataJwtToken) },
           process.env.JWT_REFRESH_TOKEN,
           {
-            expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired * 6, // 26 hours
+            expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired * 6, // 24 hours
           }
         );
 
@@ -155,7 +155,7 @@ export default {
           username: usernameDecrypt,
           password: password,
           role: helpersExtension.checkIsNotNull(role) ? role : ROLE.USER.name,
-          email: username,
+          email: usernameDecrypt,
           phone: helpersExtension.checkIsNotNull(phone) ? phone : 0,
           oneTimePassword: helpersExtension.checkIsNotNull(oneTimePassword)
             ? oneTimePassword
