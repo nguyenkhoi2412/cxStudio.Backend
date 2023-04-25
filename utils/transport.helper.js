@@ -28,6 +28,13 @@ export default {
         subject: mailOptions.subject,
         text: mailOptions.text || "",
         html: mailOptions.html || "",
+        // attachments: [
+        //   {
+        //     // Use a URL as an attachment
+        //     filename: "your-testla.png",
+        //     path: "https://media.gettyimages.com/photos/view-of-tesla-model-s-in-barcelona-spain-on-september-10-2018-picture-id1032050330?s=2048x2048",
+        //   },
+        // ],
       };
 
       transporter.sendMail(options, function (err, info) {
