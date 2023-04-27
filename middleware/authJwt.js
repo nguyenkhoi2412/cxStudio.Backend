@@ -1,4 +1,4 @@
-import { ROLE } from "../shared/enums.js";
+import { ROLE } from "../constant/enumRoles.js";
 import sessionHandler from "./sessionHandler.js";
 import jwt from "jsonwebtoken";
 const { TokenExpiredError } = jwt;

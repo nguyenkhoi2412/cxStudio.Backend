@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import encryptHelper from "../utils/encrypt.helper.js";
-import { ROLE } from "../shared/enums.js";
+import { ROLE } from "../constant/enumRoles.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
 import bcrypt from "bcrypt";
 
@@ -47,6 +47,7 @@ var userSchema = new mongoose.Schema(
       type: Object,
       firstname: { type: String },
       lastname: { type: String },
+      avatarPath: { type: String },
     },
     site_ref: { type: String, ref: "sites" },
   },

@@ -1,5 +1,4 @@
 import asyncHandler from "express-async-handler";
-import { ROLE } from "../shared/enums.js";
 import Role from "../models/role.model.js";
 import response from "../utils/response.helper.js";
 

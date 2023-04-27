@@ -1,6 +1,5 @@
 import asyncHandler from "express-async-handler";
-import sessionHandler from "../middleware/sessionHandler.js";
-import { ROLE } from "../shared/enums.js";
+import { ROLE } from "../constant/enumRoles.js";
 import User from "../models/user.model.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
 import { TEMPLATES } from "../shared/templates.js";
@@ -80,7 +79,13 @@ export default {
           });
         }
 
-        let userResponse = { ...user.toJSON() };
+        let userResponse = {
+          ...user.toJSON(),
+          isAdmin: user.role === ROLE.ADMIN.name,
+          isSupervisor: user.role === ROLE.SUPERVISOR.name,
+          isUser: user.role === ROLE.USER.name,
+          isVisitor: user.role === ROLE.VISITOR.name,
+        };
         const dataJwtToken = {
           ...userResponse,
           verified_token: !userResponse.oneTimePassword,
@@ -169,6 +174,9 @@ export default {
               : "",
             lastname: helpersExtension.checkIsNotNull(detailInfos.lastname)
               ? detailInfos.lastname
+              : "",
+            avatarPath: helpersExtension.checkIsNotNull(detailInfos.avatarPath)
+              ? detailInfos.avatarPath
               : "",
           },
         });
