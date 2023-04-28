@@ -16,6 +16,9 @@ routerAuth.route("/validate/:username&:password").get(auth.VALIDATE_USER);
 // POST: api/auth/register
 routerAuth.route("/register/").post(auth.REGISTER_USER);
 
+// POST: api/auth/changepassword
+routerAuth.route("/changepassword/").put(auth.CHANGE_PASSWORD);
+
 // GET: api/auth/secure_2fa/gettoken
 routerAuth
   .route("/secure_2fa/gettoken/:id")

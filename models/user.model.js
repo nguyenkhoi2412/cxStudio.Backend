@@ -60,6 +60,10 @@ var userSchema = new mongoose.Schema(
 );
 
 //#region queries
+userSchema.query.findByFilter = function (filterInfos) {
+  return this.find(filterInfos).lean();
+};
+
 userSchema.query.findByUsername = function (username) {
   return this.where({ username: username });
 };

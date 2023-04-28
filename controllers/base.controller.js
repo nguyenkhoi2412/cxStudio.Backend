@@ -94,6 +94,30 @@ export default {
     });
   }),
 
+  UPDATE_MANY: asyncHandler(async (req, res, DataModel) => {
+    // var model = req.body;
+    // model.updated_at = new Date();
+
+    // var filter = { _id: model._id };
+    // var updateValues = { $set: model };
+    // // Save update
+    // await DataModel.findOneAndUpdate(filter, updateValues, {
+    //   upsert: true,
+    //   new: true,
+    //   returnNewDocument: true,
+    // }).exec((err, rs) => {
+    //   if (!err && rs) {
+    //     DataModel.find()
+    //       .findByFilter(filter)
+    //       .exec((error, rsData) => {
+    //         response.DEFAULT(res, err, rsData);
+    //       });
+    //   } else {
+    //     response.DEFAULT(res, err, rs);
+    //   }
+    // });
+  }),
+
   //delete
   DELETE: asyncHandler(async (req, res, DataModel) => {
     // check ids

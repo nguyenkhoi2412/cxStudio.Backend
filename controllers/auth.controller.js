@@ -8,6 +8,7 @@ import transportHelper from "../utils/transport.helper.js";
 import response from "../utils/response.helper.js";
 import jwt from "jsonwebtoken";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
+import bcrypt from "bcrypt";
 
 const expired = 60 * 60; // 1 hours
 
@@ -193,6 +194,79 @@ export default {
             lastname: result.detailInfos.lastname,
             fullname:
               result.detailInfos.firstname + " " + result.detailInfos.lastname,
+          });
+        });
+      });
+  }),
+  //change password
+  CHANGE_PASSWORD: asyncHandler(async (req, res) => {
+    // Create an instance of model SomeModel
+    const { username, currentPassword, newPassword } = req.body;
+
+    const password = currentPassword;
+    var usernameDecrypt = encryptHelper.rsa.decrypt(username);
+    // get user by username
+    User.findOne()
+      .findByUsername(usernameDecrypt)
+      .exec((err, user) => {
+        if (err) {
+          return res.status(statusCodes.UNAUTHORIZED).json({
+            code: statusCodes.UNAUTHORIZED,
+            ok: false,
+            message: err.message,
+          });
+        }
+
+        if (!user) {
+          return res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
+            ok: false,
+            message: "Authentication failed. Incorrect password",
+            rs: [],
+          });
+        }
+
+        // verify password with crypto & bcrypt
+        if (!user.verifyPassword(password)) {
+          return res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
+            ok: false,
+            message: "Authentication failed. Incorrect password",
+            rs: {},
+          });
+        }
+
+        // decrypt & bcrypt password before update
+        let newPasswordHash = encryptHelper.rsa.decrypt(newPassword);
+        bcrypt.hash(newPasswordHash, 10, function (err, hash) {
+          if (err) {
+            return next(err);
+          }
+          // update new password
+          var newValueUpdate = {
+            _id: user._id,
+            password: hash,
+            updated_at: new Date(),
+          };
+
+          var filter = { _id: newValueUpdate._id };
+          var updateValues = { $set: newValueUpdate };
+
+          // Save update
+          User.findOneAndUpdate(filter, updateValues, {
+            upsert: true,
+            new: true,
+            returnNewDocument: true,
+          }).exec((err, rs) => {
+            if (!err && rs) {
+              User.find()
+                .findByFilter(filter)
+                .exec((error, rsData) => {
+                  response.DEFAULT(res, err, {});
+                });
+            } else {
+              response.DEFAULT(res, err, rs);
+            }
           });
         });
       });
