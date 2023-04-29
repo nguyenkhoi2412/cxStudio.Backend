@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 import csrf from "csurf";
 import dbService from "./config/dbService.js";
 import corsOptions from "./config/corsOptions.js";
-import _apiRouters from "./routes/_api.routes.js";
+import _apiRouters from "./_routes/_api.routes.js";
 import { stringExtension } from "./utils/helpersExtension.js";
 
 //dotenv config, read data in .env
