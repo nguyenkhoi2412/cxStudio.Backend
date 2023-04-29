@@ -16,51 +16,21 @@ const expired = 60 * 60; // 1 hours
 export default {
   //#region AUTHENTICATION
   FIND_BY_USER: asyncHandler(async (req, res) => {
-    var username = encryptHelper.rsa.decrypt(req.body.username);
     // get user by username
-    User.findOne()
-      .findByUsername(username)
-      .exec((err, user) => {
-        if (err) {
-          return res.status(statusCodes.UNAUTHORIZED).json({
-            code: statusCodes.UNAUTHORIZED,
-            ok: false,
-            message: err.message,
-          });
-        }
-
-        if (!user) {
-          return res.status(statusCodes.OK).json({
-            code: statusCodes.OK,
-            ok: false,
-            message: "User not found",
-            rs: [],
-          });
-        }
-
-        res.status(statusCodes.OK).json({
-          code: statusCodes.OK,
-          ok: true,
-          message: "User is existing in system",
-          rs: [],
-        });
+    UserService.findByUser(req, res, req.body.username).then((user) => {
+      res.status(statusCodes.OK).json({
+        code: statusCodes.OK,
+        ok: true,
+        message: "User is existing in system",
+        rs: [],
       });
+    });
   }),
   //validate function to retrieve user by username & password
   VALIDATE_USER: asyncHandler(async (req, res) => {
-    var username = encryptHelper.rsa.decrypt(req.params.username);
-    var password = req.params.password;
+    var { username, password } = req.params;
 
-    UserService.findByUser(req, res, username).then((user) => {
-      if (!user.verifyPassword(password)) {
-        return res.status(statusCodes.OK).json({
-          code: statusCodes.OK,
-          ok: false,
-          message: "Authentication failed. Incorrect password",
-          rs: {},
-        });
-      }
-
+    UserService.verifyPassword(req, res, username, password).then((user) => {
       let userResponse = {
         ...user.toJSON(),
         isAdmin: user.role === ROLE.ADMIN.name,
@@ -193,60 +163,11 @@ export default {
     const password = currentPassword;
     var currentUsernameDecrypt = encryptHelper.rsa.decrypt(currentUsername);
     // get user by username
-    User.findOne()
-      .findByUsername(currentUsernameDecrypt)
-      .exec((err, user) => {
-        if (err) {
-          return res.status(statusCodes.UNAUTHORIZED).json({
-            code: statusCodes.UNAUTHORIZED,
-            ok: false,
-            message: err.message,
-          });
-        }
-
-        if (!user) {
-          return res.status(statusCodes.OK).json({
-            code: statusCodes.OK,
-            ok: false,
-            message: "Authentication failed. Incorrect password",
-            rs: [],
-          });
-        }
-
-        // verify password with crypto & bcrypt
-        if (!user.verifyPassword(password)) {
-          return res.status(statusCodes.OK).json({
-            code: statusCodes.OK,
-            ok: false,
-            message: "Authentication failed. Incorrect password",
-            rs: {},
-          });
-        }
-
+    UserService.verifyPassword(req, res, currentUsername, currentPassword).then(
+      (user) => {
         // check account need to change/reset password existing?
-        var usernameResetPasswordDecrypt = encryptHelper.rsa.decrypt(
-          usernameResetPassword
-        );
-        User.findOne()
-          .findByUsername(usernameResetPasswordDecrypt)
-          .exec((err, userReset) => {
-            if (err) {
-              return res.status(statusCodes.UNAUTHORIZED).json({
-                code: statusCodes.UNAUTHORIZED,
-                ok: false,
-                message: err.message,
-              });
-            }
-
-            if (!userReset) {
-              return res.status(statusCodes.OK).json({
-                code: statusCodes.OK,
-                ok: false,
-                message: "Authentication failed. Incorrect password",
-                rs: [],
-              });
-            }
-
+        UserService.findByUser(req, res, usernameResetPassword).then(
+          (userReset) => {
             // decrypt & bcrypt password before update
             let newPasswordHash = encryptHelper.rsa.decrypt(newPassword);
             bcrypt.hash(newPasswordHash, 10, function (err, hash) {
@@ -262,7 +183,7 @@ export default {
 
               var filter = { _id: newValueUpdate._id };
               var updateValues = { $set: newValueUpdate };
-              console.log("newValueUpdate", userReset);
+
               // Save update
               User.findOneAndUpdate(filter, updateValues, {
                 upsert: true,
@@ -280,8 +201,10 @@ export default {
                 }
               });
             });
-          });
-      });
+          }
+        );
+      }
+    );
   }),
   // refreshtoken function to retrieve new token
   REFRESH_TOKEN: asyncHandler(async (req, res) => {
