@@ -19,6 +19,9 @@ routerAuth.route("/register/").post(auth.REGISTER_USER);
 // POST: api/auth/changepassword
 routerAuth.route("/changepassword/").put(auth.CHANGE_PASSWORD);
 
+// POST: api/auth/recoverypassword
+routerAuth.route("/recoverypassword/:username").get(auth.RECOVERY_PASSWORD);
+
 // GET: api/auth/secure_2fa/gettoken
 routerAuth
   .route("/secure_2fa/gettoken/:id")

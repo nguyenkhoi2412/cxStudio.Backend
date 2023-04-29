@@ -160,8 +160,6 @@ export default {
       newPassword,
     } = req.body;
 
-    const password = currentPassword;
-    var currentUsernameDecrypt = encryptHelper.rsa.decrypt(currentUsername);
     // get user by username
     UserService.verifyPassword(req, res, currentUsername, currentPassword).then(
       (user) => {
@@ -205,6 +203,64 @@ export default {
         );
       }
     );
+  }),
+  RECOVERY_PASSWORD: asyncHandler(async (req, res) => {
+    const { username } = req.params;
+
+    // get user info by username
+    UserService.findByUser(req, res, username).then((user) => {
+      let newPasswordHash = process.env.DEFAULT_PASSWORD || "7654321aA@";
+      bcrypt.hash(newPasswordHash, 10, function (err, hash) {
+        if (err) {
+          return next(err);
+        }
+
+        // update new password
+        var newValueUpdate = {
+          _id: user._id,
+          password: hash,
+          updated_at: new Date(),
+        };
+
+        var filter = { _id: newValueUpdate._id };
+        var updateValues = { $set: newValueUpdate };
+
+        // Save update
+        User.findOneAndUpdate(filter, updateValues, {
+          upsert: true,
+          new: true,
+          returnNewDocument: true,
+        }).exec((err, rs) => {
+          if (!err && rs) {
+            // sent mail recovery password
+            const yourBand = `cxStudio 🌠`;
+            const htmlTemplate = TEMPLATES.EMAIL.RECOVERY_PASSWORD;
+
+            transportHelper.mail.smtp({
+              to: user.email,
+              subject: "Recovery password",
+              text: newPasswordHash,
+              html: htmlTemplate
+                .replace(
+                  `{{user.givenname}}`,
+                  user.detailInfos.firstname + " " + user.detailInfos.lastname
+                )
+                .replace(`{{password}}`, newPasswordHash)
+                .replace(/{{yourBand}}/gi, yourBand),
+            });
+
+            // response to client
+            res.status(statusCodes.OK).json({
+              code: statusCodes.OK,
+              ok: true,
+              message: "Your password has been reset, please check in your email " + user.email,
+            });
+          } else {
+            response.DEFAULT(res, err, rs);
+          }
+        });
+      });
+    });
   }),
   // refreshtoken function to retrieve new token
   REFRESH_TOKEN: asyncHandler(async (req, res) => {
@@ -356,7 +412,10 @@ export default {
           subject: "Verify your login",
           text: token_2fa,
           html: htmlTemplate
-            .replace(`{{user.givenname}}`, user.username)
+            .replace(
+              `{{user.givenname}}`,
+              user.detailInfos.firstname + " " + user.detailInfos.lastname
+            )
             .replace(`{{OTPCode}}`, token_2fa)
             .replace(/{{yourBand}}/gi, yourBand),
         });
