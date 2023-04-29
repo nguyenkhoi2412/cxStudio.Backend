@@ -201,13 +201,18 @@ export default {
   //change password
   CHANGE_PASSWORD: asyncHandler(async (req, res) => {
     // Create an instance of model SomeModel
-    const { username, currentPassword, newPassword } = req.body;
+    const {
+      currentUsername,
+      currentPassword,
+      usernameResetPassword,
+      newPassword,
+    } = req.body;
 
     const password = currentPassword;
-    var usernameDecrypt = encryptHelper.rsa.decrypt(username);
+    var currentUsernameDecrypt = encryptHelper.rsa.decrypt(currentUsername);
     // get user by username
     User.findOne()
-      .findByUsername(usernameDecrypt)
+      .findByUsername(currentUsernameDecrypt)
       .exec((err, user) => {
         if (err) {
           return res.status(statusCodes.UNAUTHORIZED).json({
@@ -236,39 +241,64 @@ export default {
           });
         }
 
-        // decrypt & bcrypt password before update
-        let newPasswordHash = encryptHelper.rsa.decrypt(newPassword);
-        bcrypt.hash(newPasswordHash, 10, function (err, hash) {
-          if (err) {
-            return next(err);
-          }
-          // update new password
-          var newValueUpdate = {
-            _id: user._id,
-            password: hash,
-            updated_at: new Date(),
-          };
-
-          var filter = { _id: newValueUpdate._id };
-          var updateValues = { $set: newValueUpdate };
-
-          // Save update
-          User.findOneAndUpdate(filter, updateValues, {
-            upsert: true,
-            new: true,
-            returnNewDocument: true,
-          }).exec((err, rs) => {
-            if (!err && rs) {
-              User.find()
-                .findByFilter(filter)
-                .exec((error, rsData) => {
-                  response.DEFAULT(res, err, {});
-                });
-            } else {
-              response.DEFAULT(res, err, rs);
+        // check account need to change/reset password existing?
+        var usernameResetPasswordDecrypt = encryptHelper.rsa.decrypt(
+          usernameResetPassword
+        );
+        User.findOne()
+          .findByUsername(usernameResetPasswordDecrypt)
+          .exec((err, userReset) => {
+            if (err) {
+              return res.status(statusCodes.UNAUTHORIZED).json({
+                code: statusCodes.UNAUTHORIZED,
+                ok: false,
+                message: err.message,
+              });
             }
+
+            if (!userReset) {
+              return res.status(statusCodes.OK).json({
+                code: statusCodes.OK,
+                ok: false,
+                message: "Authentication failed. Incorrect password",
+                rs: [],
+              });
+            }
+
+            // decrypt & bcrypt password before update
+            let newPasswordHash = encryptHelper.rsa.decrypt(newPassword);
+            bcrypt.hash(newPasswordHash, 10, function (err, hash) {
+              if (err) {
+                return next(err);
+              }
+              // update new password
+              var newValueUpdate = {
+                _id: userReset._id,
+                password: hash,
+                updated_at: new Date(),
+              };
+
+              var filter = { _id: newValueUpdate._id };
+              var updateValues = { $set: newValueUpdate };
+              console.log("newValueUpdate", userReset);
+              // Save update
+              User.findOneAndUpdate(filter, updateValues, {
+                upsert: true,
+                new: true,
+                returnNewDocument: true,
+              }).exec((err, rs) => {
+                if (!err && rs) {
+                  User.find()
+                    .findByFilter(filter)
+                    .exec((error, rsData) => {
+                      response.DEFAULT(res, err, {});
+                    });
+                } else {
+                  response.DEFAULT(res, err, rs);
+                }
+              });
+            });
           });
-        });
       });
   }),
   // refreshtoken function to retrieve new token
