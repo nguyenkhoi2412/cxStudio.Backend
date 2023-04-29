@@ -9,6 +9,7 @@ import response from "../utils/response.helper.js";
 import jwt from "jsonwebtoken";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 import bcrypt from "bcrypt";
+import UserService from "../services/user.js";
 
 const expired = 60 * 60; // 1 hours
 
@@ -49,82 +50,63 @@ export default {
   VALIDATE_USER: asyncHandler(async (req, res) => {
     var username = encryptHelper.rsa.decrypt(req.params.username);
     var password = req.params.password;
-    // get user by username
-    User.findOne()
-      .findByUsername(username)
-      .exec((err, user) => {
-        if (err) {
-          return res.status(statusCodes.UNAUTHORIZED).json({
-            code: statusCodes.UNAUTHORIZED,
-            ok: false,
-            message: err.message,
-          });
-        }
 
-        if (!user) {
-          return res.status(statusCodes.OK).json({
-            code: statusCodes.OK,
-            ok: false,
-            message: "User not found",
-            rs: [],
-          });
-        }
-
-        // verify password with crypto & bcrypt
-        if (!user.verifyPassword(password)) {
-          return res.status(statusCodes.OK).json({
-            code: statusCodes.OK,
-            ok: false,
-            message: "Authentication failed. Incorrect password",
-            rs: {},
-          });
-        }
-
-        let userResponse = {
-          ...user.toJSON(),
-          isAdmin: user.role === ROLE.ADMIN.name,
-          isSupervisor: user.role === ROLE.SUPERVISOR.name,
-          isUser: user.role === ROLE.USER.name,
-          isVisitor: user.role === ROLE.VISITOR.name,
-        };
-        const dataJwtToken = {
-          ...userResponse,
-          verified_token: !userResponse.oneTimePassword,
-        };
-
-        // create access token
-        const jwtToken = jwt.sign(
-          { data: JSON.stringify(dataJwtToken) },
-          process.env.JWT_TOKEN,
-          {
-            expiresIn: dataJwtToken.verified_token
-              ? parseInt(process.env.TOKEN_EXPIRESIN) * expired // 6 hours
-              : 900, // 15 min use for login
-          }
-        );
-
-        // create refresh token
-        const jwtRefreshToken = jwt.sign(
-          { data: JSON.stringify(dataJwtToken) },
-          process.env.JWT_REFRESH_TOKEN,
-          {
-            expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired * 6, // 24 hours
-          }
-        );
-
-        // remove secure data
-        delete userResponse.password;
-        delete userResponse.oneTimePassword;
-        delete userResponse.secret_2fa;
-
-        // sessionHandler.setCookie(res, "access_token", "abcdrf#@$@#$");
-        response.DEFAULT(res, err, {
-          verified_token: !user.oneTimePassword,
-          currentUser: userResponse,
-          access_token: jwtToken,
-          refresh_token: jwtRefreshToken,
+    UserService.findByUser(req, res, username).then((user) => {
+      if (!user.verifyPassword(password)) {
+        return res.status(statusCodes.OK).json({
+          code: statusCodes.OK,
+          ok: false,
+          message: "Authentication failed. Incorrect password",
+          rs: {},
         });
+      }
+
+      let userResponse = {
+        ...user.toJSON(),
+        isAdmin: user.role === ROLE.ADMIN.name,
+        isSupervisor: user.role === ROLE.SUPERVISOR.name,
+        isUser: user.role === ROLE.USER.name,
+        isVisitor: user.role === ROLE.VISITOR.name,
+      };
+
+      const dataJwtToken = {
+        ...userResponse,
+        verified_token: !userResponse.oneTimePassword,
+      };
+
+      // create access token
+      const jwtToken = jwt.sign(
+        { data: JSON.stringify(dataJwtToken) },
+        process.env.JWT_TOKEN,
+        {
+          expiresIn: dataJwtToken.verified_token
+            ? parseInt(process.env.TOKEN_EXPIRESIN) * expired // 6 hours
+            : 900, // 15 min use for login
+        }
+      );
+
+      // create refresh token
+      const jwtRefreshToken = jwt.sign(
+        { data: JSON.stringify(dataJwtToken) },
+        process.env.JWT_REFRESH_TOKEN,
+        {
+          expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired * 6, // 24 hours
+        }
+      );
+
+      // remove secure data
+      delete userResponse.password;
+      delete userResponse.oneTimePassword;
+      delete userResponse.secret_2fa;
+
+      // sessionHandler.setCookie(res, "access_token", "abcdrf#@$@#$");
+      response.DEFAULT(res, null, {
+        verified_token: !user.oneTimePassword,
+        currentUser: userResponse,
+        access_token: jwtToken,
+        refresh_token: jwtRefreshToken,
       });
+    });
   }),
   //saveUser function to save new user
   REGISTER_USER: asyncHandler(async (req, res) => {
