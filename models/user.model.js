@@ -37,6 +37,9 @@ var userSchema = new mongoose.Schema(
     phone: {
       type: String,
     },
+    isLock: {
+      type: Boolean,
+    },
     oneTimePassword: {
       type: Boolean,
     },

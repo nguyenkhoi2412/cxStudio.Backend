@@ -31,6 +31,16 @@ export default {
     var { username, password } = req.params;
 
     UserService.verifyPassword(req, res, username, password).then((user) => {
+      // check user isLock?
+      if (user.isLock) {
+        return res.status(statusCodes.OK).json({
+          code: statusCodes.LOCKED,
+          ok: false,
+          message: "Authentication failed. Account has been locked",
+          rs: {},
+        });
+      }
+
       let userResponse = {
         ...user.toJSON(),
         isAdmin: user.role === ROLE.ADMIN.name,
@@ -115,6 +125,7 @@ export default {
           role: helpersExtension.checkIsNotNull(role) ? role : ROLE.USER.name,
           email: usernameDecrypt,
           phone: helpersExtension.checkIsNotNull(phone) ? phone : 0,
+          isLock: false,
           oneTimePassword: helpersExtension.checkIsNotNull(oneTimePassword)
             ? oneTimePassword
             : false,
@@ -209,6 +220,15 @@ export default {
 
     // get user info by username
     UserService.findByUser(req, res, username).then((user) => {
+      if (user.isLock) {
+        return res.status(statusCodes.OK).json({
+          code: statusCodes.LOCKED,
+          ok: false,
+          message: "Account has been locked",
+          rs: {},
+        });
+      }
+
       let newPasswordHash = process.env.DEFAULT_PASSWORD || "7654321aA@";
       bcrypt.hash(newPasswordHash, 10, function (err, hash) {
         if (err) {
@@ -253,7 +273,9 @@ export default {
             res.status(statusCodes.OK).json({
               code: statusCodes.OK,
               ok: true,
-              message: "Your password has been reset, please check in your email " + user.email,
+              message:
+                "Your password has been reset, please check in your email " +
+                user.email,
             });
           } else {
             response.DEFAULT(res, err, rs);
