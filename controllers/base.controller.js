@@ -10,8 +10,12 @@ export default {
       req.params.query
     );
 
-    const skip = !helpersExtension.checkIsNotNull(pageno) ? 1 : parseInt(pageno) - 1; // pageno
-    const limit = !helpersExtension.checkIsNotNull(pagesize) ? 1000 : parseInt(pagesize); // pagesize
+    const skip = !helpersExtension.checkIsNotNull(pageno)
+      ? 1
+      : parseInt(pageno) - 1; // pageno
+    const limit = !helpersExtension.checkIsNotNull(pagesize)
+      ? 1000
+      : parseInt(pagesize); // pagesize
     const sortInfos = helpersExtension.checkIsNotNull(sortCriteria)
       ? sortCriteria
       : { created_at: -1 }; //default with sort created_at asc: 1/desc: -1
@@ -86,6 +90,15 @@ export default {
         DataModel.find()
           .findByFilter(filter)
           .exec((error, rsData) => {
+            //! Special case for DataModel is User
+            rsData.map((item) => {
+              // remove secure data
+              delete item.password;
+              delete item.secret_2fa;
+
+              return item;
+            });
+
             response.DEFAULT(res, err, rsData);
           });
       } else {
@@ -97,7 +110,6 @@ export default {
   UPDATE_MANY: asyncHandler(async (req, res, DataModel) => {
     // var model = req.body;
     // model.updated_at = new Date();
-
     // var filter = { _id: model._id };
     // var updateValues = { $set: model };
     // // Save update

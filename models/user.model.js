@@ -48,9 +48,11 @@ var userSchema = new mongoose.Schema(
     },
     detailInfos: {
       type: Object,
-      firstname: { type: String },
-      lastname: { type: String },
+      firstName: { type: String },
+      lastName: { type: String },
       avatarPath: { type: String },
+      country: { type: String },
+      birthday: { type: Date },
     },
     site_ref: { type: String, ref: "sites" },
   },

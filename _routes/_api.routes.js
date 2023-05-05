@@ -6,6 +6,7 @@ import variables from "./../shared/variables.js";
 
 import fileRoutes from "./file.routes.js";
 import authRoutes from "./auth.routes.js";
+import userRoutes from "./user.routes.js";
 import roleRouters from "./role.routes.js";
 import siteRoutes from "./site.routes.js";
 import typeRoutes from "./type.routes.js";
@@ -52,8 +53,9 @@ export default (app) => {
   app.use("/" + variables.DIR_UPLOADS, express.static(variables.DIR_UPLOADS)); // public access folder upload
   app.use("/api/file", fileRoutes);
   app.use("/api/auth", authRoutes);
+  app.use("/api/user", userRoutes);
   app.use("/api/role", roleRouters);
-  
+
   app.use("/api/site", siteRoutes);
   app.use("/api/type", typeRoutes);
   app.use("/api/supplier", supplierRoutes);

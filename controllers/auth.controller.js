@@ -76,7 +76,6 @@ export default {
 
       // remove secure data
       delete userResponse.password;
-      delete userResponse.oneTimePassword;
       delete userResponse.secret_2fa;
 
       // sessionHandler.setCookie(res, "access_token", "abcdrf#@$@#$");
