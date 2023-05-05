@@ -27,7 +27,9 @@ export class helpersExtension {
 
   //#region check
   static checkIsNotNull(data) {
-    return data !== null && data !== undefined && !objectExtension.isEmpty(data);
+    return (
+      data !== null && data !== undefined && !objectExtension.isEmpty(data)
+    );
   }
 
   static acceptFileExtension(file, filetypes = /jpeg|jpg|png/) {
@@ -84,6 +86,14 @@ export class objectExtension {
     }
     return true;
   };
+
+  static compareArrays = (a, b) =>
+    a.length === b.length &&
+    a.every(
+      (element, index) =>
+        element === b[index] ||
+        JSON.stringify(element) === JSON.stringify(b[index])
+    );
 }
 //#endregion
 
