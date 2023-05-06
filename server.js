@@ -28,7 +28,7 @@ const options = {
 //connect database
 dbService.connect((err) => {
   if (err) {
-    console.error(`Error: ${error.message}`);
+    console.error(`Error: ${err.message}`);
     process.exit(1);
   }
 
