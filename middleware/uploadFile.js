@@ -49,12 +49,23 @@ const multerFileFilter = (req, file, cb) => {
   if (acceptUpload) return cb(null, true);
 };
 
-let uploadFile = multer({
+let uploadFileSingle = multer({
   // dest: uploadFolder,
   storage: multerStorage,
   limits: { fileSize: maxSize },
   fileFilter: multerFileFilter,
-}).single("avatar");
+}).single("single");
+let uploadFileSingleMiddleware = util.promisify(uploadFileSingle);
 
-let uploadFileMiddleware = util.promisify(uploadFile);
-export default uploadFileMiddleware;
+let uploadFileMultiple = multer({
+  // dest: uploadFolder,
+  storage: multerStorage,
+  limits: { fileSize: maxSize },
+  fileFilter: multerFileFilter,
+}).array("multiple");
+let uploadFileMultiplesMiddleware = util.promisify(uploadFileMultiple);
+
+export default {
+  SINGLE: uploadFileSingleMiddleware,
+  MULTIPLES: uploadFileMultiplesMiddleware,
+};

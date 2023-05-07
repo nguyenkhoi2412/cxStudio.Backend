@@ -5,7 +5,7 @@ const routerFile = express.Router();
 //#region ARTICLES
 // POST: api/file/upload
 routerFile.route("/upload").post((req, res) => {
-  file.UPLOAD_FILE(req, res);
+  file.UPLOAD_FILE_SINGLE(req, res);
 });
 //#endregion
 
