@@ -3,6 +3,16 @@ import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 export default {
   DEFAULT: (res, err, data, additionalData = {}) => {
     const code = statusCodes.OK;
+
+    // error
+    if (err) {
+      return res.status(code).json({
+        code: code,
+        ok: false,
+        message: err.message,
+      });
+    }
+
     const method = res.req.method;
     const dataLength =
       data === null || data === undefined || data.length === undefined
@@ -27,15 +37,6 @@ export default {
         // is GET
         messageOk += "founded";
         break;
-    }
-
-    // error
-    if (err) {
-      return res.status(code).json({
-        code: code,
-        ok: false,
-        message: err.message,
-      });
     }
 
     // not found
@@ -63,6 +64,20 @@ export default {
   },
   UPLOAD_FILE: (res, err, data) => {
     let code = statusCodes.OK;
+
+    // error
+    if (err) {
+      code = statusCodes.UNAUTHORIZED;
+      switch (err.code) {
+        default:
+          return res.status(code).json({
+            code: code,
+            ok: false,
+            message: err,
+          });
+      }
+    }
+
     // let protocol = res.req.protocol || "http";
     // let HOST = res.req.headers["host"];
     const method = res.req.method;
@@ -81,19 +96,6 @@ export default {
         // is GET
         messageOk += "founded";
         break;
-    }
-
-    // error
-    if (err) {
-      code = statusCodes.UNAUTHORIZED;
-      switch (err.code) {
-        default:
-          return res.status(code).json({
-            code: code,
-            ok: false,
-            message: err,
-          });
-      }
     }
 
     // not found

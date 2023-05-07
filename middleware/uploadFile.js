@@ -1,5 +1,8 @@
 import util from "util";
-import { helpersExtension, stringExtension } from "../utils/helpersExtension.js";
+import {
+  helpersExtension,
+  stringExtension,
+} from "../utils/helpersExtension.js";
 import variables from "../shared/variables.js";
 import multer from "multer";
 import * as mime from "mime-types";
@@ -15,9 +18,13 @@ let multerStorage = multer.diskStorage({
     cb(null, uploadFolder);
   },
   filename: (req, file, cb) => {
-    let filename = variables.DIR_UPLOADS + "/" + helpersExtension.generateKey(
-      new Date().toISOString().replace(/[:-]/gi, "")
-    );
+    let filename =
+      variables.DIR_UPLOADS +
+      "/" +
+      helpersExtension.generateKey(
+        new Date().toISOString().replace(/[:-]/gi, "")
+      );
+
     let ext = mime.extension(file.mimetype);
 
     cb(null, `${filename + "." + ext}`);
@@ -47,7 +54,7 @@ let uploadFile = multer({
   storage: multerStorage,
   limits: { fileSize: maxSize },
   fileFilter: multerFileFilter,
-}).single("file");
+}).single("avatar");
 
 let uploadFileMiddleware = util.promisify(uploadFile);
 export default uploadFileMiddleware;
