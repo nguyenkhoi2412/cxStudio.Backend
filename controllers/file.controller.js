@@ -9,9 +9,10 @@ export default {
       response.UPLOAD_FILE(res, err, req.file);
     });
   }),
+  // uploadFile multiple
   UPLOAD_FILES: asyncHandler(async (req, res) => {
-    uploadFile.MULTIPLES(req, res, function (err) {
-      response.UPLOAD_FILE(res, err, req.file);
+    uploadFile.MULTIPLE(req, res, function (err) {
+      response.UPLOAD_FILE(res, err, req.files);
     });
   }),
 };

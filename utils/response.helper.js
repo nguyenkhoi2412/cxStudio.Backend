@@ -108,12 +108,21 @@ export default {
       });
     }
 
+    let dataFileNames = [];
+    if (dataLength > 1) {
+      data.forEach((item, index) => {
+        dataFileNames.push(item.filename);
+      });
+    } else {
+      dataFileNames[data.filename];
+    }
+
     const responseJson = {
       code: code,
       ok: true,
       message: messageOk,
       rs: {
-        filename: data.filename,
+        filename: dataFileNames,
       },
     };
 

@@ -12,12 +12,15 @@ const __dirname = path.resolve();
 const maxSize = 2 * 1024 * 1024; // 2Mb
 const uploadFolder = path.join(__dirname, "/");
 
-let multerStorage = multer.diskStorage({
+const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
+    console.log('destination', file);
+
     fs.mkdirSync(uploadFolder, { recursive: true });
     cb(null, uploadFolder);
   },
   filename: (req, file, cb) => {
+    console.log('filename', file);
     let filename =
       variables.DIR_UPLOADS +
       "/" +
@@ -49,23 +52,23 @@ const multerFileFilter = (req, file, cb) => {
   if (acceptUpload) return cb(null, true);
 };
 
-let uploadFileSingle = multer({
-  // dest: uploadFolder,
+// upload single file
+const uploadFileSingle = multer({
   storage: multerStorage,
   limits: { fileSize: maxSize },
   fileFilter: multerFileFilter,
 }).single("single");
-let uploadFileSingleMiddleware = util.promisify(uploadFileSingle);
+const uploadFileSingleMiddleware = util.promisify(uploadFileSingle);
 
-let uploadFileMultiple = multer({
-  // dest: uploadFolder,
+// upload file multiple max files 6
+const uploadFileMultiple = multer({
   storage: multerStorage,
   limits: { fileSize: maxSize },
   fileFilter: multerFileFilter,
-}).array("multiple");
-let uploadFileMultiplesMiddleware = util.promisify(uploadFileMultiple);
+}).array("multiple", 6);
+const uploadFileMultiplesMiddleware = util.promisify(uploadFileMultiple);
 
 export default {
   SINGLE: uploadFileSingleMiddleware,
-  MULTIPLES: uploadFileMultiplesMiddleware,
+  MULTIPLE: uploadFileMultiplesMiddleware,
 };

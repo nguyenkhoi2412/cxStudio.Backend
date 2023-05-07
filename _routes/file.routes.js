@@ -3,9 +3,19 @@ import file from "../controllers/file.controller.js";
 const routerFile = express.Router();
 
 //#region ARTICLES
-// POST: api/file/upload
-routerFile.route("/upload").post((req, res) => {
-  file.UPLOAD_FILE_SINGLE(req, res);
+// POST: api/file/upload/
+routerFile.route("/upload/:type?").post((req, res) => {
+  const { type } = req.params;
+  
+  switch (type) {
+    case "multiple":
+      file.UPLOAD_FILES(req, res);
+      break;
+
+    default:
+      file.UPLOAD_FILE_SINGLE(req, res);
+      break;
+  }
 });
 //#endregion
 
