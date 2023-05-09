@@ -76,10 +76,10 @@ app.use((req, res, next) => {
   return next();
 });
 
-// Logging the rejected field from multer error
-app.use((error, req, res, next) => {
-  console.log('This is the rejected field ->', error.field);
-});
+// // Logging the rejected field from multer error
+// app.use((error, req, res, next) => {
+//   console.log('This is the rejected field ->', error.field);
+// });
 
 //Request API for clients callback
 _apiRouters(app);

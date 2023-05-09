@@ -67,15 +67,11 @@ export default {
 
     // error
     if (err) {
-      code = statusCodes.UNAUTHORIZED;
-      switch (err.code) {
-        default:
-          return res.status(code).json({
-            code: code,
-            ok: false,
-            message: err,
-          });
-      }
+      return res.status(code).json({
+        code: code,
+        ok: false,
+        message: err,
+      });
     }
 
     // let protocol = res.req.protocol || "http";
@@ -114,7 +110,7 @@ export default {
         dataFileNames.push(item.filename);
       });
     } else {
-      dataFileNames[data.filename];
+      dataFileNames.push(data.filename);
     }
 
     const responseJson = {
@@ -122,7 +118,7 @@ export default {
       ok: true,
       message: messageOk,
       rs: {
-        filename: dataFileNames,
+        filenames: dataFileNames,
       },
     };
 

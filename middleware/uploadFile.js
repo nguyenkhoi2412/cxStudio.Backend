@@ -9,18 +9,15 @@ import * as mime from "mime-types";
 import path from "path";
 import fs from "fs";
 const __dirname = path.resolve();
-const maxSize = 2 * 1024 * 1024; // 2Mb
+const maxSize = 1 * 1024 * 1024; // 1Mb
 const uploadFolder = path.join(__dirname, "/");
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    console.log('destination', file);
-
     fs.mkdirSync(uploadFolder, { recursive: true });
     cb(null, uploadFolder);
   },
   filename: (req, file, cb) => {
-    console.log('filename', file);
     let filename =
       variables.DIR_UPLOADS +
       "/" +
@@ -35,7 +32,7 @@ const multerStorage = multer.diskStorage({
 });
 
 const multerFileFilter = (req, file, cb) => {
-  var filetypes = /jpeg|jpg|png|mp4/;
+  var filetypes = /jpeg|jpg|png/;
   var acceptUpload = true;
 
   if (!helpersExtension.acceptFileExtension(file, filetypes)) {

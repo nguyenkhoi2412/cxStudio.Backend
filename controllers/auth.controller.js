@@ -50,7 +50,8 @@ export default {
       };
 
       const dataJwtToken = {
-        ...userResponse,
+        username: userResponse.username,
+        role: userResponse.role,
         verified_token: !userResponse.oneTimePassword,
       };
 
@@ -364,7 +365,8 @@ export default {
         if (verified) {
           let userResponse = { ...user.toJSON() };
           const dataJwtToken = {
-            ...userResponse,
+            username: userResponse.username,
+            role: userResponse.role,
             verified_token: verified,
           };
 
