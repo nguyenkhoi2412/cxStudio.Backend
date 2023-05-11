@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import encryptHelper from "../utils/encrypt.helper.js";
 import { ROLE } from "../constant/enumRoles.js";
+import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
 import bcrypt from "bcrypt";
 
@@ -31,14 +32,24 @@ var userSchema = new mongoose.Schema(
       },
       required: true,
     },
+    status: {
+      type: String,
+      enum: {
+        values: [
+          ACCOUNT_STATUS.ACTIVE.name,
+          ACCOUNT_STATUS.PENDING.name,
+          ACCOUNT_STATUS.LOCKED.name,
+          ACCOUNT_STATUS.DISABLED.name,
+        ],
+        message: "{VALUE} is not supported.",
+      },
+      required: true,
+    },
     email: {
       type: String,
     },
     phone: {
       type: String,
-    },
-    isLock: {
-      type: Boolean,
     },
     oneTimePassword: {
       type: Boolean,

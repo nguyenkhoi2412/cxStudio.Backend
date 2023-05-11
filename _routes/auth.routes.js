@@ -17,7 +17,7 @@ routerAuth.route("/validate/:username&:password").get(auth.VALIDATE_USER);
 routerAuth.route("/register/").post(auth.REGISTER_USER);
 
 // POST: api/auth/changepassword
-routerAuth.route("/changepassword/").put(auth.CHANGE_PASSWORD);
+routerAuth.route("/changepassword/").put(verifyTokenJWT, auth.CHANGE_PASSWORD);
 
 // POST: api/auth/recoverypassword
 routerAuth.route("/recoverypassword/:username").get(auth.RECOVERY_PASSWORD);

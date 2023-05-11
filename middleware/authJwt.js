@@ -1,5 +1,6 @@
 import { ROLE } from "../constant/enumRoles.js";
-import sessionHandler from "./sessionHandler.js";
+import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
+import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 import jwt from "jsonwebtoken";
 const { TokenExpiredError } = jwt;
 
@@ -24,7 +25,7 @@ const verifyTokenJWT = (req, res, next) => {
       }
 
       const data = JSON.parse(decoded.data);
-      // check Method Not Allowed
+      //! check Method Not Allowed
       const rolename = data.role;
 
       const notAllowed =
@@ -32,8 +33,24 @@ const verifyTokenJWT = (req, res, next) => {
 
       if (notAllowed) {
         return res
-          .status(405) // 405 Method Not Allowed
-          .send({ message: "Method Not Allowed!" });
+          .status(statusCodes.METHOD_NOT_ALLOWED) //* 405 Method Not Allowed
+          .json({
+            code: statusCodes.METHOD_NOT_ALLOWED,
+            ok: false,
+            message: "Method Not Allowed!",
+          });
+      }
+
+      //! check user status?
+      if (data.status !== ACCOUNT_STATUS.ACTIVE.name) {
+        console.log(ACCOUNT_STATUS[data.status].description);
+        return res
+          .status(statusCodes.LOCKED) //* 423 Locked
+          .json({
+            code: statusCodes.LOCKED,
+            ok: false,
+            message: ACCOUNT_STATUS[data.status].description,
+          });
       }
 
       //* get url request from client
@@ -41,8 +58,12 @@ const verifyTokenJWT = (req, res, next) => {
       //* condition allow for url contain secure_2fa
       if (!data.verified_token && originalUrl.indexOf("secure_2fa") === -1) {
         return res
-          .status(401) // 401 Unauthorized
-          .send({ message: "Unauthorized!" });
+          .status(statusCodes.UNAUTHORIZED) // 401 Unauthorized
+          .json({
+            code: statusCodes.UNAUTHORIZED,
+            ok: false,
+            message: "Unauthorized!",
+          });
       }
 
       req.data = data;

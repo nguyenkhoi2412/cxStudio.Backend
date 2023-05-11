@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { ROLE } from "../constant/enumRoles.js";
+import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import User from "../models/user.model.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
 import { TEMPLATES } from "../shared/templates.js";
@@ -31,12 +32,12 @@ export default {
     var { username, password } = req.params;
 
     UserService.verifyPassword(req, res, username, password).then((user) => {
-      // check user isLock?
-      if (user.isLock) {
+      // check user status?
+      if (user.status !== ACCOUNT_STATUS.ACTIVE.name) {
         return res.status(statusCodes.OK).json({
           code: statusCodes.LOCKED,
           ok: false,
-          message: "Authentication failed. Account has been locked",
+          message: "Authentication failed. " + ACCOUNT_STATUS[user.status].description,
           rs: {},
         });
       }
@@ -52,6 +53,7 @@ export default {
       const dataJwtToken = {
         username: userResponse.username,
         role: userResponse.role,
+        status: userResponse.status,
         verified_token: !userResponse.oneTimePassword,
       };
 
@@ -91,8 +93,15 @@ export default {
   //saveUser function to save new user
   REGISTER_USER: asyncHandler(async (req, res) => {
     // Create an instance of model SomeModel
-    const { username, password, role, oneTimePassword, phone, detailInfos } =
-      req.body;
+    const {
+      username,
+      password,
+      role,
+      status,
+      oneTimePassword,
+      phone,
+      detailInfos,
+    } = req.body;
 
     const usernameDecrypt = encryptHelper.rsa.decrypt(username);
 
@@ -122,10 +131,10 @@ export default {
           _id: userId,
           username: usernameDecrypt,
           password: password,
-          role: helpersExtension.checkIsNotNull(role) ? role : ROLE.USER.name,
+          role: role ?? ROLE.USER.name,
+          status: status ?? ACCOUNT_STATUS.ACTIVE.name,
           email: usernameDecrypt,
           phone: helpersExtension.checkIsNotNull(phone) ? phone : 0,
-          isLock: false,
           oneTimePassword: helpersExtension.checkIsNotNull(oneTimePassword)
             ? oneTimePassword
             : false,
@@ -220,11 +229,11 @@ export default {
 
     // get user info by username
     UserService.findByUser(req, res, username).then((user) => {
-      if (user.isLock) {
+      if (user.status !== ACCOUNT_STATUS.ACTIVE.name) {
         return res.status(statusCodes.OK).json({
           code: statusCodes.LOCKED,
           ok: false,
-          message: "Account has been locked",
+          message: "Authentication failed. " + ACCOUNT_STATUS[user.status].description,
           rs: {},
         });
       }
@@ -367,6 +376,7 @@ export default {
           const dataJwtToken = {
             username: userResponse.username,
             role: userResponse.role,
+            status: userResponse.status,
             verified_token: verified,
           };
 
