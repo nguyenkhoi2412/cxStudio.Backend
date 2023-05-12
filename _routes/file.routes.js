@@ -4,9 +4,9 @@ const routerFile = express.Router();
 
 //#region ARTICLES
 // POST: api/file/upload/
-routerFile.route("/upload/:type?").post((req, res) => {
+routerFile.route("/upload/:type?/:identifyfolder?/").post((req, res) => {
   const { type } = req.params;
-  
+
   switch (type) {
     case "multiple":
       file.UPLOAD_FILES(req, res);

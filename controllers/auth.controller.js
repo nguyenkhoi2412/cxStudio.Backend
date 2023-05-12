@@ -37,7 +37,8 @@ export default {
         return res.status(statusCodes.OK).json({
           code: statusCodes.LOCKED,
           ok: false,
-          message: "Authentication failed. " + ACCOUNT_STATUS[user.status].description,
+          message:
+            "Authentication failed. " + ACCOUNT_STATUS[user.status].description,
           rs: {},
         });
       }
@@ -110,7 +111,7 @@ export default {
       .findByUsername(usernameDecrypt)
       .exec((err, user) => {
         if (err) {
-          return res.status(statusCodes.UNAUTHORIZED).json({
+          return res.status(statusCodes.OK).json({
             code: statusCodes.UNAUTHORIZED,
             ok: false,
             message: err.message,
@@ -142,15 +143,12 @@ export default {
             encryptHelper.totp.generateKey(usernameDecrypt)
           ),
           detailInfos: {
-            firstname: helpersExtension.checkIsNotNull(detailInfos.firstname)
-              ? detailInfos.firstname
-              : "",
-            lastname: helpersExtension.checkIsNotNull(detailInfos.lastname)
-              ? detailInfos.lastname
-              : "",
+            firstName: detailInfos.firstName ?? "",
+            lastName: detailInfos.lastName ?? "",
             avatarPath: helpersExtension.checkIsNotNull(detailInfos.avatarPath)
               ? detailInfos.avatarPath
               : "",
+            country: detailInfos.country ?? "",
           },
         });
 
@@ -162,10 +160,10 @@ export default {
             password: result.password,
             role: result.role,
             secret_2fa: result.secret_2fa,
-            firstname: result.detailInfos.firstname,
-            lastname: result.detailInfos.lastname,
+            firstName: result.detailInfos.firstName,
+            lastName: result.detailInfos.lastName,
             fullname:
-              result.detailInfos.firstname + " " + result.detailInfos.lastname,
+              result.detailInfos.firstName + " " + result.detailInfos.lastName,
           });
         });
       });
@@ -233,7 +231,8 @@ export default {
         return res.status(statusCodes.OK).json({
           code: statusCodes.LOCKED,
           ok: false,
-          message: "Authentication failed. " + ACCOUNT_STATUS[user.status].description,
+          message:
+            "Authentication failed. " + ACCOUNT_STATUS[user.status].description,
           rs: {},
         });
       }

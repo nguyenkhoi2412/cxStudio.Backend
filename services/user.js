@@ -36,7 +36,7 @@ class UserService {
             return res.status(statusCodes.OK).json({
               code: statusCodes.OK,
               ok: false,
-              message: "User not found",
+              message: "Not found!",
               rs: [],
             });
           }
@@ -61,7 +61,7 @@ class UserService {
           return res.status(statusCodes.OK).json({
             code: statusCodes.OK,
             ok: false,
-            message: "Authentication failed. Incorrect password",
+            message: "Authentication failed. Incorrect username/password",
             rs: {},
           });
         }

@@ -1,3 +1,4 @@
+import variables from "../shared/variables.js";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 
 export default {
@@ -44,7 +45,7 @@ export default {
       return res.status(code).json({
         code: code,
         ok: true,
-        message: "Data not found",
+        message: "Not found!",
       });
     }
 
@@ -62,8 +63,13 @@ export default {
 
     res.status(code).json(mergedData);
   },
-  UPLOAD_FILE: (res, err, data) => {
+  UPLOAD_FILE: (req, res, err) => {
     let code = statusCodes.OK;
+    let data = req.file;
+    if (req.files && req.files.length > 0) {
+      data = req.files;
+    }
+    const { identifyfolder } = req.params;
 
     // error
     if (err) {
@@ -107,10 +113,14 @@ export default {
     let dataFileNames = [];
     if (dataLength > 1) {
       data.forEach((item, index) => {
-        dataFileNames.push(item.filename);
+        dataFileNames.push(
+          variables.DIR_UPLOADS + "/" + identifyfolder + "/" + item.filename
+        );
       });
     } else {
-      dataFileNames.push(data.filename);
+      dataFileNames.push(
+        variables.DIR_UPLOADS + "/" + identifyfolder + "/" + data.filename
+      );
     }
 
     const responseJson = {

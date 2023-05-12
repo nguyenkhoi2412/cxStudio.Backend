@@ -10,20 +10,35 @@ import path from "path";
 import fs from "fs";
 const __dirname = path.resolve();
 const maxSize = 1 * 1024 * 1024; // 1Mb
-const uploadFolder = path.join(__dirname, "/");
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    fs.mkdirSync(uploadFolder, { recursive: true });
+    var { identifyfolder } = req.params;
+    var uploadFolder =
+      path.join(__dirname, "/" + variables.DIR_UPLOADS + "/") + identifyfolder;
+    var stat = null;
+    try {
+      stat = fs.statSync(uploadFolder);
+    } catch (err) {
+      fs.mkdirSync(uploadFolder);
+    }
+    if (stat && !stat.isDirectory()) {
+      throw new Error(
+        'Directory cannot be created because an inode of a different type exists at "' +
+          dest +
+          '"'
+      );
+    }
+
     cb(null, uploadFolder);
+
+    // fs.mkdirSync(uploadFolder, { recursive: true });
+    // cb(null, uploadFolder);
   },
   filename: (req, file, cb) => {
-    let filename =
-      variables.DIR_UPLOADS +
-      "/" +
-      helpersExtension.generateKey(
-        new Date().toISOString().replace(/[:-]/gi, "")
-      );
+    let filename = helpersExtension.generateKey(
+      new Date().toISOString().replace(/[:-]/gi, "")
+    );
 
     let ext = mime.extension(file.mimetype);
 

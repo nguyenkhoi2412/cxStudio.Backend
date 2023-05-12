@@ -2,6 +2,7 @@ import { ROLE } from "../constant/enumRoles.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 import jwt from "jsonwebtoken";
+import User from "../models/user.model.js";
 const { TokenExpiredError } = jwt;
 
 const catchError = (err, res) => {
@@ -25,49 +26,75 @@ const verifyTokenJWT = (req, res, next) => {
       }
 
       const data = JSON.parse(decoded.data);
-      //! check Method Not Allowed
-      const rolename = data.role;
 
-      const notAllowed =
-        ROLE[rolename.toUpperCase()].power.indexOf(req.method) === -1;
+      //* get User by username from mongodb
+      User.findOne()
+        .findByUsername(data.username)
+        .exec((err, user) => {
+          if (err) {
+            return res.status(statusCodes.OK).json({
+              code: statusCodes.UNAUTHORIZED,
+              ok: false,
+              message: "Unauthorized!",
+            });
+          }
 
-      if (notAllowed) {
-        return res
-          .status(statusCodes.METHOD_NOT_ALLOWED) //* 405 Method Not Allowed
-          .json({
-            code: statusCodes.METHOD_NOT_ALLOWED,
-            ok: false,
-            message: "Method Not Allowed!",
-          });
-      }
+          //! User not found
+          if (!user) {
+            return res.status(statusCodes.OK).json({
+              code: statusCodes.OK,
+              ok: false,
+              message: "Not found!",
+              rs: [],
+            });
+          }
 
-      //! check user status?
-      if (data.status !== ACCOUNT_STATUS.ACTIVE.name) {
-        console.log(ACCOUNT_STATUS[data.status].description);
-        return res
-          .status(statusCodes.LOCKED) //* 423 Locked
-          .json({
-            code: statusCodes.LOCKED,
-            ok: false,
-            message: ACCOUNT_STATUS[data.status].description,
-          });
-      }
+          //! check user status?
+          if (user.status !== ACCOUNT_STATUS.ACTIVE.name) {
+            return res
+              .status(statusCodes.OK) //* 423 Locked
+              .json({
+                code: statusCodes.LOCKED,
+                ok: false,
+                message: ACCOUNT_STATUS[user.status].description,
+              });
+          }
 
-      //* get url request from client
-      const originalUrl = req.originalUrl;
-      //* condition allow for url contain secure_2fa
-      if (!data.verified_token && originalUrl.indexOf("secure_2fa") === -1) {
-        return res
-          .status(statusCodes.UNAUTHORIZED) // 401 Unauthorized
-          .json({
-            code: statusCodes.UNAUTHORIZED,
-            ok: false,
-            message: "Unauthorized!",
-          });
-      }
+          //! check Method Not Allowed
+          const rolename = user.role;
+          const notAllowed =
+            ROLE[rolename.toUpperCase()].power.indexOf(req.method) === -1;
 
-      req.data = data;
-      next();
+          if (notAllowed) {
+            return res
+              .status(statusCodes.OK) //* 405 Method Not Allowed
+              .json({
+                code: statusCodes.METHOD_NOT_ALLOWED,
+                ok: false,
+                message: "Method Not Allowed!",
+              });
+          }
+
+          //* get url request from client
+          const originalUrl = req.originalUrl;
+          //! condition allow for url contain secure_2fa
+          //! important use data.verified_token for check here
+          if (
+            !data.verified_token &&
+            originalUrl.indexOf("secure_2fa") === -1
+          ) {
+            return res
+              .status(statusCodes.OK) // 401 Unauthorized
+              .json({
+                code: statusCodes.UNAUTHORIZED,
+                ok: false,
+                message: "Unauthorized!",
+              });
+          }
+
+          req.data = user;
+          next();
+        });
     });
   } else {
     return res.status(403).send({ message: "No token provided!" });
