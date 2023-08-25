@@ -3,6 +3,7 @@ import { helpersExtension } from "./../utils/helpersExtension.js";
 import encryptHelper from "./../utils/encrypt.helper.js";
 import captcha from "./../utils/captcha.js";
 import variables from "./../shared/variables.js";
+import response from "../utils/response.helper.js";
 
 import fileRoutes from "./file.routes.js";
 import authRoutes from "./auth.routes.js";
@@ -51,6 +52,7 @@ export default (app) => {
 
   // put the HTML file containing your form in a directory named "public" (relative to where this script is located)
   app.use("/" + variables.DIR_UPLOADS, express.static(variables.DIR_UPLOADS)); // public access folder upload
+  app.use("/undefined", (req, res) => {});
   app.use("/api/file", fileRoutes);
   app.use("/api/auth", authRoutes);
   app.use("/api/user", userRoutes);

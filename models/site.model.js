@@ -12,14 +12,6 @@ var siteSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
-    routes: {
-      type: Array,
-      path: { type: String },
-      public: { type: Boolean },
-      exact: { type: Boolean },
-      title: { type: Object },
-      component: { type: String },
-    },
     locale: {
       type: Array, //! DATATYPES
       _id: String,
@@ -30,7 +22,16 @@ var siteSchema = new mongoose.Schema(
       time_format: { type: String },
       is_default: { type: Boolean },
     },
+    theme: {
+      type: String, //! DATATYPES
+      lowercase: true,
+    },
     title: { type: Array }, //! DATATYPES
+    is_active: {
+      type: Boolean, //! DATATYPES
+      default: true,
+      default: "default"
+    },
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
@@ -45,10 +46,14 @@ siteSchema.query.findByFilter = function (filterInfos) {
   return this.find(filterInfos).lean();
 };
 
-siteSchema.query.findByName = function (name) {
-  return this.findOne({
-    name: { $regex: new RegExp(name, "i") }, //make case-insensitive queries
-  }).lean();
+// siteSchema.query.findByName = function (name) {
+//   return this.findOne({
+//     name: { $regex: new RegExp(name, "i") }, //make case-insensitive queries
+//   }).lean();
+// };
+
+siteSchema.query.findById = function (id) {
+  return this.where({ _id: id });
 };
 //#endregion
 

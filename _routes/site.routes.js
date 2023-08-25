@@ -14,17 +14,22 @@ routerSite
   });
 
 // GET: api/site/getbyname
-routerSite.route("/getbyname/:name").get(site.GET_BY_NAME);
+// routerSite.route("/getbyname/:name").get(site.GET_BY_NAME);
 
-// POST: api/site/insertnew
-routerSite.route("/insertnew").post(verifyTokenJWT, (req, res) => {
-  base.INSERT(req, res, Site);
+// GET: api/site/getbyid
+routerSite.route("/getbyid/:id").get((req, res) => {
+  base.GET_BY_FILTER(req, res, Site);
 });
 
-// PUT: api/site/update
-routerSite.route("/update").put(verifyTokenJWT, (req, res) => {
-  base.UPDATE(req, res, Site);
-});
+// // POST: api/site/insertnew
+// routerSite.route("/insertnew").post(verifyTokenJWT, (req, res) => {
+//   base.INSERT(req, res, Site);
+// });
+
+// // PUT: api/site/update
+// routerSite.route("/update").put(verifyTokenJWT, (req, res) => {
+//   base.UPDATE(req, res, Site);
+// });
 //#endregion
 
 export default routerSite;
