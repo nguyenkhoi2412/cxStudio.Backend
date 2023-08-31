@@ -36,10 +36,10 @@ var userSchema = new mongoose.Schema(
       type: String,
       enum: {
         values: [
-          ACCOUNT_STATUS.ACTIVE.name,
-          ACCOUNT_STATUS.PENDING.name,
-          ACCOUNT_STATUS.LOCKED.name,
-          ACCOUNT_STATUS.DISABLED.name,
+          ACCOUNT_STATUS.ACTIVE.TEXT,
+          ACCOUNT_STATUS.PENDING.TEXT,
+          ACCOUNT_STATUS.LOCKED.TEXT,
+          ACCOUNT_STATUS.DISABLED.TEXT,
         ],
         message: "{VALUE} is not supported.",
       },
@@ -54,6 +54,7 @@ var userSchema = new mongoose.Schema(
     oneTimePassword: {
       type: Boolean,
     },
+    loginAttemptCount: { type: Number, default: 0 },
     secret_2fa: {
       type: String,
     },
@@ -62,6 +63,8 @@ var userSchema = new mongoose.Schema(
       firstName: { type: String },
       lastName: { type: String },
       avatarPath: { type: String },
+      aliasName: { type: String },
+      showAlias: { type: Boolean, default: false },
       country: { type: String },
       birthday: { type: Date },
     },

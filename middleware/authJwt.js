@@ -50,13 +50,13 @@ const verifyTokenJWT = (req, res, next) => {
           }
 
           //! check user status?
-          if (user.status !== ACCOUNT_STATUS.ACTIVE.name) {
+          if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
             return res
               .status(statusCodes.OK) //* 423 Locked
               .json({
                 code: statusCodes.LOCKED,
                 ok: false,
-                message: ACCOUNT_STATUS[user.status].description,
+                message: ACCOUNT_STATUS[user.status].DESC,
               });
           }
 

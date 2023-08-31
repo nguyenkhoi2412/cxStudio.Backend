@@ -46,6 +46,7 @@ export default (app) => {
         salt_key: encryptHelper.aes.generateKey(length_aes * 2),
       },
       rsa: encryptHelper.rsa.generateKey(length),
+      otplib: encryptHelper.otplib.generateKey(),
     });
   });
   //#endregion

@@ -20,7 +20,9 @@ export const TEMPLATES = {
                       <p style="font-size: 18px; margin: 0; line-height: 24px; font-family: 'Nunito Sans', Arial, Verdana, Helvetica, sans-serif; text-align: left; padding-bottom: 3%;">
                           Please use this one time password to sign in to your application:
                       </p>
-                      <h2 style="background: #333;margin: 0 auto;width: max-content;padding: 5px 10px;color: #fff;border-radius: 4px; letter-spacing: 4px;">{{OTPCode}}</h2>
+                      <h2 style="margin: 0 auto;width: max-content;padding: 5px 10px;color: #fff;border-radius: 4px; letter-spacing: 4px;">
+                        <img src='{{OTPCode}}' alt='qr-code' />
+                      </h2>
                       <h3 style="font-weight: 300; margin: 15px auto; width: max-content;">Your token expires in 3 minutes</h3>
                   </td>
               </tr>

@@ -33,12 +33,12 @@ export default {
 
     UserService.verifyPassword(req, res, username, password).then((user) => {
       // check user status?
-      if (user.status !== ACCOUNT_STATUS.ACTIVE.name) {
+      if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
         return res.status(statusCodes.OK).json({
           code: statusCodes.LOCKED,
           ok: false,
           message:
-            "Authentication failed. " + ACCOUNT_STATUS[user.status].description,
+            "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
           rs: {},
         });
       }
@@ -128,26 +128,31 @@ export default {
         }
 
         var userId = helpersExtension.uuidv4();
+        var fName = detailInfos.firstName ?? "";
+        var lName = detailInfos.lastName ?? "";
+        var alias = detailInfos.aliasName ?? fName + " " + lName;
+
         var userData = new User({
           _id: userId,
           username: usernameDecrypt,
           password: password,
           role: role ?? ROLE.USER.name,
-          status: status ?? ACCOUNT_STATUS.ACTIVE.name,
+          status: status ?? ACCOUNT_STATUS.ACTIVE.TEXT,
+          loginAttemptCount: 0,
           email: usernameDecrypt,
           phone: helpersExtension.checkIsNotNull(phone) ? phone : 0,
           oneTimePassword: helpersExtension.checkIsNotNull(oneTimePassword)
             ? oneTimePassword
             : false,
           secret_2fa: encryptHelper.aes.encrypt(
-            encryptHelper.totp.generateKey(usernameDecrypt)
+            encryptHelper.otplib.generateKey()
           ),
           detailInfos: {
-            firstName: detailInfos.firstName ?? "",
-            lastName: detailInfos.lastName ?? "",
-            avatarPath: helpersExtension.checkIsNotNull(detailInfos.avatarPath)
-              ? detailInfos.avatarPath
-              : "",
+            firstName: fName,
+            lastName: lName,
+            aliasName: alias,
+            showAlias: false,
+            avatarPath: detailInfos.avatarPath ?? "",
             country: detailInfos.country ?? "",
           },
         });
@@ -227,12 +232,12 @@ export default {
 
     // get user info by username
     UserService.findByUser(req, res, username).then((user) => {
-      if (user.status !== ACCOUNT_STATUS.ACTIVE.name) {
+      if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
         return res.status(statusCodes.OK).json({
           code: statusCodes.LOCKED,
           ok: false,
           message:
-            "Authentication failed. " + ACCOUNT_STATUS[user.status].description,
+            "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
           rs: {},
         });
       }
@@ -364,9 +369,9 @@ export default {
         }
 
         // validate code from 2fa
-        const verified = encryptHelper.totp.verified(
-          encryptHelper.aes.decrypt(user.secret_2fa),
-          code
+        const verified = encryptHelper.otplib.verified(
+          code,
+          encryptHelper.aes.decrypt(user.secret_2fa)
         );
 
         //* verified success
@@ -435,27 +440,36 @@ export default {
 
         // generateToken from 2fa
         const secret = encryptHelper.aes.decrypt(user.secret_2fa);
-        const token_2fa = encryptHelper.totp.generateToken(secret);
-        const yourBand = `cxStudio 🌠`;
-        const htmlTemplate = TEMPLATES.EMAIL.VERIFICATION_CODE;
+        const otpAuth = encryptHelper.otplib.generateToken(
+          user.username,
+          secret
+        );
+        // const QRCodeImage = encryptHelper.otplib.generateQRCode(otpAuth);
+        encryptHelper.otplib.generateQRCode(otpAuth).then((imageUrl) => {
+          // const yourBand = `Community 🌠`;
+          // const htmlTemplate = TEMPLATES.EMAIL.VERIFICATION_CODE;
 
-        transportHelper.mail.smtp({
-          to: user.email,
-          subject: "Verify your login",
-          text: token_2fa,
-          html: htmlTemplate
-            .replace(
-              `{{user.givenname}}`,
-              user.detailInfos.firstname + " " + user.detailInfos.lastname
-            )
-            .replace(`{{OTPCode}}`, token_2fa)
-            .replace(/{{yourBand}}/gi, yourBand),
-        });
+          // transportHelper.mail.smtp({
+          //   to: user.email,
+          //   subject: "Verify your login",
+          //   // text: QRCodeImage,
+          //   html: htmlTemplate
+          //     .replace(
+          //       `{{user.givenname}}`,
+          //       user.detailInfos.firstName + " " + user.detailInfos.lastName
+          //     )
+          //     .replace(`{{OTPCode}}`, imageUrl)
+          //     .replace(/{{yourBand}}/gi, yourBand),
+          // });
 
-        res.status(statusCodes.OK).json({
-          code: statusCodes.OK,
-          ok: true,
-          message: "Code is sent to email: " + user.email,
+          res.status(statusCodes.OK).json({
+            code: statusCodes.OK,
+            ok: true,
+            message: "Generate QRCode successfull.",
+            rs: {
+              qrCode: imageUrl,
+            },
+          });
         });
       });
   }),

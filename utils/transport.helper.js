@@ -23,7 +23,7 @@ export default {
 
       var options = {
         // thiết lập đối tượng, nội dung gửi mail
-        from: mailOptions.from || `cxStudio 🌠<` + process.env.SMTP_EMAIL + `>`,
+        from: mailOptions.from || `Community 🌠<` + process.env.SMTP_EMAIL + `>`,
         to: mailOptions.to,
         subject: mailOptions.subject,
         text: mailOptions.text || "",

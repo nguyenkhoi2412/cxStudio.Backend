@@ -1,6 +1,10 @@
 import CryptoJs from "crypto-js"; // encrypt use AES
 import RSAKey from "react-native-rsa"; // encrypt use RSA
-import speakeasy from "speakeasy"; // security 2FA (Two-factor authentication)
+// import speakeasy from "speakeasy"; // security 2FA (Two-factor authentication)
+import qrcode from "qrcode"; // security 2FA (Two-factor authentication)
+import otplib from "otplib"; // security 2FA (Two-factor authentication)
+
+const { authenticator } = otplib;
 
 export default {
   //#region cryptoJs-aes
@@ -61,82 +65,92 @@ export default {
   },
   //#endregion
   //#region 2FA - TOTP
-  totp: {
-    //* verify token coming from client, will return True if tokens match
-    verified: (secret, token, encoding = "base32") => {
-      let secretType = secret.base32; // default is base32
+  // totp: {
+  //   //* verify token coming from client, will return True if tokens match
+  //   verified: (secret, token, encoding = "base32") => {
+  //     let secretType = secret.base32; // default is base32
 
-      switch (encoding) {
-        case "ascii":
-          secretType = secret.ascii;
-          break;
+  //     switch (encoding) {
+  //       case "ascii":
+  //         secretType = secret.ascii;
+  //         break;
 
-        case "hex":
-          secretType = secret.hex;
-          break;
+  //       case "hex":
+  //         secretType = secret.hex;
+  //         break;
 
-        case "otpauth_url":
-          secretType = secret.otpauth_url;
-          break;
-      }
+  //       case "otpauth_url":
+  //         secretType = secret.otpauth_url;
+  //         break;
+  //     }
 
-      return speakeasy.totp.verify({
-        secret: secretType,
-        encoding: encoding,
-        token: token,
-        window: 6,
+  //     return speakeasy.totp.verify({
+  //       secret: secretType,
+  //       encoding: encoding,
+  //       token: token,
+  //       window: 6,
+  //     });
+  //   },
+  //   //* generate 6 digit code based on base32 secret
+  //   generateToken: (secret, encoding = "base32") => {
+  //     let secretType = secret.base32; // default is base32
+
+  //     switch (encoding) {
+  //       case "ascii":
+  //         secretType = secret.ascii;
+  //         break;
+
+  //       case "hex":
+  //         secretType = secret.hex;
+  //         break;
+
+  //       case "otpauth_url":
+  //         secretType = secret.otpauth_url;
+  //         break;
+  //     }
+
+  //     return speakeasy.totp({
+  //       secret: secretType,
+  //       encoding: encoding,
+  //     });
+  //   },
+  //   //* generate ascii, hex, base32, otpauth_url
+  //   generateKey: (issuer = "INC") => {
+  //     return speakeasy.generateSecret({
+  //       issuer: issuer,
+  //       google_auth_qr: true,
+  //       qr_codes: true,
+  //     });
+  //   },
+  // },
+  //#endregion
+  //#region 2FA - Otplib, qrcode
+  /*
+   * Note: secret params it generated from otplib.generateKey() when register user
+   */
+  otplib: {
+    verified: (token, secret) => {
+      return authenticator.verify({ token, secret });
+    },
+    generateToken: (username, secret, serviceName = "Community") => {
+      return authenticator.keyuri(username, serviceName, secret);
+    },
+    generateKey: () => {
+      // base32 encoded hex secret key
+      return authenticator.generateSecret();
+    },
+    generateQRCode: (otpAuth) => {
+      return new Promise(async (resolve, reject) => {
+        await qrcode.toDataURL(otpAuth, (err, imageUrl) => {
+          if (err) {
+            console.log("Could not generate QR code", err);
+            reject(error);
+          }
+
+          resolve(imageUrl);
+        });
       });
     },
-    //* generate 6 digit code based on base32 secret
-    generateToken: (secret, encoding = "base32") => {
-      let secretType = secret.base32; // default is base32
-
-      switch (encoding) {
-        case "ascii":
-          secretType = secret.ascii;
-          break;
-
-        case "hex":
-          secretType = secret.hex;
-          break;
-
-        case "otpauth_url":
-          secretType = secret.otpauth_url;
-          break;
-      }
-
-      return speakeasy.totp({
-        secret: secretType,
-        encoding: encoding,
-      });
-    },
-    //* generate ascii, hex, base32, otpauth_url
-    generateKey: (issuer = 'INC') => {
-      return speakeasy.generateSecret({ issuer: issuer, google_auth_qr: true, qr_codes: true });
-    },
-    // abc: (secret, token, encoding = "base32") => {
-    //   let secretType = secret.base32; // default is base32
-
-    //   switch (encoding) {
-    //     case "ascii":
-    //       secretType = secret.ascii;
-    //       break;
-
-    //     case "hex":
-    //       secretType = secret.hex;
-    //       break;
-
-    //     case "otpauth_url":
-    //       secretType = secret.otpauth_url;
-    //       break;
-    //   }
-
-    //   return speakeasy.totp.verifyDelta({
-    //     secret: secretType,
-    //     encoding: encoding,
-    //     token: token,
-    //   });
-    // },
   },
   //#endregion
 };
