@@ -42,6 +42,7 @@ export default (app) => {
     var length = parseInt(req.params.length) || 1024;
     var length_aes = length / 16;
     res.send({
+      password: helpersExtension.generatePassword(length),
       aes: {
         salt_key: encryptHelper.aes.generateKey(length_aes * 2),
       },
@@ -54,9 +55,9 @@ export default (app) => {
   // put the HTML file containing your form in a directory named "public" (relative to where this script is located)
   app.use("/" + variables.DIR_UPLOADS, express.static(variables.DIR_UPLOADS)); // public access folder upload
   app.use("/undefined", (req, res) => {});
-  app.use("/api/file", fileRoutes);
   app.use("/api/auth", authRoutes);
   app.use("/api/user", userRoutes);
+  app.use("/api/file", fileRoutes);
   app.use("/api/role", roleRouters);
 
   app.use("/api/site", siteRoutes);

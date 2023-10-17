@@ -41,7 +41,8 @@ dbService.connect((err) => {
   //   console.log(`App is running mode on port ${PORT}`);
   // });
   http.createServer(app).listen(PORT, function () {
-    console.log(`App is running mode on port ${PORT}`);
+    console.log(`Server is successfully running...`);
+    console.log(`App is listening on port ${PORT}`);
   });
 
   app.get("/", (req, res, next) => {

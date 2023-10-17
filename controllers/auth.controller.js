@@ -37,8 +37,7 @@ export default {
         return res.status(statusCodes.OK).json({
           code: statusCodes.LOCKED,
           ok: false,
-          message:
-            "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
+          message: "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
           rs: {},
         });
       }
@@ -51,32 +50,7 @@ export default {
         isVisitor: user.role === ROLE.VISITOR.name,
       };
 
-      const dataJwtToken = {
-        username: userResponse.username,
-        role: userResponse.role,
-        status: userResponse.status,
-        verified_token: !userResponse.oneTimePassword,
-      };
-
-      // create access token
-      const jwtToken = jwt.sign(
-        { data: JSON.stringify(dataJwtToken) },
-        process.env.JWT_TOKEN,
-        {
-          expiresIn: dataJwtToken.verified_token
-            ? parseInt(process.env.TOKEN_EXPIRESIN) * expired // 6 hours
-            : 900, // 15 min use for login
-        }
-      );
-
-      // create refresh token
-      const jwtRefreshToken = jwt.sign(
-        { data: JSON.stringify(dataJwtToken) },
-        process.env.JWT_REFRESH_TOKEN,
-        {
-          expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired * 6, // 24 hours
-        }
-      );
+      let jwt = UserService.jwtSignTokenForUser(userResponse);
 
       // remove secure data
       delete userResponse.password;
@@ -86,8 +60,8 @@ export default {
       response.DEFAULT(res, null, {
         verified_token: !user.oneTimePassword,
         currentUser: userResponse,
-        access_token: jwtToken,
-        refresh_token: jwtRefreshToken,
+        access_token: jwt.token,
+        refresh_token: jwt.refreshToken,
       });
     });
   }),
@@ -236,8 +210,7 @@ export default {
         return res.status(statusCodes.OK).json({
           code: statusCodes.LOCKED,
           ok: false,
-          message:
-            "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
+          message: "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
           rs: {},
         });
       }
@@ -342,6 +315,123 @@ export default {
     }
   }),
   //#endregion
+  //#region AUTHENTICATION SOCIAL EXTERNAL
+  SOCIAL: {
+    GOOGLE: asyncHandler(async (req, res) => {
+      // Create an instance of model SomeModel
+      const {
+        username,
+        password,
+        role,
+        status,
+        oneTimePassword,
+        phone,
+        detailInfos,
+      } = req.body;
+
+      const usernameDecrypt = encryptHelper.rsa.decrypt(username);
+
+      // get user by username
+      User.findOne()
+        .findByUsername(usernameDecrypt)
+        .exec((err, user) => {
+          if (err) {
+            return res.status(statusCodes.OK).json({
+              code: statusCodes.UNAUTHORIZED,
+              ok: false,
+              message: err.message,
+            });
+          }
+
+          // if account is already in db
+          if (user) {
+            // check user status?
+            if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
+              return res.status(statusCodes.OK).json({
+                code: statusCodes.LOCKED,
+                ok: false,
+                message:
+                  "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
+                rs: {},
+              });
+            }
+
+            let userResponse = {
+              ...user.toJSON(),
+              isAdmin: user.role === ROLE.ADMIN.name,
+              isSupervisor: user.role === ROLE.SUPERVISOR.name,
+              isUser: user.role === ROLE.USER.name,
+              isVisitor: user.role === ROLE.VISITOR.name,
+            };
+
+            let jwtResponse = UserService.jwtSignTokenForUser(userResponse);
+
+            // remove secure data
+            delete userResponse.password;
+            delete userResponse.secret_2fa;
+
+            res.status(200).json({
+              code: 200,
+              ok: true,
+              message: "1 record(s) founded.",
+              rs: {
+                verified_token: !user.oneTimePassword,
+                currentUser: userResponse,
+                access_token: jwtResponse.token,
+                refresh_token: jwtResponse.refreshToken,
+              },
+            });
+          } else {
+            // Register new account
+            var userId = helpersExtension.uuidv4();
+            var fName = detailInfos.firstName ?? "";
+            var lName = detailInfos.lastName ?? "";
+            var alias = detailInfos.aliasName ?? fName + " " + lName;
+
+            var userData = new User({
+              _id: userId,
+              username: usernameDecrypt,
+              password: helpersExtension.generatePassword(8),
+              role: ROLE.USER.name,
+              status: ACCOUNT_STATUS.ACTIVE.TEXT,
+              loginAttemptCount: 0,
+              email: usernameDecrypt,
+              phone: 0,
+              oneTimePassword: false,
+              secret_2fa: encryptHelper.aes.encrypt(
+                encryptHelper.otplib.generateKey()
+              ),
+              detailInfos: {
+                firstName: fName,
+                lastName: lName,
+                aliasName: alias,
+                showAlias: false,
+                avatarPath: detailInfos.avatarPath ?? "",
+                country: "",
+              },
+            });
+
+            // Save the new model instance, passing a callback
+            userData.save(function (err, result) {
+              response.DEFAULT(res, err, {
+                _id: result._id,
+                username: result.username,
+                password: result.password,
+                role: result.role,
+                secret_2fa: result.secret_2fa,
+                firstName: result.detailInfos.firstName,
+                lastName: result.detailInfos.lastName,
+                fullname:
+                  result.detailInfos.firstName +
+                  " " +
+                  result.detailInfos.lastName,
+              });
+            });
+          }
+        });
+    }),
+  },
+  //#endregion
   //#region SECURE 2FA
   // validate token from 2FA
   VALIDATE_SECURE_2FA: asyncHandler(async (req, res) => {
@@ -377,28 +467,14 @@ export default {
         //* verified success
         if (verified) {
           let userResponse = { ...user.toJSON() };
-          const dataJwtToken = {
-            username: userResponse.username,
-            role: userResponse.role,
-            status: userResponse.status,
-            verified_token: verified,
-          };
-
-          // create new access token
-          const jwtToken = jwt.sign(
-            { data: JSON.stringify(dataJwtToken) },
-            process.env.JWT_TOKEN,
-            {
-              expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired, // 6 hours
-            }
-          );
+          let jwtResponse = UserService.jwtSignTokenForUser(userResponse);
 
           res.status(statusCodes.OK).json({
             code: statusCodes.OK,
             ok: verified,
             message: "ok",
             rs: {
-              access_token: jwtToken,
+              access_token: jwtResponse.token,
               verified_token: true,
             },
           });

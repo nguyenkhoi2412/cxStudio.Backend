@@ -8,6 +8,35 @@ export class helpersExtension {
     }`;
   };
 
+  // Generate a cryptographically secure random password.
+  static generatePassword = (length = 8) => {
+    let password = "";
+    const chars = [
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "abcdefghijklmnopqrstuvwxyz",
+      "@$!%*?&",
+      "1234567890",
+    ];
+    for (let j = 0; j < chars.length; j++) {
+      password += chars[j].charAt(Math.floor(Math.random() * chars[j].length));
+    }
+    if (length > chars.length) {
+      length = length - chars.length;
+      for (let i = 0; i < length; i++) {
+        const index = Math.floor(Math.random() * chars.length);
+        password += chars[index].charAt(
+          Math.floor(Math.random() * chars[index].length)
+        );
+      }
+    }
+    return password
+      .split("")
+      .sort(function () {
+        return 0.5 - Math.random();
+      })
+      .join("");
+  };
+
   static uuidv4 = () => {
     var dt = new Date().getTime();
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
