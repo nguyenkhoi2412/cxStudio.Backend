@@ -521,12 +521,13 @@ const responseUserValidate = (res, user) => {
   // remove secure data
   delete userResponse.password;
   delete userResponse.secret_2fa;
+  delete userResponse.oneTimePassword;
 
   response.DEFAULT(res, null, {
     verified_token: !user.oneTimePassword,
     currentUser: userResponse,
-    access_token: jwt.token,
-    refresh_token: jwt.refreshToken,
+    access_token: jwtResponse.token,
+    refresh_token: jwtResponse.refreshToken,
   });
 };
 //#endregion
