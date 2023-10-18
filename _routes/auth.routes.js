@@ -34,8 +34,8 @@ routerAuth
 //#endregion
 
 //#endregion AUTHENTICATION EXTERNAL
-// POST: api/auth/google
-routerAuth.route("/google").post(auth.SOCIAL.GOOGLE);
+// GET: api/auth/google
+routerAuth.route("/google/:query").get(auth.SOCIAL.GOOGLE);
 //#endregion
 
 export default routerAuth;

@@ -4,7 +4,7 @@ import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import User from "../models/user.model.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
 import { TEMPLATES } from "../shared/templates.js";
-import encryptHelper from "../utils/encrypt.helper.js";
+import encrypt from "../utils/encrypt.helper.js";
 import transportHelper from "../utils/transport.helper.js";
 import response from "../utils/response.helper.js";
 import jwt from "jsonwebtoken";
@@ -78,7 +78,7 @@ export default {
       detailInfos,
     } = req.body;
 
-    const usernameDecrypt = encryptHelper.rsa.decrypt(username);
+    const usernameDecrypt = encrypt.rsa.decrypt(username);
 
     // get user by username
     User.findOne()
@@ -118,9 +118,7 @@ export default {
           oneTimePassword: helpersExtension.checkIsNotNull(oneTimePassword)
             ? oneTimePassword
             : false,
-          secret_2fa: encryptHelper.aes.encrypt(
-            encryptHelper.otplib.generateKey()
-          ),
+          secret_2fa: encrypt.aes.encrypt(encrypt.otplib.generateKey()),
           detailInfos: {
             firstName: fName,
             lastName: lName,
@@ -136,9 +134,7 @@ export default {
           response.DEFAULT(res, err, {
             _id: result._id,
             username: result.username,
-            password: result.password,
             role: result.role,
-            secret_2fa: result.secret_2fa,
             firstName: result.detailInfos.firstName,
             lastName: result.detailInfos.lastName,
             fullname:
@@ -164,7 +160,7 @@ export default {
         UserService.findByUser(req, res, usernameResetPassword).then(
           (userReset) => {
             // decrypt & bcrypt password before update
-            let newPasswordHash = encryptHelper.rsa.decrypt(newPassword);
+            let newPasswordHash = encrypt.rsa.decrypt(newPassword);
             bcrypt.hash(newPasswordHash, 10, function (err, hash) {
               if (err) {
                 return next(err);
@@ -327,13 +323,11 @@ export default {
         oneTimePassword,
         phone,
         detailInfos,
-      } = req.body;
-
-      const usernameDecrypt = encryptHelper.rsa.decrypt(username);
+      } = encrypt.aes.decrypt(req.params.query);
 
       // get user by username
       User.findOne()
-        .findByUsername(usernameDecrypt)
+        .findByUsername(username)
         .exec((err, user) => {
           if (err) {
             return res.status(statusCodes.OK).json({
@@ -345,42 +339,7 @@ export default {
 
           // if account is already in db
           if (user) {
-            // check user status?
-            if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
-              return res.status(statusCodes.OK).json({
-                code: statusCodes.LOCKED,
-                ok: false,
-                message:
-                  "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
-                rs: {},
-              });
-            }
-
-            let userResponse = {
-              ...user.toJSON(),
-              isAdmin: user.role === ROLE.ADMIN.name,
-              isSupervisor: user.role === ROLE.SUPERVISOR.name,
-              isUser: user.role === ROLE.USER.name,
-              isVisitor: user.role === ROLE.VISITOR.name,
-            };
-
-            let jwtResponse = UserService.jwtSignTokenForUser(userResponse);
-
-            // remove secure data
-            delete userResponse.password;
-            delete userResponse.secret_2fa;
-
-            res.status(200).json({
-              code: 200,
-              ok: true,
-              message: "1 record(s) founded.",
-              rs: {
-                verified_token: !user.oneTimePassword,
-                currentUser: userResponse,
-                access_token: jwtResponse.token,
-                refresh_token: jwtResponse.refreshToken,
-              },
-            });
+            responseUserValidate(res, user);
           } else {
             // Register new account
             var userId = helpersExtension.uuidv4();
@@ -390,17 +349,17 @@ export default {
 
             var userData = new User({
               _id: userId,
-              username: usernameDecrypt,
-              password: helpersExtension.generatePassword(8),
+              username: username,
+              password: encrypt.rsa.encrypt(
+                helpersExtension.generatePassword(8)
+              ),
               role: ROLE.USER.name,
               status: ACCOUNT_STATUS.ACTIVE.TEXT,
               loginAttemptCount: 0,
-              email: usernameDecrypt,
+              email: username,
               phone: 0,
               oneTimePassword: false,
-              secret_2fa: encryptHelper.aes.encrypt(
-                encryptHelper.otplib.generateKey()
-              ),
+              secret_2fa: encrypt.aes.encrypt(encrypt.otplib.generateKey()),
               detailInfos: {
                 firstName: fName,
                 lastName: lName,
@@ -413,19 +372,7 @@ export default {
 
             // Save the new model instance, passing a callback
             userData.save(function (err, result) {
-              response.DEFAULT(res, err, {
-                _id: result._id,
-                username: result.username,
-                password: result.password,
-                role: result.role,
-                secret_2fa: result.secret_2fa,
-                firstName: result.detailInfos.firstName,
-                lastName: result.detailInfos.lastName,
-                fullname:
-                  result.detailInfos.firstName +
-                  " " +
-                  result.detailInfos.lastName,
-              });
+              responseUserValidate(res, result);
             });
           }
         });
@@ -459,9 +406,9 @@ export default {
         }
 
         // validate code from 2fa
-        const verified = encryptHelper.otplib.verified(
+        const verified = encrypt.otplib.verified(
           code,
-          encryptHelper.aes.decrypt(user.secret_2fa)
+          encrypt.aes.decrypt(user.secret_2fa)
         );
 
         //* verified success
@@ -515,13 +462,10 @@ export default {
         }
 
         // generateToken from 2fa
-        const secret = encryptHelper.aes.decrypt(user.secret_2fa);
-        const otpAuth = encryptHelper.otplib.generateToken(
-          user.username,
-          secret
-        );
-        // const QRCodeImage = encryptHelper.otplib.generateQRCode(otpAuth);
-        encryptHelper.otplib.generateQRCode(otpAuth).then((imageUrl) => {
+        const secret = encrypt.aes.decrypt(user.secret_2fa);
+        const otpAuth = encrypt.otplib.generateToken(user.username, secret);
+        // const QRCodeImage = encrypt.otplib.generateQRCode(otpAuth);
+        encrypt.otplib.generateQRCode(otpAuth).then((imageUrl) => {
           // const yourBand = `Community 🌠`;
           // const htmlTemplate = TEMPLATES.EMAIL.VERIFICATION_CODE;
 
@@ -551,3 +495,38 @@ export default {
   }),
   //#endregion
 };
+
+//#region SUPPORT FOR RESPONSE
+const responseUserValidate = (res, user) => {
+  // check user status?
+  if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
+    return res.status(statusCodes.OK).json({
+      code: statusCodes.LOCKED,
+      ok: false,
+      message: "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
+      rs: {},
+    });
+  }
+
+  let userResponse = {
+    ...user.toJSON(),
+    isAdmin: user.role === ROLE.ADMIN.name,
+    isSupervisor: user.role === ROLE.SUPERVISOR.name,
+    isUser: user.role === ROLE.USER.name,
+    isVisitor: user.role === ROLE.VISITOR.name,
+  };
+
+  let jwtResponse = UserService.jwtSignTokenForUser(userResponse);
+
+  // remove secure data
+  delete userResponse.password;
+  delete userResponse.secret_2fa;
+
+  response.DEFAULT(res, null, {
+    verified_token: !user.oneTimePassword,
+    currentUser: userResponse,
+    access_token: jwt.token,
+    refresh_token: jwt.refreshToken,
+  });
+};
+//#endregion
