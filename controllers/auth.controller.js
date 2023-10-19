@@ -485,7 +485,7 @@ export default {
           res.status(statusCodes.OK).json({
             code: statusCodes.OK,
             ok: true,
-            message: "Generate QRCode successfull.",
+            message: "Generate QRCode successful.",
             rs: {
               qrCode: imageUrl,
             },
