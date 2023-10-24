@@ -5,6 +5,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
+import { Server } from "socket.io";
 import csrf from "csurf";
 import dbService from "./config/dbService.js";
 import corsOptions from "./config/corsOptions.js";
@@ -25,7 +26,7 @@ const options = {
 };
 //#endregion
 
-//connect database
+//#region CONNECT DATABASE
 dbService.connect((err) => {
   if (err) {
     console.error(`Error: ${err.message}`);
@@ -33,6 +34,7 @@ dbService.connect((err) => {
   }
 
   const PORT = process.env.PORT || 5009;
+  const PORT_SOCKET = process.env.PORT_SOCKET || 5008;
   //Express js listen method to run project on https://e-gostore.vn:5009
   // app.listen(PORT, function () {
   //   console.log(`App is running mode on port ${PORT}`);
@@ -40,20 +42,56 @@ dbService.connect((err) => {
   // https.createServer(options, app).listen(PORT, function () {
   //   console.log(`App is running mode on port ${PORT}`);
   // });
-  http.createServer(app).listen(PORT, function () {
+  const server = http.createServer(app).listen(PORT, function () {
     console.log(`Server is successfully running...`);
     console.log(`App is listening on port ${PORT}`);
   });
+
+  //#region CONNECTION SOCKET
+  let users = [];
+  const io = new Server(server);
+  io.listen(PORT_SOCKET);
+
+  io.on("connection", (socket) => {
+    console.log(`⚡: ${socket.id} user just connected!`);
+
+    // MESSAGE
+    socket.on("message", (data) => {
+      io.emit("messageResponse", data);
+    });
+
+    // TYPEING
+    socket.on("typing", (data) =>
+      socket.broadcast.emit("typingResponse", data)
+    );
+
+    // NEWUSER
+    socket.on("newUser", (data) => {
+      users.push(data);
+      io.emit("newUserResponse", users);
+    });
+
+    // DISCONNECT
+    socket.on("disconnect", () => {
+      console.log("🔥: A user disconnected");
+      users = users.filter((user) => user.socketID !== socket.id);
+      io.emit("newUserResponse", users);
+      socket.disconnect();
+    });
+  });
+  //#endregion
 
   app.get("/", (req, res, next) => {
     res.send("Server started\n");
   });
 });
+//#endregion
 
-// Middleware
+//#region Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));
+//#endregion
 
 // handle request url
 app.use((req, res, next) => {
