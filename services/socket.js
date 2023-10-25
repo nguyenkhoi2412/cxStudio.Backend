@@ -1,5 +1,7 @@
 import { Server } from "socket.io";
 
+const _liveChat = "liveChat__";
+
 const SocketService = {
   connect: (server) => {
     let users = [];
@@ -11,24 +13,25 @@ const SocketService = {
     });
 
     io.on("connection", (socket) => {
-      console.log(`⚡: ${socket.id} user just connected!`);
+      // console.log(`⚡: ${socket.id} just connected!`);
 
+      //#region LIVE__CHAT
       // MESSAGE
-      socket.on("message", (data) => {
+      socket.on(_liveChat + "message", (data) => {
         console.log("message", data);
-        io.emit("messageResponse", data);
+        io.emit(_liveChat + "messageResponse", data);
       });
 
-      // TYPEING
-      socket.on("typing", (data) => {
+      // TYPING
+      socket.on(_liveChat + "typing", (data) => {
         console.log("typing", data);
-        socket.broadcast.emit("typingResponse", data);
+        socket.broadcast.emit(_liveChat + "typingResponse", data);
       });
 
       // NEWUSER
-      socket.on("newUser", (data) => {
+      socket.on(_liveChat + "join", (data) => {
         users.push(data);
-        io.emit("newUserResponse", users);
+        io.emit(_liveChat + "joinResponse", users);
       });
 
       // DISCONNECT
@@ -45,9 +48,10 @@ const SocketService = {
         //     " disconnected"
         // );
         users = users.filter((user) => user.socketId !== socket.id);
-        io.emit("newUserResponse", users);
+        io.emit(_liveChat + "joinResponse", users);
         socket.disconnect();
       });
+      //#endregion
     });
   },
 };
