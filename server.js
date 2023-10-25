@@ -7,7 +7,7 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import csrf from "csurf";
 import dbService from "./config/dbService.js";
-import SocketService from "./config/socketService.js";
+import SocketService from "./services/socket.js";
 import corsOptions from "./config/corsOptions.js";
 import _apiRouters from "./_routes/_api.routes.js";
 
