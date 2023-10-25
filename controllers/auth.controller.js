@@ -114,8 +114,8 @@ export default {
           status: status ?? ACCOUNT_STATUS.ACTIVE.TEXT,
           loginAttemptCount: 0,
           email: usernameDecrypt,
-          phone: helpersExtension.checkIsNotNull(phone) ? phone : 0,
-          oneTimePassword: helpersExtension.checkIsNotNull(oneTimePassword)
+          phone: helpersExtension.isNotNull(phone) ? phone : 0,
+          oneTimePassword: helpersExtension.isNotNull(oneTimePassword)
             ? oneTimePassword
             : false,
           secret_2fa: encrypt.aes.encrypt(encrypt.otplib.generateKey()),

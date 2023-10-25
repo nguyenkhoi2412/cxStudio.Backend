@@ -3,7 +3,7 @@ import path from "path";
 export class helpersExtension {
   //#region generate
   static generateKey = (pre) => {
-    return `${this.checkIsNotNull(pre) ? pre + "_" : ""}${
+    return `${this.isNotNull(pre) ? pre + "_" : ""}${
       new Date().getTime() + this.randomNumber()
     }`;
   };
@@ -55,7 +55,7 @@ export class helpersExtension {
   //#endregion
 
   //#region check
-  static checkIsNotNull(data) {
+  static isNotNull(data) {
     return (
       data !== null && data !== undefined && !objectExtension.isEmpty(data)
     );
@@ -229,9 +229,9 @@ export class arrayExtension {
 //#region string
 export class stringExtension {
   static render = (value, langCode = "", defaultValue = "Noname") => {
-    return helpersExtension.checkIsNotNull(value)
+    return helpersExtension.isNotNull(value)
       ? langCode !== ""
-        ? helpersExtension.checkIsNotNull(value[langCode])
+        ? helpersExtension.isNotNull(value[langCode])
           ? value[langCode]
           : defaultValue
         : value

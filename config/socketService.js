@@ -15,17 +15,20 @@ const SocketService = {
 
       // MESSAGE
       socket.on("message", (data) => {
+        console.log('message', data);
         io.emit("messageResponse", data);
       });
 
       // TYPEING
-      socket.on("typing", (data) =>
-        socket.broadcast.emit("typingResponse", data)
-      );
+      socket.on("typing", (data) => {
+        console.log('typing', data);
+        socket.broadcast.emit("typingResponse", data);
+      });
 
       // NEWUSER
       socket.on("newUser", (data) => {
         users.push(data);
+        console.log("newUser", data);
         io.emit("newUserResponse", users);
       });
 

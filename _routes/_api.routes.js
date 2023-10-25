@@ -21,7 +21,7 @@ export default (app) => {
   app.get("/api/captcha/test/:width?/:height?/:colortext?/", (req, res) => {
     const width = parseInt(req.params.width) || 150;
     const height = parseInt(req.params.height) || 50;
-    const colortext = helpersExtension.checkIsNotNull(req.params.colortext)
+    const colortext = helpersExtension.isNotNull(req.params.colortext)
       ? req.params.colortext
       : "#000";
 

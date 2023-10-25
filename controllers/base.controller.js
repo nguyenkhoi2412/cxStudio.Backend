@@ -10,17 +10,17 @@ export default {
       req.params.query
     );
 
-    const skip = !helpersExtension.checkIsNotNull(pageno)
+    const skip = !helpersExtension.isNotNull(pageno)
       ? 1
       : parseInt(pageno) - 1; // pageno
-    const limit = !helpersExtension.checkIsNotNull(pagesize)
+    const limit = !helpersExtension.isNotNull(pagesize)
       ? 1000
       : parseInt(pagesize); // pagesize
-    const sortInfos = helpersExtension.checkIsNotNull(sortCriteria)
+    const sortInfos = helpersExtension.isNotNull(sortCriteria)
       ? sortCriteria
       : { created_at: -1 }; //default with sort created_at asc: 1/desc: -1
 
-    const filterInfos = helpersExtension.checkIsNotNull(filterCriteria)
+    const filterInfos = helpersExtension.isNotNull(filterCriteria)
       ? filterCriteria
       : {};
 
@@ -38,7 +38,7 @@ export default {
   GET_BY_FILTER: asyncHandler(async (req, res, DataModel) => {
     // findById
     const id = req.params.id;
-    if (helpersExtension.checkIsNotNull(id)) {
+    if (helpersExtension.isNotNull(id)) {
       await DataModel.findById(id).exec((err, rs) =>
         response.DEFAULT(res, err, rs)
       );
