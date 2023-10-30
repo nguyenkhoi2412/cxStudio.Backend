@@ -1,7 +1,5 @@
 import { Server } from "socket.io";
 
-const _liveChat = "liveChat__";
-
 const SocketService = {
   connect: (server) => {
     let users = [];
@@ -17,38 +15,38 @@ const SocketService = {
 
       //#region LIVE__CHAT
       // MESSAGE
-      socket.on(_liveChat + "message", (data) => {
+      socket.on("liveChat__message", (data) => {
         console.log("message", data);
-        io.emit(_liveChat + "messageResponse", data);
+        io.emit("liveChat__messageResponse", data);
       });
 
       // TYPING
-      socket.on(_liveChat + "typing", (data) => {
+      socket.on("liveChat__typing", (data) => {
         console.log("typing", data);
-        socket.broadcast.emit(_liveChat + "typingResponse", data);
+        socket.broadcast.emit("liveChat__typingResponse", data);
       });
 
       // NEWUSER
-      socket.on(_liveChat + "join", (data) => {
+      socket.on("liveChat__join", (data) => {
         users.push(data);
-        io.emit(_liveChat + "joinResponse", users);
+        io.emit("liveChat__joinResponse", users);
       });
 
       // DISCONNECT
       socket.on("disconnect", () => {
-        // const userDisconnected = users.filter(
-        //   (user) => user.socketId === socket.id
-        // );
-        // console.log(
-        //   "🔥: " +
-        //     userDisconnected[0]?.currentUser.detailInfos.aliasName +
-        //     " (" +
-        //     userDisconnected[0]?.currentUser.email +
-        //     ")" +
-        //     " disconnected"
-        // );
+        const userDisconnected = users.filter(
+          (user) => user.socketId === socket.id
+        );
+        console.log(
+          "🔥: " +
+            userDisconnected[0]?.currentUser.detailInfos.aliasName +
+            " (" +
+            userDisconnected[0]?.currentUser.email +
+            ")" +
+            " disconnected"
+        );
         users = users.filter((user) => user.socketId !== socket.id);
-        io.emit(_liveChat + "joinResponse", users);
+        io.emit("liveChat__joinResponse", users);
         socket.disconnect();
       });
       //#endregion

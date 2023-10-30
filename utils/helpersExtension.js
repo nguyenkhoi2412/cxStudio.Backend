@@ -82,11 +82,54 @@ export class objectExtension {
   static getValue = (object, keys) =>
     keys.split(".").reduce((o, k) => (o || {})[k], object);
 
-  static parseToQueryString = (url, params) =>
-    url +
-    Object.keys(params)
-      .map((key) => params[key])
+  static createQueryString = (url, queryObject) => {
+    // url +
+    // Object.keys(params)
+    //   .map((key) => params[key])
+    //   .join("&");
+    let queryString = Object.keys(queryObject)
+      .filter(
+        (key) =>
+          queryObject[key] &&
+          !(Array.isArray(queryObject[key]) && !queryObject[key].length)
+      )
+      .map((key) => {
+        return Array.isArray(queryObject[key])
+          ? queryObject[key]
+              .map(
+                (item) =>
+                  `${encodeURIComponent(key)}=${encodeURIComponent(item)}`
+              )
+              .join("&")
+          : `${encodeURIComponent(key)}=${encodeURIComponent(
+              queryObject[key]
+            )}`;
+      })
       .join("&");
+    return url + (queryString ? `?${queryString}` : "");
+  };
+
+  static queryStringToObject = (queryString = "", options = {}) => {
+    let queryObject = {};
+    queryString &&
+      decodeURIComponent(queryString.replace("?", ""))
+        .split("&")
+        .map((itemString) => {
+          let [itemKey, itemValue] = itemString.split("=");
+          if (options.hasOwnProperty(itemKey)) {
+            if (!queryObject[itemKey] && Array.isArray(options[itemKey])) {
+              queryObject[itemKey] = [];
+            }
+            Array.isArray(options[itemKey])
+              ? queryObject[itemKey].push(itemValue)
+              : (queryObject[itemKey] =
+                  typeof options[itemKey] === "number"
+                    ? parseInt(itemValue)
+                    : itemValue);
+          }
+        });
+    return queryObject;
+  };
 
   static getDiff = (newObj, oldObj) => {
     let diff = Object.keys(newObj).reduce((diff, key) => {
