@@ -82,6 +82,12 @@ export class objectExtension {
   static getValue = (object, keys) =>
     keys.split(".").reduce((o, k) => (o || {})[k], object);
 
+  static parseToQueryString = (url, params) =>
+    url +
+    Object.keys(params)
+      .map((key) => params[key])
+      .join("&");
+
   static createQueryString = (url, queryObject) => {
     // url +
     // Object.keys(params)
