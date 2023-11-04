@@ -364,7 +364,7 @@ export default {
                 firstName: fName,
                 lastName: lName,
                 aliasName: alias,
-                showAlias: false,
+                showAlias: true,
                 avatarPath: detailInfos.avatarPath ?? "",
                 country: "",
               },

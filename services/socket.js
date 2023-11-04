@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import ChatService from "./chat.js";
 
 const SocketService = {
   connect: (server) => {
@@ -16,8 +17,8 @@ const SocketService = {
       //#region LIVE__CHAT
       // MESSAGE
       socket.on("liveChat__message", (data) => {
-        console.log("message", data);
-        io.emit("liveChat__messageResponse", data);
+        const responseMessage = ChatService.responseMessage(data);
+        io.emit("liveChat__messageResponse", responseMessage);
       });
 
       // TYPING
