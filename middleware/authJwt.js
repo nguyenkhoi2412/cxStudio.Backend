@@ -8,8 +8,12 @@ const { TokenExpiredError } = jwt;
 const catchError = (err, res) => {
   if (err instanceof TokenExpiredError) {
     return res
-      .status(401)
-      .send({ message: "Unauthorized! Access Token was expired!" });
+      .status(statusCodes.UNAUTHORIZED) // 401 Unauthorized
+      .send({
+        code: statusCodes.UNAUTHORIZED,
+        ok: false,
+        message: "Unauthorized! Access Token was expired!",
+      });
   }
 
   return res.sendStatus(401).send({ message: "Unauthorized!" });
@@ -19,7 +23,7 @@ const verifyTokenJWT = (req, res, next) => {
   const authHeader = req.headers["authorization"]; // || req.headers["x-access-token"];
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (token !== null) {
+  if (token !== null && token !== undefined) {
     jwt.verify(token, process.env.JWT_TOKEN, (error, decoded) => {
       if (error) {
         return catchError(error, res);
@@ -32,7 +36,7 @@ const verifyTokenJWT = (req, res, next) => {
         .findByUsername(data.username)
         .exec((err, user) => {
           if (err) {
-            return res.status(statusCodes.OK).json({
+            return res.status(statusCodes.UNAUTHORIZED).send({
               code: statusCodes.UNAUTHORIZED,
               ok: false,
               message: "Unauthorized!",
@@ -52,8 +56,8 @@ const verifyTokenJWT = (req, res, next) => {
           //! check user status?
           if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
             return res
-              .status(statusCodes.OK) //* 423 Locked
-              .json({
+              .status(statusCodes.LOCKED) //* 423 Locked
+              .send({
                 code: statusCodes.LOCKED,
                 ok: false,
                 message: ACCOUNT_STATUS[user.status].DESC,
@@ -67,8 +71,8 @@ const verifyTokenJWT = (req, res, next) => {
 
           if (notAllowed) {
             return res
-              .status(statusCodes.OK) //* 405 Method Not Allowed
-              .json({
+              .status(statusCodes.METHOD_NOT_ALLOWED) //* 405 Method Not Allowed
+              .send({
                 code: statusCodes.METHOD_NOT_ALLOWED,
                 ok: false,
                 message: "Method Not Allowed!",
@@ -84,8 +88,8 @@ const verifyTokenJWT = (req, res, next) => {
             originalUrl.indexOf("secure_2fa") === -1
           ) {
             return res
-              .status(statusCodes.OK) // 401 Unauthorized
-              .json({
+              .status(statusCodes.UNAUTHORIZED) // 401 Unauthorized
+              .send({
                 code: statusCodes.UNAUTHORIZED,
                 ok: false,
                 message: "Unauthorized!",
@@ -97,7 +101,11 @@ const verifyTokenJWT = (req, res, next) => {
         });
     });
   } else {
-    return res.status(403).send({ message: "No token provided!" });
+    return res.status(statusCodes.UNAUTHORIZED).send({
+      code: statusCodes.UNAUTHORIZED,
+      ok: false,
+      message: "No token provided!",
+    });
   }
 };
 
