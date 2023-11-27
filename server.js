@@ -66,7 +66,8 @@ app.use((req, res, next) => {
   const allowedMethods = ["GET", "POST", "PUT", "DELETE"];
 
   if (!allowedMethods.includes(req.method)) {
-    res.status(405).json({
+    //* 405 Method Not Allowed
+    res.status(405).send({
       code: 405,
       ok: false,
       message: `Method ${req.method} not allowed.`,

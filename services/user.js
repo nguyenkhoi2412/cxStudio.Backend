@@ -24,7 +24,7 @@ class UserService {
         .findByUsername(usernameDescrypt)
         .exec((err, user) => {
           if (err) {
-            return res.status(statusCodes.UNAUTHORIZED).json({
+            return res.status(statusCodes.UNAUTHORIZED).send({
               code: statusCodes.UNAUTHORIZED,
               ok: false,
               message: err.message,
@@ -34,7 +34,7 @@ class UserService {
           if (!user) {
             return res.status(statusCodes.OK).json({
               code: statusCodes.OK,
-              ok: false,
+              ok: true,
               message: "Not found!",
               rs: [],
             });

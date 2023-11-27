@@ -7,7 +7,7 @@ export default {
 
     // error
     if (err) {
-      return res.status(code).json({
+      return res.status(code).send({
         code: code,
         ok: false,
         message: err.message,
@@ -64,29 +64,35 @@ export default {
     res.status(code).json(mergedData);
   },
   UPLOAD_FILE: (req, res, err) => {
-    let code = statusCodes.OK;
-    let data = req.file;
-    if (req.files && req.files.length > 0) {
-      data = req.files;
-    }
-    const { identifyfolder } = req.params;
-
     // error
     if (err) {
-      return res.status(code).json({
+      return res.status(code).send({
         code: code,
         ok: false,
         message: err,
       });
     }
 
+    let code = statusCodes.OK;
+    let data = req.file;
+    if (req.files && req.files.length > 0) {
+      data = req.files;
+    }
+
+    // not found
+    if (data === null || data === undefined) {
+      code = statusCodes.BAD_REQUEST;
+      return res.status(code).send({
+        code: code,
+        ok: false,
+        message: "Please upload a file.",
+      });
+    }
+
     // let protocol = res.req.protocol || "http";
     // let HOST = res.req.headers["host"];
     const method = res.req.method;
-    const dataLength =
-      data === null || data === undefined || data.length === undefined
-        ? 1
-        : data.length;
+    const dataLength = data.length || 1;
     let messageOk = dataLength + " file(s) ";
 
     switch (method) {
@@ -100,17 +106,8 @@ export default {
         break;
     }
 
-    // not found
-    if (!data) {
-      code = statusCodes.BAD_REQUEST;
-      return res.status(code).json({
-        code: code,
-        ok: false,
-        message: "Please upload a file.",
-      });
-    }
-
     let dataFileNames = [];
+    const { identifyfolder } = req.params;
     if (dataLength > 1) {
       data.forEach((item, index) => {
         dataFileNames.push(
