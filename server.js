@@ -74,6 +74,21 @@ app.use((req, res, next) => {
     });
   }
 
+  // handle cache-control
+  // here you can define period in second, this one is 5 minutes
+  const period = 60 * 5;
+  // you only want to cache for GET requests
+  if (req.method == "GET") {
+    res.set(`Cache-control`, `public, max-age=${period}`);
+  } else {
+    // for the other requests set strict no caching parameters
+    res.set("Cache-control", `no-store`);
+  }
+
+  if (req.url.match(/^\/(css|js|img|font)\/.+/)) {
+    res.set(`Cache-control`, "public, max-age=3600"); // 1 hours
+  }
+
   // remove xss from url
   // req.getUrl = function () {
   //   return stringExtension.stripedHtml(
