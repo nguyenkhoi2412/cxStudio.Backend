@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import response from "../utils/response.helper.js";
 import encrypt from "../utils/encrypt.helper.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
+import cache from "../middleware/cache.instance.js";
 
 export default {
   GET_BY_PAGING: asyncHandler(async (req, res, DataModel) => {
@@ -10,9 +11,7 @@ export default {
       req.params.query
     );
 
-    const skip = !helpersExtension.isNotNull(pageno)
-      ? 1
-      : parseInt(pageno) - 1; // pageno
+    const skip = !helpersExtension.isNotNull(pageno) ? 1 : parseInt(pageno) - 1; // pageno
     const limit = !helpersExtension.isNotNull(pagesize)
       ? 1000
       : parseInt(pagesize); // pagesize
@@ -39,9 +38,18 @@ export default {
     // findById
     const id = req.params.id;
     if (helpersExtension.isNotNull(id)) {
-      await DataModel.findById(id).exec((err, rs) =>
-        response.DEFAULT(res, err, rs)
-      );
+      const modelData = cache.instance().get(id);
+
+      // check data from cache
+      if (modelData !== undefined) {
+        return response.DEFAULT(res, null, modelData);
+      }
+
+      // get data from db
+      await DataModel.findById(id).exec((err, rs) => {
+        cache.instance().set(id, rs);
+        return response.DEFAULT(res, err, rs);
+      });
     } else {
       // filter with query
       const query = encrypt.aes.decrypt(req.params.query);

@@ -10,6 +10,7 @@ import dbService from "./config/dbService.js";
 import SocketService from "./services/socket.js";
 import corsOptions from "./config/corsOptions.js";
 import _apiRouters from "./_routes/_api.routes.js";
+import cacheInstance from "./middleware/cache.instance.js";
 
 //dotenv config, read data in .env
 dotenv.config();
@@ -24,6 +25,9 @@ const options = {
   cert: fs.readFileSync("./cert/cert.pem", "utf-8"),
 };
 //#endregion
+cacheInstance.start((err) => {
+  if (err) console.error(err);
+});
 
 //#region CONNECT DATABASE
 dbService.connect((err) => {
@@ -74,16 +78,15 @@ app.use((req, res, next) => {
     });
   }
 
-  // handle cache-control
-  // here you can define period in second, this one is 5 minutes
-  const period = 60 * 5;
-  // you only want to cache for GET requests
-  if (req.method == "GET") {
-    res.set(`Cache-control`, `public, max-age=${period}`);
-  } else {
-    // for the other requests set strict no caching parameters
-    res.set("Cache-control", `no-store`);
-  }
+  // // handle cache-control
+  // // here you can define period in second, this one is (60 * 5) => 5 minutes
+  // // you only want to cache for GET requests
+  // if (req.method == "GET") {
+  //   res.set(`Cache-control`, `public, max-age=${process.env.CACHE_DURATION}`);
+  // } else {
+  //   // for the other requests set strict no caching parameters
+  //   res.set("Cache-control", `no-store`);
+  // }
 
   if (req.url.match(/^\/(css|js|img|font)\/.+/)) {
     res.set(`Cache-control`, "public, max-age=3600"); // 1 hours

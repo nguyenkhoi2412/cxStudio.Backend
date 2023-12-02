@@ -3,6 +3,7 @@ import { helpersExtension } from "./../utils/helpersExtension.js";
 import encryptHelper from "./../utils/encrypt.helper.js";
 import captcha from "./../utils/captcha.js";
 import variables from "./../shared/variables.js";
+import cache from "../middleware/cache.instance.js";
 import response from "../utils/response.helper.js";
 
 import fileRoutes from "./file.routes.js";
@@ -52,6 +53,11 @@ export default (app) => {
   });
   //#endregion
 
+  // clear cache.flushAll()
+  app.get("/api/cache/clearAll", (req, res) => {
+    cache.instance().flushAll();
+    res.send(`Clear All Cached Datas`);
+  });
   // put the HTML file containing your form in a directory named "public" (relative to where this script is located)
   app.use("/" + variables.DIR_UPLOADS, express.static(variables.DIR_UPLOADS)); // public access folder upload
   app.use("/undefined", (req, res) => {});
