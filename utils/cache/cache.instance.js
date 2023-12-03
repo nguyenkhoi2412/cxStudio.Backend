@@ -15,11 +15,11 @@ const cacheInstance = {
   instance: () => {
     return cache;
   },
-  has: (key) => {
-    return cache.has(key);
+  has: async (key) => {
+    return await cache.has(key);
   },
-  get: (key) => {
-    const value = cache.get(key);
+  get: async (key) => {
+    const value = await cache.get(key);
     if (value !== null && value !== undefined) return JSON.parse(value);
 
     return null;

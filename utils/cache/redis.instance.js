@@ -20,12 +20,8 @@ const redisInstance = {
   instance: () => {
     return cache;
   },
-  has: (key) => {
-    cache.exists(key, function (err, reply) {
-      return reply === 1;
-    });
-
-    return false;
+  has: async (key) => {
+    return (await cache.exists(key)) === 1;
   },
   get: async (key) => {
     const value = await cache.get(key);

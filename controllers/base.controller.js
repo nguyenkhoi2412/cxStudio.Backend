@@ -38,11 +38,9 @@ export default {
     // findById
     const id = req.params.id;
     if (helpersExtension.isNotNull(id)) {
-      const modelData = await cache.get(id);
-
       // check data from cache
-      if (cache.has(id)) {
-        return response.DEFAULT(res, null, modelData);
+      if (await cache.has(id)) {
+        return response.DEFAULT(res, null, await cache.get(id));
       }
 
       // get data from db
