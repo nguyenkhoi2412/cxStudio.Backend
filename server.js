@@ -10,7 +10,7 @@ import dbService from "./config/dbService.js";
 import SocketService from "./services/socket.js";
 import corsOptions from "./config/corsOptions.js";
 import _apiRouters from "./_routes/_api.routes.js";
-import cache from "./utils/cache.instance.js";
+import cache from "./utils/cache/cache.instance.js";
 
 //dotenv config, read data in .env
 dotenv.config();

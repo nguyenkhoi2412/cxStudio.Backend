@@ -4,7 +4,7 @@
 // const redisInstance = {
 //   start: async () => {
 //     cache = await redis
-//       .createClient(process.env.REDIS_PORT || 6379)
+//       .createClient(process.env.CACHE_PORT || 6379)
 //       .on("error", (err) => console.log("Redis Client Error", err))
 //       .on("connect", (err) => console.log("Redis Client Started"))
 //       .connect();

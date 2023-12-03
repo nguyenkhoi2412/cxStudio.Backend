@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import response from "../utils/response.helper.js";
 import encrypt from "../utils/encrypt.helper.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
-import cache from "../utils/cache.instance.js";
+import cache from "../utils/cache/cache.instance.js";
 
 export default {
   GET_BY_PAGING: asyncHandler(async (req, res, DataModel) => {
