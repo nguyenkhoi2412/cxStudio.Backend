@@ -22,7 +22,9 @@ const redisInstance = {
   },
   get: async (key) => {
     const value = await cache.get(key);
-    return JSON.parse(value);
+    if (value !== null && value !== undefined) return JSON.parse(value);
+
+    return null;
   },
   set: async (key, value) => {
     // expire default is 60 * 5 => 5min
