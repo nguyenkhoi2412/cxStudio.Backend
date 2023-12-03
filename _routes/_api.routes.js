@@ -55,7 +55,7 @@ export default (app) => {
 
   // clear cache.flushAll()
   app.get("/api/cache/clearAll", (req, res) => {
-    cache.instance().flushAll();
+    cache.clearAll();
     res.send(`Clear All Cached Datas`);
   });
   // put the HTML file containing your form in a directory named "public" (relative to where this script is located)

@@ -38,16 +38,16 @@ export default {
     // findById
     const id = req.params.id;
     if (helpersExtension.isNotNull(id)) {
-      const modelData = cache.instance().get(id);
+      const modelData = await cache.get(id);
 
       // check data from cache
-      if (modelData !== undefined) {
+      if (helpersExtension.isNotNull(modelData)) {
         return response.DEFAULT(res, null, modelData);
       }
 
       // get data from db
       await DataModel.findById(id).exec((err, rs) => {
-        cache.instance().set(id, rs);
+        cache.set(id, rs);
         return response.DEFAULT(res, err, rs);
       });
     } else {

@@ -10,7 +10,7 @@ import dbService from "./config/dbService.js";
 import SocketService from "./services/socket.js";
 import corsOptions from "./config/corsOptions.js";
 import _apiRouters from "./_routes/_api.routes.js";
-import cacheInstance from "./middleware/cache.instance.js";
+import cache from "./middleware/cache.instance.js";
 
 //dotenv config, read data in .env
 dotenv.config();
@@ -25,7 +25,7 @@ const options = {
   cert: fs.readFileSync("./cert/cert.pem", "utf-8"),
 };
 //#endregion
-cacheInstance.start((err) => {
+cache.start((err) => {
   if (err) console.error(err);
 });
 

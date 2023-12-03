@@ -9,6 +9,21 @@ const cacheInstance = {
   instance: () => {
     return cache;
   },
+  get: async (key) => {
+    const value = await cache.get(key);
+    if (value !== null && value !== undefined) return JSON.parse(value);
+
+    return null;
+  },
+  set: async (key, value) => {
+    await cache.set(key, JSON.stringify(value));
+  },
+  del: async (key) => {
+    cache.del(key);
+  },
+  clearAll: async () => {
+    await cache.flushAll();
+  },
 };
 
 export default cacheInstance;
