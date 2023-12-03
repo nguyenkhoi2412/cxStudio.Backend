@@ -8,12 +8,12 @@ const redisInstance = {
         host: process.env.REDIS_HOST || "localhost",
         port: process.env.CACHE_PORT || 6379,
       })
-      .on("error", (err) => console.log("Redis Client Error", err))
-      .on("connect", (err) => console.log("Redis Client Started"))
+      .on("error", (err) => console.log("Redis connection error: ", err))
+      .on("connect", (err) => console.log("Connected to Redis Server!"))
       .connect();
 
     setInterval(function () {
-      console.log("Keeping alive with Redis");
+      console.log("Keeping alive with Redis.");
       cache.set("ping", "pong");
     }, 1000 * 4 * 60);
   },

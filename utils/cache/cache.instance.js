@@ -5,6 +5,12 @@ const cacheInstance = {
   start: (done) => {
     if (cache) return done();
     cache = new nodeCache({ stdTTL: process.env.CACHE_DURATION });
+    console.log('Connected to NodeCache!')
+
+    setInterval(function () {
+      console.log("Keeping alive with NodeCache.");
+      cache.set("ping", "pong");
+    }, 1000 * 4 * 60);
   },
   instance: () => {
     return cache;
