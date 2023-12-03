@@ -56,7 +56,13 @@ const redisInstance = {
   del: async (key) => {
     cache.del(key);
   },
-  clearCache: async () => {},
+  clearCache: async () => {
+    cache.keys("*", function (err, keys) {
+      keys.forEach(function (key, pos) {
+        cache.del(key);
+      });
+    });
+  },
 };
 
 export default redisInstance;
