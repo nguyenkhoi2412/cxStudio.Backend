@@ -11,6 +11,11 @@ const redisInstance = {
       .on("error", (err) => console.log("Redis Client Error", err))
       .on("connect", (err) => console.log("Redis Client Started"))
       .connect();
+
+    setInterval(function () {
+      console.log("Keeping alive with Redis");
+      cache.set("ping", "pong");
+    }, 1000 * 4 * 60);
   },
   instance: () => {
     return cache;
@@ -20,17 +25,36 @@ const redisInstance = {
     return JSON.parse(value);
   },
   set: async (key, value) => {
-    // expire default is 60 * 5 => 300min
+    // expire default is 60 * 5 => 5min
     await cache.set(
       key,
       JSON.stringify(value),
       process.env.CACHE_DURATION || 600
     );
   },
+  take: async (key) => {
+    const value = await cache.get(key);
+    if (value !== null && value !== undefined) {
+      await cache.del(key);
+      return JSON.parse(value);
+    }
+
+    return null;
+  },
+  put: async (key, value) => {
+    // get data from cache
+    let data = await cache.get(key);
+    if (data !== null && data !== undefined) {
+      // delete old
+      await cache.del(key);
+    }
+
+    await cache.set(key, JSON.stringify(value));
+  },
   del: async (key) => {
     cache.del(key);
   },
-  clearAll: async () => {},
+  clearCache: async () => {},
 };
 
 export default redisInstance;
