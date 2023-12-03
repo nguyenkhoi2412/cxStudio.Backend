@@ -54,7 +54,7 @@ export default (app) => {
   //#endregion
 
   // clear cache.flushAll()
-  app.get("/api/cache/clearCache", (req, res) => {
+  app.get("/api/cache/clearcache", (req, res) => {
     cache.clearCache();
     res.send(`Clear All Cached Datas`);
   });

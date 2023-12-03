@@ -5,7 +5,7 @@ const cacheInstance = {
   start: (done) => {
     if (cache) return done();
     cache = new nodeCache({ stdTTL: process.env.CACHE_DURATION });
-    console.log('Connected to NodeCache!')
+    console.log("Connected to NodeCache!");
 
     setInterval(function () {
       console.log("Keeping alive with NodeCache.");
@@ -15,8 +15,11 @@ const cacheInstance = {
   instance: () => {
     return cache;
   },
-  get: async (key) => {
-    const value = await cache.get(key);
+  has: (key) => {
+    return cache.has(key);
+  },
+  get: (key) => {
+    const value = cache.get(key);
     if (value !== null && value !== undefined) return JSON.parse(value);
 
     return null;

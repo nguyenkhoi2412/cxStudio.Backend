@@ -41,7 +41,7 @@ export default {
       const modelData = await cache.get(id);
 
       // check data from cache
-      if (helpersExtension.isNotNull(modelData)) {
+      if (cache.has(id)) {
         return response.DEFAULT(res, null, modelData);
       }
 
