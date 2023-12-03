@@ -16,9 +16,9 @@
 //     const value = await cache.get(key);
 //     return JSON.parse(value);
 //   },
-//   set: async (key, value, expireCache = 300) => {
+//   set: async (key, value) => {
 //     // expire default is 60 * 5 => 300min
-//     await cache.set(key, JSON.stringify(value), expireCache);
+//     await cache.set(key, JSON.stringify(value), process.env.CACHE_DURATION || 600);
 //   },
 //   del: async (key) => {
 //     cache.del(key);
