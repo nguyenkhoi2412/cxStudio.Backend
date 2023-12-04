@@ -48,8 +48,8 @@ const redisInstance = {
   },
   put: async (key, value) => {
     // get data from cache
-    let data = await cache.get(key);
-    if (data !== null && data !== undefined) {
+    let hasData = (await cache.exists(key)) === 1;
+    if (hasData) {
       // delete old
       await cache.del(key);
     }
