@@ -3,7 +3,7 @@ const Cache = {
   start: async (useRedis) => {
     if (useRedis) {
       await import("./redis.instance.js").then((cache) => {
-        cache.default?.start();
+        cache.default.start();
         instance = cache.default;
       });
     } else {
