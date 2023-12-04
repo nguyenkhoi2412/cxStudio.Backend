@@ -46,7 +46,6 @@ export default {
 
       // get data from db
       await DataModel.findById(id).exec((err, rs) => {
-        console.log("rssdfsdf", rs);
         cache.set(id, rs);
         return response.DEFAULT(res, err, rs);
       });
