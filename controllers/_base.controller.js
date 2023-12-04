@@ -2,7 +2,8 @@ import asyncHandler from "express-async-handler";
 import response from "../utils/response.helper.js";
 import encrypt from "../utils/encrypt.helper.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
-import cache from "../utils/cache/cache.instance.js";
+// import cache from "../utils/cache/cache.instance.js";
+import cache from "../utils/cache/index.js";
 
 export default {
   GET_BY_PAGING: asyncHandler(async (req, res, DataModel) => {
@@ -45,6 +46,7 @@ export default {
 
       // get data from db
       await DataModel.findById(id).exec((err, rs) => {
+        console.log("rssdfsdf", rs);
         cache.set(id, rs);
         return response.DEFAULT(res, err, rs);
       });

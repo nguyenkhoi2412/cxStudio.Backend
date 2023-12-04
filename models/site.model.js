@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-// import RoutePathSchema from "./routepath.external.js";
 
 //Define collection and schema for Business
 var siteSchema = new mongoose.Schema(

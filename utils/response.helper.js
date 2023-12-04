@@ -7,8 +7,8 @@ export default {
 
     // error
     if (err) {
-      return res.status(code).send({
-        code: code,
+      return res.status(statusCodes.NO_CONTENT).send({
+        code: statusCodes.NO_CONTENT,
         ok: false,
         message: err.message,
       });

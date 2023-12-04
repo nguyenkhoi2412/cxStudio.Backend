@@ -1,6 +1,6 @@
 import express from "express";
 import Category from "../models/category.model.js";
-import base from "../controllers/base.controller.js";
+import base from "../controllers/_base.controller.js";
 import cate from "../controllers/category.controller.js";
 import verifyTokenJWT from "../middleware/authJwt.js";
 const routerCategory = express.Router();

@@ -1,14 +1,14 @@
 import asyncHandler from "express-async-handler";
-import Type from "../models/type.model.js";
+import Workspace from "../models/workspace.model.js";
 import response from "../utils/response.helper.js";
 
 export default {
   //getbysite function to retrieve site info
   GET_BY_SITE: asyncHandler(async (req, res) => {
-    const { site_ref } = req.params;
+    const { site_id } = req.params;
 
-    Type.findOne()
-      .findBySite(site_ref)
+    Workspace.findOne()
+      .findBySite(site_id)
       .exec((err, rs) => {
         response.DEFAULT(res, err, rs);
       });

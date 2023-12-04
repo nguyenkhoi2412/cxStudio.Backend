@@ -7,10 +7,10 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import csrf from "csurf";
 import dbService from "./config/dbService.js";
+import cache from "./config/cacheService.js";
 import SocketService from "./services/socket.js";
 import corsOptions from "./config/corsOptions.js";
 import _apiRouters from "./_routes/_api.routes.js";
-import cache from "./utils/cache/cache.instance.js";
 
 //dotenv config, read data in .env
 dotenv.config();
@@ -25,9 +25,7 @@ const options = {
   cert: fs.readFileSync("./cert/cert.pem", "utf-8"),
 };
 //#endregion
-cache.start((err) => {
-  if (err) console.error(err);
-});
+cache.connect();
 
 //#region CONNECT DATABASE
 dbService.connect((err) => {

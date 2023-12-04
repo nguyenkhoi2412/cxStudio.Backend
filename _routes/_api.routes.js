@@ -11,7 +11,7 @@ import authRoutes from "./auth.routes.js";
 import userRoutes from "./user.routes.js";
 import roleRouters from "./role.routes.js";
 import siteRoutes from "./site.routes.js";
-import typeRoutes from "./type.routes.js";
+import workspaceRoutes from "./workspace.routes.js";
 import supplierRoutes from "./supplier.routes.js";
 import categoryRoutes from "./category.routes.js";
 import articleRoutes from "./article.routes.js";
@@ -67,7 +67,8 @@ export default (app) => {
   app.use("/api/role", roleRouters);
 
   app.use("/api/site", siteRoutes);
-  app.use("/api/type", typeRoutes);
+  app.use("/api/workspace", workspaceRoutes);
+
   app.use("/api/supplier", supplierRoutes);
   app.use("/api/category", categoryRoutes);
   app.use("/api/article", articleRoutes);
