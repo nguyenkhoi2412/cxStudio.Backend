@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
-import Article from "../models/article.model.js";
-import response from "../utils/response.helper.js";
+import Article from "#models/article.model";
+import response from "#utils/response.helper";
 
 export default {
   //getbycategory function to retrieve articles info

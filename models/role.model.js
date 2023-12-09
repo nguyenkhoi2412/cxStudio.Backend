@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { helpersExtension } from "../utils/helpersExtension.js";
+import { helpersExtension } from "#utils/helpersExtension";
 
 //Define collection and schema for Business
 var roleSchema = new mongoose.Schema(

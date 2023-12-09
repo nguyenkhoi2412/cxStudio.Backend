@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
-import Site from "../models/site.model.js";
-import response from "../utils/response.helper.js";
+import Site from "#models/site.model";
+import response from "#utils/response.helper";
 
 export default {
   //getbyname function to retrieve site info

@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
-import uploadFile from "../middleware/uploadFile.js";
-import response from "../utils/response.helper.js";
+import uploadFile from "#middleware/uploadFile";
+import response from "#utils/response.helper";
 
 export default {
   //uploadfile function to retrieve file info

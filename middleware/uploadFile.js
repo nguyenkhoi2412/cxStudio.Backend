@@ -2,8 +2,8 @@ import util from "util";
 import {
   helpersExtension,
   stringExtension,
-} from "../utils/helpersExtension.js";
-import variables from "../shared/variables.js";
+} from "#utils/helpersExtension";
+import variables from "#shared/variables";
 import multer from "multer";
 import * as mime from "mime-types";
 import path from "path";

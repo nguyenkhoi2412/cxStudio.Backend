@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
-import Role from "../models/role.model.js";
-import response from "../utils/response.helper.js";
+import Role from "#models/role.model";
+import response from "#utils/response.helper";
 
 export default {
   //getbyname function to retrieve role info

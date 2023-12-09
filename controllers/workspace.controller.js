@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
-import Workspace from "../models/workspace.model.js";
-import response from "../utils/response.helper.js";
+import Workspace from "#models/workspace.model";
+import response from "#utils/response.helper";
 
 export default {
   //getbysite function to retrieve site info

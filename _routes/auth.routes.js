@@ -1,6 +1,6 @@
 import express from "express";
-import auth from "../controllers/auth.controller.js";
-import verifyTokenJWT from "../middleware/authJwt.js";
+import auth from "#controllers/auth.controller";
+import verifyTokenJWT from "#middleware/authJwt";
 const routerAuth = express.Router();
 
 //#region AUTHENTICATION

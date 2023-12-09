@@ -1,8 +1,8 @@
 import express from "express";
-import Article from "../models/article.model.js";
-import articleController from "../controllers/article.controller.js";
-import base from "../controllers/_base.controller.js";
-import verifyTokenJWT from "../middleware/authJwt.js";
+import Article from "#models/article.model";
+import articleController from "#controllers/article.controller";
+import base from "#controllers/_base.controller";
+import verifyTokenJWT from "#middleware/authJwt";
 const routerArticle = express.Router();
 
 //#region ARTICLES

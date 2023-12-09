@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import ChatService from "./chat.js";
+import ChatService from "#services/chat";
 
 const SocketService = {
   connect: (server) => {

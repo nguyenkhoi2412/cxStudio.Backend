@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { ROLE } from "../constant/enumRoles.js";
-import { helpersExtension } from "../utils/helpersExtension.js";
+import { ROLE } from "#constant/enumRoles";
+import { helpersExtension } from "#utils/helpersExtension";
 
 //Define collection and schema for Business
 var workspaceSchema = new mongoose.Schema(

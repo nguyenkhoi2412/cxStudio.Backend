@@ -38,5 +38,17 @@
     "react-native-rsa": "0.0.3",
     "redis": "^4.6.11",
     "socket.io": "^4.7.2"
+  },
+  "imports": {
+    "#src/*": "./*.js",
+    "#middleware/*": "./middleware/*.js",
+    "#models/*": "./models/*.js",
+    "#controllers/*": "./controllers/*.js",
+    "#constant/*": "./constant/*.js",
+    "#shared/*": "./shared/*.js",
+    "#utils/*": "./utils/*.js",
+    "#config/*": "./config/*.js",
+    "#services/*": "./services/*.js",
+    "#routes/*": "./_routes/*.js"
   }
 }

@@ -1,8 +1,8 @@
 import express from "express";
-import Supplier from "../models/supplier.model.js";
-// import art from "../controllers/supplier.controller.js";
-import base from "../controllers/_base.controller.js";
-import verifyTokenJWT from "../middleware/authJwt.js";
+import Supplier from "#models/supplier.model";
+// import art from "#controllers/supplier.controller";
+import base from "#controllers/_base.controller";
+import verifyTokenJWT from "#middleware/authJwt";
 const routerSupplier = express.Router();
 
 //#region SUPPLIERS

@@ -1,6 +1,6 @@
 import express from "express";
-import file from "../controllers/file.controller.js";
-import verifyTokenJWT from "../middleware/authJwt.js";
+import file from "#controllers/file.controller";
+import verifyTokenJWT from "#middleware/authJwt";
 const routerFile = express.Router();
 
 //#region ARTICLES

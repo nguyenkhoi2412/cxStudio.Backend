@@ -1,20 +1,20 @@
 import express from "express";
-import { helpersExtension } from "./../utils/helpersExtension.js";
-import encryptHelper from "./../utils/encrypt.helper.js";
-import captcha from "./../utils/captcha.js";
-import variables from "./../shared/variables.js";
-import cache from "../utils/cache/cache.instance.js";
-import response from "../utils/response.helper.js";
+import { helpersExtension } from "#utils/helpersExtension";
+import encryptHelper from "#utils/encrypt.helper";
+import captcha from "#utils/captcha";
+import variables from "#shared/variables";
+import cache from "#utils/cache/cache.instance";
+import response from "#utils/response.helper";
 
-import fileRoutes from "./file.routes.js";
-import authRoutes from "./auth.routes.js";
-import userRoutes from "./user.routes.js";
-import roleRouters from "./role.routes.js";
-import siteRoutes from "./site.routes.js";
-import workspaceRoutes from "./workspace.routes.js";
-import supplierRoutes from "./supplier.routes.js";
-import categoryRoutes from "./category.routes.js";
-import articleRoutes from "./article.routes.js";
+import fileRoutes from "#routes/file.routes";
+import authRoutes from "#routes/auth.routes";
+import userRoutes from "#routes/user.routes";
+import roleRouters from "#routes/role.routes";
+import siteRoutes from "#routes/site.routes";
+import workspaceRoutes from "#routes/workspace.routes";
+import supplierRoutes from "#routes/supplier.routes";
+import categoryRoutes from "#routes/category.routes";
+import articleRoutes from "#routes/article.routes";
 
 export default (app) => {
   //#region Request API callback generate
