@@ -6,7 +6,7 @@ export default class ChatService {
     // decrypt data using
     const dataReceived = encryptHelper.aes.decrypt(data);
     const { message, postedOn, userInfo } = dataReceived;
-    const showAlias = userInfo?.detailInfos?.showAlias ?? false;
+    const showAlias = userInfo?.detailInfos?.showAlias || false;
 
     return {
       _id: dataReceived._id,

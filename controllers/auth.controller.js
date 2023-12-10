@@ -102,16 +102,16 @@ export default {
         }
 
         var userId = helpersExtension.uuidv4();
-        var fName = detailInfos.firstName ?? "";
-        var lName = detailInfos.lastName ?? "";
-        var alias = detailInfos.aliasName ?? fName + " " + lName;
+        var fName = detailInfos.firstName || "";
+        var lName = detailInfos.lastName || "";
+        var alias = detailInfos.aliasName || fName + " " + lName;
 
         var userData = new User({
           _id: userId,
           username: usernameDecrypt,
           password: password,
-          role: role ?? ROLE.USER.name,
-          status: status ?? ACCOUNT_STATUS.ACTIVE.TEXT,
+          role: role || ROLE.USER.name,
+          status: status || ACCOUNT_STATUS.ACTIVE.TEXT,
           loginAttemptCount: 0,
           email: usernameDecrypt,
           phone: helpersExtension.isNotNull(phone) ? phone : 0,
@@ -124,8 +124,8 @@ export default {
             lastName: lName,
             aliasName: alias,
             showAlias: false,
-            avatarPath: detailInfos.avatarPath ?? "",
-            country: detailInfos.country ?? "",
+            avatarPath: detailInfos.avatarPath || "",
+            country: detailInfos.country || "",
           },
         });
 
@@ -343,9 +343,9 @@ export default {
           } else {
             // Register new account
             var userId = helpersExtension.uuidv4();
-            var fName = detailInfos.firstName ?? "";
-            var lName = detailInfos.lastName ?? "";
-            var alias = detailInfos.aliasName ?? fName + " " + lName;
+            var fName = detailInfos.firstName || "";
+            var lName = detailInfos.lastName || "";
+            var alias = detailInfos.aliasName || fName + " " + lName;
 
             var userData = new User({
               _id: userId,
@@ -365,7 +365,7 @@ export default {
                 lastName: lName,
                 aliasName: alias,
                 showAlias: true,
-                avatarPath: detailInfos.avatarPath ?? "",
+                avatarPath: detailInfos.avatarPath || "",
                 country: "",
               },
             });
