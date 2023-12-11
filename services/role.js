@@ -14,21 +14,20 @@ class RoleService {
   /*
    * findByType
    */
-  static findByType = (req, res, typeId) => {
+  static findByType = (typeId) => {
     return new Promise(async (resolve) => {
-      const { originalUrl } = req;
+      const cacheKey = "findByType" + typeId;
       // check data from cache
-      if (await cache.has(originalUrl)) {
-        resolve(await cache.get(originalUrl));
+      if (await cache.has(cacheKey)) {
+        resolve(await cache.get(cacheKey));
       }
 
       Role.find()
         .byType(typeId)
         .then((rs) => {
-          cache.set(originalUrl, rs);
+          cache.set(cacheKey, rs);
           resolve(rs);
-        })
-        .catch((err) => response.DEFAULT(res, err, null));
+        });
     });
   };
 }

@@ -6,7 +6,7 @@ import response from "../utils/response.helper.js";
 export default {
   GET_BY_TYPE: asyncHandler(async (req, res) => {
     const { typeId } = req.params;
-    await RoleService.findByType(req, res, typeId).then((rs) => {
+    await RoleService.findByType(typeId).then((rs) => {
       response.DEFAULT(res, null, rs);
     });
   }),

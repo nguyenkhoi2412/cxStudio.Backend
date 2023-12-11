@@ -5,7 +5,7 @@ const routerAuth = express.Router();
 
 //#region AUTHENTICATION
 // GET: api/auth/findByUser
-routerAuth.route("/findbyuser").get(auth.FIND_BY_USER);
+// routerAuth.route("/findbyuser").get(auth.FIND_BY_USER);
 
 // GET: api/auth/refreshtoken
 routerAuth.route("/refreshtoken").get(auth.REFRESH_TOKEN);

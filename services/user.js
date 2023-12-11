@@ -9,52 +9,15 @@ class UserService {
   /*
    * findByUser
    */
-  static findByUser = (req, res, username) => {
+  static findByUser = (username) => {
     return new Promise((resolve) => {
       var usernameDescrypt = encryptHelper.rsa.decrypt(username);
 
       User.findOne()
         .byUsername(usernameDescrypt)
         .then((user) => {
-          if (!user) {
-            return res.status(statusCodes.OK).json({
-              code: statusCodes.OK,
-              ok: true,
-              message: "Not found!",
-              rs: [],
-            });
-          }
-
           resolve(user);
-        })
-        .catch((err) => {
-          return res.status(statusCodes.UNAUTHORIZED).send({
-            code: statusCodes.UNAUTHORIZED,
-            ok: false,
-            message: err.message,
-          });
         });
-    });
-  };
-
-  /*
-   * verifyPassword
-   */
-  static verifyPassword = (req, res, username, password) => {
-    return new Promise((resolve) => {
-      this.findByUser(req, res, username).then((user) => {
-        // check verify password
-        if (!user.verifyPassword(password)) {
-          return res.status(statusCodes.OK).json({
-            code: statusCodes.OK,
-            ok: false,
-            message: "Authentication failed. Incorrect username/password",
-            rs: {},
-          });
-        }
-
-        resolve(user);
-      });
     });
   };
 

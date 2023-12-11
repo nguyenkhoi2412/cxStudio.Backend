@@ -16,22 +16,43 @@ const expired = 60 * 60; // 1 hours
 
 export default {
   //#region AUTHENTICATION
-  FIND_BY_USER: asyncHandler(async (req, res) => {
-    // get user by username
-    UserService.findByUser(req, res, req.body.username).then((user) => {
-      res.status(statusCodes.OK).json({
-        code: statusCodes.OK,
-        ok: true,
-        message: "User is existing in system",
-        rs: [],
-      });
-    });
-  }),
+  // FIND_BY_USER: asyncHandler(async (req, res) => {
+  //   // get user by username
+  //   UserService.findByUser(req.body.username).then((user) => {
+  //     // if (!user) {
+  //     //   return res.status(statusCodes.OK).json({
+  //     //     code: statusCodes.OK,
+  //     //     ok: true,
+  //     //     message: "Not found!",
+  //     //     rs: [],
+  //     //   });
+  //     // }
+  //     if (user) {
+  //       res.status(statusCodes.OK).json({
+  //         code: statusCodes.OK,
+  //         ok: true,
+  //         message: "User is existing in system",
+  //         rs: [],
+  //       });
+  //     }
+
+  //   });
+  // }),
   //validate function to retrieve user by username & password
   VALIDATE_USER: asyncHandler(async (req, res) => {
     var { username, password } = req.params;
 
-    UserService.verifyPassword(req, res, username, password).then((user) => {
+    UserService.findByUser(username).then((user) => {
+      // validate username/password
+      if (!user.verifyPassword(password)) {
+        return res.status(statusCodes.OK).json({
+          code: statusCodes.OK,
+          ok: false,
+          message: "Authentication failed. Incorrect username/password",
+          rs: {},
+        });
+      }
+
       // check user status?
       if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
         return res.status(statusCodes.OK).json({
@@ -153,48 +174,56 @@ export default {
     } = req.body;
 
     // get user by username
-    UserService.verifyPassword(req, res, currentUsername, currentPassword).then(
-      (user) => {
-        // check account need to change/reset password existing?
-        UserService.findByUser(req, res, usernameResetPassword).then(
-          (userReset) => {
-            // decrypt & bcrypt password before update
-            let newPasswordHash = encrypt.rsa.decrypt(newPassword);
-            bcrypt.hash(newPasswordHash, 10, function (err, hash) {
-              if (err) {
-                return next(err);
-              }
-              // update new password
-              var newValueUpdate = {
-                _id: userReset._id,
-                password: hash,
-                updated_at: new Date(),
-              };
-
-              var filter = { _id: newValueUpdate._id };
-              var updateValues = { $set: newValueUpdate };
-
-              // Save update
-              User.findOneAndUpdate(filter, updateValues, {
-                upsert: true,
-                new: true,
-                returnNewDocument: true,
-              }).then((rs) => {
-                if (rs) {
-                  User.find()
-                    .byFilter(filter)
-                    .then((rsData) => {
-                      response.DEFAULT(res, err, {});
-                    });
-                } else {
-                  response.DEFAULT(res, err, rs);
-                }
-              });
-            });
-          }
-        );
+    UserService.findByUser(currentUsername).then((user) => {
+      // check verify password
+      if (!user.verifyPassword(currentPassword)) {
+        return res.status(statusCodes.OK).json({
+          code: statusCodes.OK,
+          ok: false,
+          message: "Authentication failed. Incorrect username/password",
+          rs: {},
+        });
       }
-    );
+
+      // check account need to change/reset password existing?
+      UserService.findByUser(req, res, usernameResetPassword).then(
+        (userReset) => {
+          // decrypt & bcrypt password before update
+          let newPasswordHash = encrypt.rsa.decrypt(newPassword);
+          bcrypt.hash(newPasswordHash, 10, function (err, hash) {
+            if (err) {
+              return next(err);
+            }
+            // update new password
+            var newValueUpdate = {
+              _id: userReset._id,
+              password: hash,
+              updated_at: new Date(),
+            };
+
+            var filter = { _id: newValueUpdate._id };
+            var updateValues = { $set: newValueUpdate };
+
+            // Save update
+            User.findOneAndUpdate(filter, updateValues, {
+              upsert: true,
+              new: true,
+              returnNewDocument: true,
+            }).then((rs) => {
+              if (rs) {
+                User.find()
+                  .byFilter(filter)
+                  .then((rsData) => {
+                    response.DEFAULT(res, err, {});
+                  });
+              } else {
+                response.DEFAULT(res, err, rs);
+              }
+            });
+          });
+        }
+      );
+    });
   }),
   RECOVERY_PASSWORD: asyncHandler(async (req, res) => {
     const { username } = req.params;
