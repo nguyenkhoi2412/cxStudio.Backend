@@ -14,16 +14,8 @@ class UserService {
       var usernameDescrypt = encryptHelper.rsa.decrypt(username);
 
       User.findOne()
-        .findByUsername(usernameDescrypt)
-        .exec((err, user) => {
-          if (err) {
-            return res.status(statusCodes.UNAUTHORIZED).send({
-              code: statusCodes.UNAUTHORIZED,
-              ok: false,
-              message: err.message,
-            });
-          }
-
+        .byUsername(usernameDescrypt)
+        .then((user) => {
           if (!user) {
             return res.status(statusCodes.OK).json({
               code: statusCodes.OK,
@@ -34,6 +26,13 @@ class UserService {
           }
 
           resolve(user);
+        })
+        .catch((err) => {
+          return res.status(statusCodes.UNAUTHORIZED).send({
+            code: statusCodes.UNAUTHORIZED,
+            ok: false,
+            message: err.message,
+          });
         });
     });
   };

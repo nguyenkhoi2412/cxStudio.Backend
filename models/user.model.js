@@ -79,17 +79,14 @@ var userSchema = new mongoose.Schema(
 );
 
 //#region queries
-userSchema.query.findByFilter = function (filterInfos) {
+userSchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos).lean();
 };
 
-userSchema.query.findByUsername = function (username) {
+userSchema.query.byUsername = function (username) {
   return this.where({ username: username });
 };
 
-userSchema.query.findById = function (id) {
-  return this.where({ _id: id });
-};
 //#endregion
 
 //#region methods

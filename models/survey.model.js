@@ -25,7 +25,7 @@ var surveySchema = new Schema(
 );
 
 //#region queries
-surveySchema.query.findByFilter = function (filterInfos) {
+surveySchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos)
     .lean()
     .populate("categories_ref", "title desc")

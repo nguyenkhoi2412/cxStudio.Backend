@@ -42,7 +42,7 @@ var workspaceSchema = new mongoose.Schema(
 );
 
 //#region queries
-workspaceSchema.query.findByFilter = function (filterInfos) {
+workspaceSchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos).lean().populate("team_members", "_id email");
 };
 

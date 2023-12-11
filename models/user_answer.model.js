@@ -41,7 +41,7 @@ userAnswerSchema.query.findByEmail = function (email) {
   return this.where({ email: email });
 };
 
-userAnswerSchema.query.findByFilter = function (filterInfos) {
+userAnswerSchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos).lean();
 };
 //#endregion

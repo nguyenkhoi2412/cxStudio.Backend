@@ -33,16 +33,8 @@ const verifyTokenJWT = (req, res, next) => {
 
       //* get User by username from mongodb
       User.findOne()
-        .findByUsername(data.username)
-        .exec((err, user) => {
-          if (err) {
-            return res.status(statusCodes.UNAUTHORIZED).send({
-              code: statusCodes.UNAUTHORIZED,
-              ok: false,
-              message: "Unauthorized!",
-            });
-          }
-
+        .byUsername(data.username)
+        .then((user) => {
           //! User not found
           if (!user) {
             return res.status(statusCodes.OK).json({
@@ -98,6 +90,13 @@ const verifyTokenJWT = (req, res, next) => {
 
           req.data = user;
           next();
+        })
+        .catch((err) => {
+          return res.status(statusCodes.UNAUTHORIZED).send({
+            code: statusCodes.UNAUTHORIZED,
+            ok: false,
+            message: "Unauthorized!",
+          });
         });
     });
   } else {

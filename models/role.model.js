@@ -30,11 +30,11 @@ var roleSchema = new mongoose.Schema(
 );
 
 //#region queries
-roleSchema.query.findByFilter = function (filterInfos) {
+roleSchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos).lean();
 };
 
-roleSchema.query.findByName = function (name) {
+roleSchema.query.byName = function (name) {
   return this.findOne({
     name: { $regex: new RegExp(name, "i") }, //make case-insensitive queries
   }).lean();

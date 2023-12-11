@@ -82,16 +82,8 @@ export default {
 
     // get user by username
     User.findOne()
-      .findByUsername(usernameDecrypt)
-      .exec((err, user) => {
-        if (err) {
-          return res.status(statusCodes.OK).json({
-            code: statusCodes.UNAUTHORIZED,
-            ok: false,
-            message: err.message,
-          });
-        }
-
+      .byUsername(usernameDecrypt)
+      .then((user) => {
         if (user) {
           return res.status(statusCodes.OK).json({
             code: statusCodes.OK,
@@ -141,6 +133,13 @@ export default {
               result.detailInfos.firstName + " " + result.detailInfos.lastName,
           });
         });
+      })
+      .catch((err) => {
+        return res.status(statusCodes.OK).json({
+          code: statusCodes.UNAUTHORIZED,
+          ok: false,
+          message: err.message,
+        });
       });
   }),
   //change password
@@ -180,11 +179,11 @@ export default {
                 upsert: true,
                 new: true,
                 returnNewDocument: true,
-              }).exec((err, rs) => {
-                if (!err && rs) {
+              }).then((rs) => {
+                if (rs) {
                   User.find()
-                    .findByFilter(filter)
-                    .exec((error, rsData) => {
+                    .byFilter(filter)
+                    .then((rsData) => {
                       response.DEFAULT(res, err, {});
                     });
                 } else {
@@ -327,16 +326,8 @@ export default {
 
       // get user by username
       User.findOne()
-        .findByUsername(username)
-        .exec((err, user) => {
-          if (err) {
-            return res.status(statusCodes.OK).json({
-              code: statusCodes.UNAUTHORIZED,
-              ok: false,
-              message: err.message,
-            });
-          }
-
+        .byUsername(username)
+        .then((user) => {
           // if account is already in db
           if (user) {
             responseUserValidate(res, user);
@@ -375,6 +366,13 @@ export default {
               responseUserValidate(res, result);
             });
           }
+        })
+        .catch((err) => {
+          return res.status(statusCodes.OK).json({
+            code: statusCodes.UNAUTHORIZED,
+            ok: false,
+            message: err.message,
+          });
         });
     }),
   },
@@ -385,17 +383,8 @@ export default {
     var { id, code } = req.body;
 
     // get user by id
-    User.findOne()
-      .findById(id)
-      .exec((err, user) => {
-        if (err) {
-          return res.status(statusCodes.UNAUTHORIZED).json({
-            code: statusCodes.UNAUTHORIZED,
-            ok: false,
-            message: err.message,
-          });
-        }
-
+    User.findById(id)
+      .then((user) => {
         if (!user) {
           return res.status(statusCodes.OK).json({
             code: statusCodes.OK,
@@ -433,6 +422,13 @@ export default {
             rs: [],
           });
         }
+      })
+      .then((err) => {
+        return res.status(statusCodes.UNAUTHORIZED).json({
+          code: statusCodes.UNAUTHORIZED,
+          ok: false,
+          message: err,
+        });
       });
   }),
 
@@ -441,17 +437,8 @@ export default {
     var id = req.params.id;
 
     // get user by id
-    User.findOne()
-      .findById(id)
-      .exec((err, user) => {
-        if (err) {
-          return res.status(statusCodes.UNAUTHORIZED).json({
-            code: statusCodes.UNAUTHORIZED,
-            ok: false,
-            message: err.message,
-          });
-        }
-
+    User.findById(id)
+      .then((user) => {
         if (!user) {
           return res.status(statusCodes.OK).json({
             code: statusCodes.OK,
@@ -490,6 +477,13 @@ export default {
               qrCode: imageUrl,
             },
           });
+        });
+      })
+      .catch((err) => {
+        return res.status(statusCodes.UNAUTHORIZED).json({
+          code: statusCodes.UNAUTHORIZED,
+          ok: false,
+          message: err.message,
         });
       });
   }),

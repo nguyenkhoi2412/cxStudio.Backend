@@ -5,11 +5,6 @@ const dbService = {
   connect: async (callback) => {
     await mongoose
       .connect(process.env.DB_CONNECT, {
-        promiseLibrary: Promise,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true,
-        useFindAndModify: false,
       })
       .then((db) => {
         //     // update fields
@@ -25,8 +20,8 @@ const dbService = {
         callback(null);
       })
       .catch((err) => {
-        mongoose.close();
         console.error("Database connection error: ", err);
+        process.exit(1);
       });
   },
 };

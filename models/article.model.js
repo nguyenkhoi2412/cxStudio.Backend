@@ -37,7 +37,7 @@ var articleSchema = new Schema(
 );
 
 //#region queries
-articleSchema.query.findByFilter = function (filterInfos) {
+articleSchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos)
     .sort({ title: 1 })
     .lean()

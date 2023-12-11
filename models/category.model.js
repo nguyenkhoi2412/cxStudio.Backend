@@ -23,7 +23,7 @@ var categorySchema = new Schema(
 );
 
 //#region queries
-categorySchema.query.findByFilter = function (filterInfos) {
+categorySchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos).lean().populate("type_ref", "name");
 };
 

@@ -19,7 +19,7 @@ var supplierSchema = new Schema(
 );
 
 //#region queries
-supplierSchema.query.findByFilter = function (filterInfos) {
+supplierSchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos).lean();
 };
 //#endregion

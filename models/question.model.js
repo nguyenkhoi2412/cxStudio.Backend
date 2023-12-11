@@ -39,7 +39,7 @@ var questionSchema = new Schema(
 );
 
 //#region queries
-questionSchema.query.findByFilter = function (filterInfos) {
+questionSchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos)
     .lean()
     .populate("categories_ref", "title")

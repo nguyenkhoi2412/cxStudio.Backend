@@ -8,8 +8,8 @@ export default {
     const { name } = req.params;
 
     Role.findOne()
-      .findByName(name)
-      .exec((err, role) => {
+      .byName(name)
+      .then((role) => {
         response.DEFAULT(res, err, role);
       });
   }),

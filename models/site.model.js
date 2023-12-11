@@ -29,7 +29,7 @@ var siteSchema = new mongoose.Schema(
     is_active: {
       type: Boolean, //! DATATYPES
       default: true,
-      default: "default"
+      default: "default",
     },
   },
   {
@@ -41,7 +41,7 @@ var siteSchema = new mongoose.Schema(
 );
 
 //#region queries
-siteSchema.query.findByFilter = function (filterInfos) {
+siteSchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos).lean();
 };
 
@@ -50,10 +50,6 @@ siteSchema.query.findByFilter = function (filterInfos) {
 //     name: { $regex: new RegExp(name, "i") }, //make case-insensitive queries
 //   }).lean();
 // };
-
-siteSchema.query.findById = function (id) {
-  return this.where({ _id: id });
-};
 //#endregion
 
 const Site = mongoose.model("sites", siteSchema);
