@@ -10,7 +10,7 @@ import response from "../utils/response.helper.js";
 import jwt from "jsonwebtoken";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 import bcrypt from "bcrypt";
-import UserService from "#services/user";
+import UserService from "../services/user.js";
 
 const expired = 60 * 60; // 1 hours
 

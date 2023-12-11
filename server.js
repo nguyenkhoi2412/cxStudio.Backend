@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 // import csrf from "csurf";
 import dbService from "./config/dbService.js";
 import cache from "./config/cacheService.js";
-import SocketService from "#services/socket";
+import SocketService from "./services/socket.js";
 import corsOptions from "./config/corsOptions.js";
 import _apiRouters from "#routes/_api.routes";
 
