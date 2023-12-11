@@ -2,7 +2,7 @@ import { ROLE } from "../constant/enumRoles.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 import jwt from "jsonwebtoken";
-import User from "#models/user.model";
+import User from "../models/user.model.js";
 const { TokenExpiredError } = jwt;
 
 const catchError = (err, res) => {

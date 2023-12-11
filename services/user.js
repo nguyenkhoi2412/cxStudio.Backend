@@ -1,4 +1,4 @@
-import User from "#models/user.model";
+import User from "../models/user.model.js";
 import encryptHelper from "../utils/encrypt.helper.js";
 import jwt from "jsonwebtoken";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";

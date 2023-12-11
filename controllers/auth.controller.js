@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { ROLE } from "../constant/enumRoles.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
-import User from "#models/user.model";
+import User from "../models/user.model.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
 import { TEMPLATES } from "../shared/templates.js";
 import encrypt from "../utils/encrypt.helper.js";

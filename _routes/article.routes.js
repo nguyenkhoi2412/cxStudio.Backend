@@ -1,5 +1,5 @@
 import express from "express";
-import Article from "#models/article.model";
+import Article from "../models/article.model.js";
 import articleController from "#controllers/article.controller";
 import base from "#controllers/_base.controller";
 import verifyTokenJWT from "../middleware/authJwt.js";

@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import Article from "#models/article.model";
+import Article from "../models/article.model.js";
 import response from "../utils/response.helper.js";
 
 export default {

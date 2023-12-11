@@ -1,5 +1,5 @@
 import express from "express";
-import Category from "#models/category.model";
+import Category from "../models/category.model.js";
 import base from "#controllers/_base.controller";
 import cate from "#controllers/category.controller";
 import verifyTokenJWT from "../middleware/authJwt.js";

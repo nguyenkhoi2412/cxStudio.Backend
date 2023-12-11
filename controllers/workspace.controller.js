@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import Workspace from "#models/workspace.model";
+import Workspace from "../models/workspace.model.js";
 import response from "../utils/response.helper.js";
 
 export default {

@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import Role from "#models/role.model";
+import Role from "../models/role.model.js";
 import RoleService from "../services/role.js";
 import response from "../utils/response.helper.js";
 

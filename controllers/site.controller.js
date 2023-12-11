@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import Site from "#models/site.model";
+import Site from "../models/site.model.js";
 import response from "../utils/response.helper.js";
 
 export default {

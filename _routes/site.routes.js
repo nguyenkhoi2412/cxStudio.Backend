@@ -1,5 +1,5 @@
 import express from "express";
-import Site from "#models/site.model";
+import Site from "../models/site.model.js";
 import site from "#controllers/site.controller";
 import base from "#controllers/_base.controller";
 import verifyTokenJWT from "../middleware/authJwt.js";

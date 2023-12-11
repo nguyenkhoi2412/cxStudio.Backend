@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import Category from "#models/category.model";
+import Category from "../models/category.model.js";
 import response from "../utils/response.helper.js";
 
 export default {

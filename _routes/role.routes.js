@@ -1,5 +1,5 @@
 import express from "express";
-import Role from "#models/role.model";
+import Role from "../models/role.model.js";
 import role from "#controllers/role.controller";
 import base from "#controllers/_base.controller";
 import verifyTokenJWT from "../middleware/authJwt.js";

@@ -1,5 +1,5 @@
 import express from "express";
-import Supplier from "#models/supplier.model";
+import Supplier from "../models/supplier.model.js";
 // import art from "#controllers/supplier.controller";
 import base from "#controllers/_base.controller";
 import verifyTokenJWT from "../middleware/authJwt.js";

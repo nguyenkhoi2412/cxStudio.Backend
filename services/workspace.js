@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { ROLE } from "../constant/enumRoles.js";
-import Workspace from "#models/workspace.model";
+import Workspace from "../models/workspace.model.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
 import { TEMPLATES } from "../shared/templates.js";
 import encryptHelper from "../utils/encrypt.helper.js";
