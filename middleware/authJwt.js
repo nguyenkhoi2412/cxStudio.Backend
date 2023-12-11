@@ -1,4 +1,4 @@
-import { ROLE } from "../constant/enumRoles.js";
+import { ROLE } from "../constant/role.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 import jwt from "jsonwebtoken";

@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import { ROLE } from "../constant/enumRoles.js";
+import { ROLE } from "../constant/role.js";
 import User from "../models/user.model.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
 import { TEMPLATES } from "../shared/templates.js";

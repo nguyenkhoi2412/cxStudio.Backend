@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ROLE } from "../constant/enumRoles.js";
+import { ROLE } from "../constant/role.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
 
 //Define collection and schema for Business
