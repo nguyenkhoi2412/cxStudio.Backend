@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { helpersExtension } from "#utils/helpersExtension";
+import { helpersExtension } from "../utils/helpersExtension.js";
 
 var Schema = mongoose.Schema;
 

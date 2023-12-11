@@ -1,10 +1,10 @@
 import express from "express";
-import { helpersExtension } from "#utils/helpersExtension";
-import encryptHelper from "#utils/encrypt.helper";
-import captcha from "#utils/captcha";
+import { helpersExtension } from "../utils/helpersExtension.js";
+import encryptHelper from "../utils/encrypt.helper.js";
+import captcha from "../utils/captcha.js";
 import variables from "#shared/variables";
-import cache from "#utils/cache/cache.instance";
-import response from "#utils/response.helper";
+import cache from "../utils/cache/cache.instance.js";
+import response from "../utils/response.helper.js";
 
 import fileRoutes from "#routes/file.routes";
 import authRoutes from "#routes/auth.routes";

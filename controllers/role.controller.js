@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Role from "#models/role.model";
 import RoleService from "../services/role.js";
-import response from "#utils/response.helper";
+import response from "../utils/response.helper.js";
 
 export default {
   GET_BY_TYPE: asyncHandler(async (req, res) => {

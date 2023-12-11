@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
-import response from "#utils/response.helper";
-import encrypt from "#utils/encrypt.helper";
-import { helpersExtension } from "#utils/helpersExtension";
+import response from "../utils/response.helper.js";
+import encrypt from "../utils/encrypt.helper.js";
+import { helpersExtension } from "../utils/helpersExtension.js";
 import cache from "../utils/cache/index.js";
 
 export default {

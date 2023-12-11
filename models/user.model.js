@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import encryptHelper from "#utils/encrypt.helper";
+import encryptHelper from "../utils/encrypt.helper.js";
 import { ROLE } from "#constant/enumRoles";
 import { ACCOUNT_STATUS } from "#constant/enumAccountStatus";
-import { helpersExtension } from "#utils/helpersExtension";
+import { helpersExtension } from "../utils/helpersExtension.js";
 import bcrypt from "bcrypt";
 
 //Define collection and schema for Business

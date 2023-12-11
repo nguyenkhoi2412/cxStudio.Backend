@@ -46,7 +46,6 @@
     "#controllers/*": "./controllers/*.js",
     "#constant/*": "./constant/*.js",
     "#shared/*": "./shared/*.js",
-    "#utils/*": "./utils/*.js",
     "#config/*": "./config/*.js",
     "#services/*": "./services/*.js",
     "#routes/*": "./_routes/*.js"

@@ -2,7 +2,7 @@ import util from "util";
 import {
   helpersExtension,
   stringExtension,
-} from "#utils/helpersExtension";
+} from "../utils/helpersExtension.js";
 import variables from "#shared/variables";
 import multer from "multer";
 import * as mime from "mime-types";

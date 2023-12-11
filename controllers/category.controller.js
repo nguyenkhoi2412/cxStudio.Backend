@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Category from "#models/category.model";
-import response from "#utils/response.helper";
+import response from "../utils/response.helper.js";
 
 export default {
   //getbytype function to retrieve category info

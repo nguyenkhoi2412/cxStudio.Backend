@@ -1,5 +1,5 @@
-import { helpersExtension } from "#utils/helpersExtension";
-import encryptHelper from "#utils/encrypt.helper";
+import { helpersExtension } from "../utils/helpersExtension.js";
+import encryptHelper from "../utils/encrypt.helper.js";
 
 export default class ChatService {
   static responseMessage = (data) => {

@@ -1,4 +1,4 @@
-import cache from "#utils/cache/index";
+import cache from "../utils/cache/index.js";
 
 const CacheConfig = {
   connect: async () => {

@@ -1,5 +1,5 @@
 import User from "#models/user.model";
-import encryptHelper from "#utils/encrypt.helper";
+import encryptHelper from "../utils/encrypt.helper.js";
 import jwt from "jsonwebtoken";
 import { HTTP_STATUS as statusCodes } from "#constant/httpStatus";
 
