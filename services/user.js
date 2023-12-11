@@ -1,7 +1,7 @@
 import User from "#models/user.model";
 import encryptHelper from "../utils/encrypt.helper.js";
 import jwt from "jsonwebtoken";
-import { HTTP_STATUS as statusCodes } from "#constant/httpStatus";
+import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 
 const expired = 60 * 60; // 1 hours
 

@@ -1,5 +1,5 @@
 import variables from "../shared/variables.js";
-import { HTTP_STATUS as statusCodes } from "#constant/httpStatus";
+import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 
 export default {
   DEFAULT: (res, err, data, additionalData = {}) => {

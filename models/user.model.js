@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import encryptHelper from "../utils/encrypt.helper.js";
-import { ROLE } from "#constant/enumRoles";
-import { ACCOUNT_STATUS } from "#constant/enumAccountStatus";
+import { ROLE } from "../constant/enumRoles.js";
+import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
 import bcrypt from "bcrypt";
 

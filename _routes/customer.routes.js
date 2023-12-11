@@ -1,6 +1,6 @@
 import express from "express";
 import customer from "#controllers/customer.controller";
-import verifyTokenJWT from "#middleware/authJwt";
+import verifyTokenJWT from "../middleware/authJwt.js";
 const routerCustomer = express.Router();
 
 //#region CUSTOMERS

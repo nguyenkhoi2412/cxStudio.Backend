@@ -2,7 +2,7 @@ import express from "express";
 import Supplier from "#models/supplier.model";
 // import art from "#controllers/supplier.controller";
 import base from "#controllers/_base.controller";
-import verifyTokenJWT from "#middleware/authJwt";
+import verifyTokenJWT from "../middleware/authJwt.js";
 const routerSupplier = express.Router();
 
 //#region SUPPLIERS

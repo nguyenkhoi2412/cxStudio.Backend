@@ -2,7 +2,7 @@ import express from "express";
 import Role from "#models/role.model";
 import role from "#controllers/role.controller";
 import base from "#controllers/_base.controller";
-import verifyTokenJWT from "#middleware/authJwt";
+import verifyTokenJWT from "../middleware/authJwt.js";
 const routerRole = express.Router();
 
 //#region ROLES

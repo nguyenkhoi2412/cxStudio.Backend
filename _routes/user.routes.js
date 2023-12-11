@@ -1,7 +1,7 @@
 import express from "express";
 import User from "#models/user.model";
 import base from "#controllers/_base.controller";
-import verifyTokenJWT from "#middleware/authJwt";
+import verifyTokenJWT from "../middleware/authJwt.js";
 const routerUser = express.Router();
 
 //#region USER/ACCOUNTS

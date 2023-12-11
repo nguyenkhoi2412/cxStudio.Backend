@@ -41,10 +41,8 @@
   },
   "imports": {
     "#src/*": "./*.js",
-    "#middleware/*": "./middleware/*.js",
     "#models/*": "./models/*.js",
     "#controllers/*": "./controllers/*.js",
-    "#constant/*": "./constant/*.js",
     "#services/*": "./services/*.js",
     "#routes/*": "./_routes/*.js"
   }

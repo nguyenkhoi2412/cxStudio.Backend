@@ -2,7 +2,7 @@ import express from "express";
 import controller from "#controllers/workspace.controller";
 import Workspace from "#models/workspace.model";
 import base from "#controllers/_base.controller";
-import verifyTokenJWT from "#middleware/authJwt";
+import verifyTokenJWT from "../middleware/authJwt.js";
 const routerWorkspace = express.Router();
 
 //#region WORKSPACES
