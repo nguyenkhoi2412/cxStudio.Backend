@@ -41,7 +41,6 @@
   },
   "imports": {
     "#src/*": "./*.js",
-    "#controllers/*": "./controllers/*.js",
     "#services/*": "./services/*.js",
     "#routes/*": "./_routes/*.js"
   }

@@ -1,5 +1,5 @@
 import express from "express";
-import auth from "#controllers/auth.controller";
+import auth from "../controllers/auth.controller.js";
 import verifyTokenJWT from "../middleware/authJwt.js";
 const routerAuth = express.Router();
 

@@ -1,7 +1,7 @@
 import express from "express";
 import Site from "../models/site.model.js";
-import site from "#controllers/site.controller";
-import base from "#controllers/_base.controller";
+import site from "../controllers/site.controller.js";
+import base from "../controllers/_base.controller.js";
 import verifyTokenJWT from "../middleware/authJwt.js";
 const routerSite = express.Router();
 
