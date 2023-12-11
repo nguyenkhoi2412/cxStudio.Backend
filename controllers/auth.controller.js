@@ -423,7 +423,7 @@ export default {
           });
         }
       })
-      .then((err) => {
+      .catch((err) => {
         return res.status(statusCodes.UNAUTHORIZED).json({
           code: statusCodes.UNAUTHORIZED,
           ok: false,
