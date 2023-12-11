@@ -6,12 +6,13 @@ var roleSchema = new mongoose.Schema(
   {
     _id: { type: String, default: helpersExtension.uuidv4() },
     name: {
-      type: String,
+      type: Object,
       required: true,
       trim: true,
     },
     lowercase: {
       type: String,
+      lowercase: true,
       required: true,
     },
     desc: {
@@ -19,6 +20,9 @@ var roleSchema = new mongoose.Schema(
     },
     power: {
       type: Array,
+    },
+    type: {
+      type: Number,
     },
   },
   {
@@ -32,6 +36,10 @@ var roleSchema = new mongoose.Schema(
 //#region queries
 roleSchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos).lean();
+};
+
+roleSchema.query.byType = function (typeId) {
+  return this.where({ type: typeId }).lean();
 };
 
 roleSchema.query.byName = function (name) {

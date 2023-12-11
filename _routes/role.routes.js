@@ -6,15 +6,13 @@ import verifyTokenJWT from "#middleware/authJwt";
 const routerRole = express.Router();
 
 //#region ROLES
-// GET: /api/role/getall
-routerRole
-  .route("/getall/:query")
-  .get((req, res) => {
-    base.GET_BY_FILTER(req, res, Role);
-  });
+// GET: /api/role/getbytype
+routerRole.route("/getbytype/:typeId").get((req, res) => {
+  role.GET_BY_TYPE(req, res);
+});
 
 // GET: api/role/getbyname
-routerRole.route("/getbyname/:name").get(role.GET_BY_NAME);
+// routerRole.route("/getbyname/:name").get(role.GET_BY_NAME);
 //#endregion
 
 export default routerRole;

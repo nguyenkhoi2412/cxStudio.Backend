@@ -2,8 +2,7 @@ import asyncHandler from "express-async-handler";
 import response from "#utils/response.helper";
 import encrypt from "#utils/encrypt.helper";
 import { helpersExtension } from "#utils/helpersExtension";
-// import cache from "#utils/cache/cache.instance";
-import cache from "#utils/cache/index";
+import cache from "../utils/cache/index.js";
 
 export default {
   GET_BY_PAGING: asyncHandler(async (req, res, ModelSchema) => {
