@@ -2,7 +2,7 @@ import express from "express";
 import { helpersExtension } from "../utils/helpersExtension.js";
 import encryptHelper from "../utils/encrypt.helper.js";
 import captcha from "../utils/captcha.js";
-import variables from "#shared/variables";
+import variables from "../shared/variables.js";
 import cache from "../utils/cache/cache.instance.js";
 import response from "../utils/response.helper.js";
 

@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import { ROLE } from "#constant/enumRoles";
 import Workspace from "#models/workspace.model";
 import { helpersExtension } from "../utils/helpersExtension.js";
-import { TEMPLATES } from "#shared/templates";
+import { TEMPLATES } from "../shared/templates.js";
 import encryptHelper from "../utils/encrypt.helper.js";
 import transportHelper from "../utils/transport.helper.js";
 import response from "../utils/response.helper.js";

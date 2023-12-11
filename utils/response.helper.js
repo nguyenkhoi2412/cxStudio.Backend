@@ -1,4 +1,4 @@
-import variables from "#shared/variables";
+import variables from "../shared/variables.js";
 import { HTTP_STATUS as statusCodes } from "#constant/httpStatus";
 
 export default {

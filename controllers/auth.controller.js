@@ -3,7 +3,7 @@ import { ROLE } from "#constant/enumRoles";
 import { ACCOUNT_STATUS } from "#constant/enumAccountStatus";
 import User from "#models/user.model";
 import { helpersExtension } from "../utils/helpersExtension.js";
-import { TEMPLATES } from "#shared/templates";
+import { TEMPLATES } from "../shared/templates.js";
 import encrypt from "../utils/encrypt.helper.js";
 import transportHelper from "../utils/transport.helper.js";
 import response from "../utils/response.helper.js";

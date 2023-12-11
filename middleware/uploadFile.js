@@ -3,7 +3,7 @@ import {
   helpersExtension,
   stringExtension,
 } from "../utils/helpersExtension.js";
-import variables from "#shared/variables";
+import variables from "../shared/variables.js";
 import multer from "multer";
 import * as mime from "mime-types";
 import path from "path";

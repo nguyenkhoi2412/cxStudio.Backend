@@ -45,8 +45,6 @@
     "#models/*": "./models/*.js",
     "#controllers/*": "./controllers/*.js",
     "#constant/*": "./constant/*.js",
-    "#shared/*": "./shared/*.js",
-    "#config/*": "./config/*.js",
     "#services/*": "./services/*.js",
     "#routes/*": "./_routes/*.js"
   }
