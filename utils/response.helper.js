@@ -66,8 +66,8 @@ export default {
   UPLOAD_FILE: (req, res, err) => {
     // error
     if (err) {
-      return res.status(code).send({
-        code: code,
+      return res.status(statusCodes.PRECONDITION_FAILED).send({
+        code: err.code,
         ok: false,
         message: err,
       });

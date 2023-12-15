@@ -73,8 +73,8 @@ export default {
       if (!err && rs) {
         ModelSchema.find()
           .byFilter({ _id: model._id })
-          .exec((error, rsData) => {
-            response.DEFAULT(res, err, rsData);
+          .then((rsData) => {
+            response.DEFAULT(res, null, rsData);
           });
       } else {
         response.DEFAULT(res, err, rs);

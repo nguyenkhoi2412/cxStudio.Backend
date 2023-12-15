@@ -1,6 +1,4 @@
 import mongoose from "mongoose";
-import { ROLE } from "../constant/role.js";
-import { helpersExtension } from "../utils/helpersExtension.js";
 
 //Define collection and schema for Business
 var workspaceSchema = new mongoose.Schema(
@@ -13,24 +11,26 @@ var workspaceSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
-    logoPath: { type: String },
-    team_members: {
-      type: Array, //! DATATYPES
-      // _id: String,
-      // email: String,
+    company: {
+      type: Object, //! DATATYPES
+      trim: true,
+      required: true,
+    },
+    logo_path: { type: String },
+    owner: {
+      type: String,
       ref: "users",
-      role: {
-        type: String, //! DATATYPES
-        enum: {
-          values: [
-            ROLE.ADMIN.name,
-            ROLE.SUPERVISOR.name,
-            ROLE.USER.name,
-            ROLE.VISITOR.name,
-          ],
-          message: "{VALUE} is not supported.",
-        },
+    },
+    team_members: [
+      {
+        type: String,
+        ref: "users",
       },
+    ],
+    is_active: {
+      type: Boolean, //! DATATYPES
+      default: true,
+      default: "default",
     },
   },
   {
@@ -43,25 +43,24 @@ var workspaceSchema = new mongoose.Schema(
 
 //#region queries
 workspaceSchema.query.byFilter = function (filterInfos) {
-  return this.find(filterInfos).lean().populate("team_members", "_id email");
+  return this.find(filterInfos)
+    .lean()
+    .populate({ path: "team_members", select: "_id email detailInfos" })
+    .populate({ path: "owner", select: "_id email detailInfos" });
 };
 
-workspaceSchema.query.findBySite = function (siteId) {
+workspaceSchema.query.bySite = function (siteId) {
   return this.find({
     site_id: siteId,
   })
     .lean()
-    .populate("team_members", "_id email");
-};
-
-workspaceSchema.query.findBySite = function (siteId) {
-  return this.find({
-    site_id: siteId,
-  })
-    .lean()
-    .populate("team_members", "_id email");
+    .populate({ path: "team_members", select: "_id email detailInfos" })
+    .populate({ path: "owner", select: "_id email detailInfos" });
 };
 //#endregion
 
-const Type = mongoose.model("types", workspaceSchema);
-export default Type;
+//#region use middleware
+//#endregion
+
+const Workspace = mongoose.model("workspaces", workspaceSchema);
+export default Workspace;

@@ -143,7 +143,7 @@ export default {
         });
 
         // Save the new model instance, passing a callback
-        userData.save(function (err, result) {
+        userData.save().then((result) => {
           response.DEFAULT(res, err, {
             _id: result._id,
             username: result.username,
@@ -391,8 +391,8 @@ export default {
             });
 
             // Save the new model instance, passing a callback
-            userData.save(function (err, result) {
-              responseUserValidate(res, result);
+            userData.save().then((rsUser) => {
+              responseUserValidate(res, rsUser);
             });
           }
         })

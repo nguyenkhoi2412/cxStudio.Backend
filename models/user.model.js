@@ -102,6 +102,7 @@ userSchema.methods.verifyPassword = function (
 };
 //#endregion
 
+//#region middleware
 //hashing a password before saving it to the database
 userSchema.pre("save", function (next) {
   var user = this;
@@ -114,6 +115,7 @@ userSchema.pre("save", function (next) {
     next();
   });
 });
+//#endregion
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("users", userSchema);
 export default User;

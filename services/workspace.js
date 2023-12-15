@@ -11,20 +11,33 @@ import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 
 class WorkspaceService {
   /*
-   * findBySite
+   * getBySite
    */
-  static findBySite = (req, res, siteId) => {
-    return new Promise((resolve) => {
-      Workspace.findOne()
-        .findBySite(siteId)
-        .exec((err, wp) => {
-          if (err) {
-            response.DEFAULT(res, err, {});
-          }
+  static getBySite = async (siteId) => {
+    const data = await Workspace.find().bySite(siteId);
+    return data;
+  };
 
-          resolve(wp);
-        });
+  /*
+   * Insert new workspace
+   */
+  static insert = async (params) => {
+    const ModelSchema = new Workspace({
+      ...params,
+      _id: helpersExtension.uuidv4(),
+      team_members: [params.currentuser_id],
+      owner: params.currentuser_id,
     });
+
+    const savedWorkspace = await ModelSchema.save();
+
+    // get data after save
+    const workspaceData = await Workspace.findById(savedWorkspace._id)
+      .lean()
+      .populate({ path: "team_members", select: "_id email detailInfos" })
+      .populate({ path: "owner", select: "_id email detailInfos" });
+
+    return workspaceData;
   };
 }
 

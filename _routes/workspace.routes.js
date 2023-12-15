@@ -1,5 +1,5 @@
 import express from "express";
-import controller from "../controllers/workspace.controller.js";
+import wpController from "../controllers/workspace.controller.js";
 import Workspace from "../models/workspace.model.js";
 import base from "../controllers/_base.controller.js";
 import verifyTokenJWT from "../middleware/authJwt.js";
@@ -16,12 +16,12 @@ routerWorkspace
 // GET: api/workspace/getbysite
 routerWorkspace
   .route("/getbysite/:id")
-  .get(controller.GET_BY_SITE);
+  .get(verifyTokenJWT, wpController.GET_BY_SITE);
 
-// // POST: api/workspace/insertnew
-// routerWorkspace.route("/insertnew").post(verifyTokenJWT, (req, res) => {
-//   base.INSERT(req, res, Workspace);
-// });
+// POST: api/workspace/insertnew
+routerWorkspace
+  .route("/insertnew")
+  .post(verifyTokenJWT, wpController.INSERT_NEW);
 
 // // PUT: api/workspace/update
 // routerWorkspace.route("/update").put(verifyTokenJWT, (req, res) => {
