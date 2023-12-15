@@ -17,14 +17,11 @@ var workspaceSchema = new mongoose.Schema(
       required: true,
     },
     logo_path: { type: String },
-    owner: {
-      type: String,
-      ref: "users",
-    },
     team_members: [
       {
-        type: String,
-        ref: "users",
+        _id: false,
+        user: { type: String, ref: "users" },
+        role: { type: String },
       },
     ],
     is_active: {
@@ -45,8 +42,7 @@ var workspaceSchema = new mongoose.Schema(
 workspaceSchema.query.byFilter = function (filterInfos) {
   return this.find(filterInfos)
     .lean()
-    .populate({ path: "team_members", select: "_id email detailInfos" })
-    .populate({ path: "owner", select: "_id email detailInfos" });
+    .populate({ path: "team_members.user", select: "_id email detailInfos" });
 };
 
 workspaceSchema.query.bySite = function (siteId) {
@@ -54,8 +50,7 @@ workspaceSchema.query.bySite = function (siteId) {
     site_id: siteId,
   })
     .lean()
-    .populate({ path: "team_members", select: "_id email detailInfos" })
-    .populate({ path: "owner", select: "_id email detailInfos" });
+    .populate({ path: "team_members.user", select: "_id email detailInfos" });
 };
 //#endregion
 

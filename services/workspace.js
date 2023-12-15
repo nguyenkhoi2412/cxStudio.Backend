@@ -25,8 +25,12 @@ class WorkspaceService {
     const ModelSchema = new Workspace({
       ...params,
       _id: helpersExtension.uuidv4(),
-      team_members: [params.currentuser_id],
-      owner: params.currentuser_id,
+      team_members: [
+        {
+          user: params.currentuser_id,
+          role: ROLE.OWNER.name,
+        },
+      ],
     });
 
     const savedWorkspace = await ModelSchema.save();
@@ -34,8 +38,7 @@ class WorkspaceService {
     // get data after save
     const workspaceData = await Workspace.findById(savedWorkspace._id)
       .lean()
-      .populate({ path: "team_members", select: "_id email detailInfos" })
-      .populate({ path: "owner", select: "_id email detailInfos" });
+      .populate({ path: "team_members.user", select: "_id email detailInfos" });
 
     return workspaceData;
   };
