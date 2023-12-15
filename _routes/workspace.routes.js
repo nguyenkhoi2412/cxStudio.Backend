@@ -13,10 +13,10 @@ routerWorkspace
     base.GET_BY_PAGING(req, res, Workspace);
   });
 
-// GET: api/workspace/getbysite
+// GET: api/workspace/getbyuser
 routerWorkspace
-  .route("/getbysite/:id")
-  .get(verifyTokenJWT, wpController.GET_BY_SITE);
+  .route("/getbyuser/:id")
+  .get(verifyTokenJWT, wpController.GET_BY_USER);
 
 // POST: api/workspace/insertnew
 routerWorkspace

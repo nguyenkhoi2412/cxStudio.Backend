@@ -1,20 +1,27 @@
-import asyncHandler from "express-async-handler";
 import { ROLE } from "../constant/role.js";
 import Workspace from "../models/workspace.model.js";
 import { helpersExtension } from "../utils/helpersExtension.js";
-import { TEMPLATES } from "../shared/templates.js";
-import encryptHelper from "../utils/encrypt.helper.js";
-import transportHelper from "../utils/transport.helper.js";
-import response from "../utils/response.helper.js";
-import jwt from "jsonwebtoken";
-import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
+import cache from "../utils/cache/index.js";
 
 class WorkspaceService {
   /*
-   * getBySite
+   * getByUser
    */
-  static getBySite = async (siteId) => {
-    const data = await Workspace.find().bySite(siteId);
+  static getByUser = async (id) => {
+    if (await cache.has(id)) {
+      return await cache.get(id);
+    }
+
+    const data = await Workspace.find({
+      is_active: true,
+      team_members: {
+        $elemMatch: { user: id },
+      },
+    })
+      .lean()
+      .populate({ path: "team_members.user", select: "_id email detailInfos" });
+
+    await cache.set(id, data);
     return data;
   };
 
@@ -32,6 +39,9 @@ class WorkspaceService {
         },
       ],
     });
+
+    // delete cache
+    await cache.del(params.currentuser_id);
 
     const savedWorkspace = await ModelSchema.save();
 

@@ -6,15 +6,12 @@ import WorkspaceService from "../services/workspace.js";
 import { ROLE } from "../constant/role.js";
 
 export default {
-  //getbysite function to retrieve site info
-  GET_BY_SITE: asyncHandler(async (req, res) => {
-    const { site_id } = req.params;
+  //getbyuser function to retrieve site info
+  GET_BY_USER: asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-    Workspace.findOne()
-      .bySite(site_id)
-      .then((err, rs) => {
-        response.DEFAULT(res, err, rs);
-      });
+    const dataWp = await WorkspaceService.getByUser(id);
+    response.DEFAULT(res, null, dataWp);
   }),
 
   //insertnew function

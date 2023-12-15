@@ -20,22 +20,22 @@ const Cache = {
     return await instance.has(key);
   },
   get: async (key) => {
-    return instance.get(key);
+    return await instance.get(key);
   },
   set: async (key, value) => {
     await instance.set(key, value);
   },
   take: async (key) => {
-    return instance.take(key);
+    return await instance.take(key);
   },
   put: async (key, value) => {
-    instance.put(key, value);
+    await instance.put(key, value);
   },
   del: async (key) => {
-    instance.del(key);
+    await instance.del(key);
   },
   clearCache: async () => {
-    instance.clearCache();
+    await instance.clearCache();
   },
 };
 
