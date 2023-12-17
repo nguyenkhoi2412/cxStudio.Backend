@@ -61,6 +61,10 @@ export class helpersExtension {
     );
   }
 
+  static isNull(data) {
+    return !this.isNotNull(data);
+  }
+
   static acceptFileExtension(file, filetypes = /jpeg|jpg|png/) {
     var mimetype = filetypes.test(file.mimetype);
     var extname = filetypes.test(path.extname(file.originalname).toLowerCase());

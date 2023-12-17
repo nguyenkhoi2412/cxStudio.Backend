@@ -44,7 +44,7 @@ export default {
 
     UserService.findByUser(username).then((user) => {
       // validate username/password
-      if (!user.verifyPassword(password)) {
+      if (helpersExtension.isNull(user) || !user.verifyPassword(password)) {
         return res.status(statusCodes.OK).json({
           code: statusCodes.OK,
           ok: false,

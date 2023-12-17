@@ -7,18 +7,18 @@ const routerSite = express.Router();
 
 //#region SITES
 // GET: api/site/getbypageno
-routerSite
-  .route("/getbypageno/:pageno?&:pagesize?&:query?")
-  .get((req, res) => {
-    base.GET_BY_PAGING(verifyTokenJWT, req, res, Site);
-  });
+// routerSite
+//   .route("/getbypageno/:pageno?&:pagesize?&:query?")
+//   .get((req, res) => {
+//     base.GET_BY_PAGING(verifyTokenJWT, req, res, Site);
+//   });
 
 // GET: api/site/getbyname
 // routerSite.route("/getbyname/:name").get(site.GET_BY_NAME);
 
 // GET: api/site/getbyid
 routerSite.route("/getbyid/:id").get((req, res) => {
-  base.GET_BY_FILTER(req, res, Site);
+  site.GET_BY_ID(req, res, Site);
 });
 
 // // POST: api/site/insertnew

@@ -41,9 +41,9 @@ var siteSchema = new mongoose.Schema(
 );
 
 //#region queries
-siteSchema.query.byFilter = function (filterInfos) {
-  return this.find(filterInfos).lean();
-};
+// siteSchema.query.byFilter = function (filterInfos) {
+//   return this.find(filterInfos).lean();
+// };
 
 // siteSchema.query.findByName = function (name) {
 //   return this.findOne({
