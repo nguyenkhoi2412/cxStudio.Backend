@@ -1,6 +1,6 @@
 import { ROLE } from "../constant/role.js";
 import Workspace from "../models/workspace.model.js";
-import { helpersExtension } from "../utils/helpersExtension.js";
+import { crossCutting } from "../utils/crossCutting.js";
 import cache from "../utils/cache/index.js";
 import CommonService from "./_common.service.js";
 
@@ -40,7 +40,7 @@ class WorkspaceService extends CommonService {
     return new Promise(async (resolve, reject) => {
       const ModelSchema = new Workspace({
         ...params,
-        _id: helpersExtension.uuidv4(),
+        _id: crossCutting.uuidv4(),
         team_members: [
           {
             user: params.currentuser_id,

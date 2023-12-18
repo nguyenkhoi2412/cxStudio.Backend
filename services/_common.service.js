@@ -1,5 +1,5 @@
 import encrypt from "../utils/encrypt.helper.js";
-import { helpersExtension } from "../utils/helpersExtension.js";
+import { crossCutting } from "../utils/crossCutting.js";
 import cache from "../utils/cache/index.js";
 
 class CommonService {
@@ -14,7 +14,7 @@ class CommonService {
       // findById
       const { id } = params;
 
-      if (helpersExtension.isNotNull(id)) {
+      if (crossCutting.isNotNull(id)) {
         // check data from cache
         if (await cache.has(id)) {
           resolve(await cache.get(id));

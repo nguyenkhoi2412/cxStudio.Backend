@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { helpersExtension } from "../utils/helpersExtension.js";
+import { crossCutting } from "../utils/crossCutting.js";
 
 var Schema = mongoose.Schema;
 
@@ -20,7 +20,7 @@ var questionSchema = new Schema(
     numberOfAnswers: { type: Number },
     answers: [
       {
-        _id: { type: String, default: helpersExtension.uuidv4() },
+        _id: { type: String, default: crossCutting.uuidv4() },
         text: { type: Object },
         correct: { type: Boolean, default: false },
         desc: { type: Object },

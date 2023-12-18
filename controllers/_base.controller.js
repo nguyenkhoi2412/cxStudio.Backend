@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import response from "../utils/response.helper.js";
 import encrypt from "../utils/encrypt.helper.js";
-import { helpersExtension } from "../utils/helpersExtension.js";
+import { crossCutting } from "../utils/crossCutting.js";
 import cache from "../utils/cache/index.js";
 import CommonService from "../services/_common.service.js";
 
@@ -12,15 +12,15 @@ class BaseController {
   //     req.params.query
   //   );
 
-  //   const skip = !helpersExtension.isNotNull(pageno) ? 1 : parseInt(pageno) - 1; // pageno
-  //   const limit = !helpersExtension.isNotNull(pagesize)
+  //   const skip = !crossCutting.isNotNull(pageno) ? 1 : parseInt(pageno) - 1; // pageno
+  //   const limit = !crossCutting.isNotNull(pagesize)
   //     ? 1000
   //     : parseInt(pagesize); // pagesize
-  //   const sortInfos = helpersExtension.isNotNull(sortCriteria)
+  //   const sortInfos = crossCutting.isNotNull(sortCriteria)
   //     ? sortCriteria
   //     : { created_at: -1 }; //default with sort created_at asc: 1/desc: -1
 
-  //   const filterInfos = helpersExtension.isNotNull(filterCriteria)
+  //   const filterInfos = crossCutting.isNotNull(filterCriteria)
   //     ? filterCriteria
   //     : {};
 
@@ -61,7 +61,7 @@ class BaseController {
   //   // await dbService.db.connection.collection("categories").insertOne(model, (err, rs) => {
   //   //   response.DEFAULT(res, err, rs.ops[0]);
   //   // });
-  //   model._id = helpersExtension.uuidv4();
+  //   model._id = crossCutting.uuidv4();
 
   //   // Save the new model instance, passing a callback
   //   await model.save((err, rs) => {

@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import { ROLE } from "../constant/role.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import User from "../models/user.model.js";
-import { helpersExtension } from "../utils/helpersExtension.js";
+import { crossCutting } from "../utils/crossCutting.js";
 import { TEMPLATES } from "../shared/templates.js";
 import encrypt from "../utils/encrypt.helper.js";
 import transportHelper from "../utils/transport.helper.js";
@@ -44,7 +44,7 @@ export default {
 
     UserService.findByUser(username).then((user) => {
       // validate username/password
-      if (helpersExtension.isNull(user) || !user.verifyPassword(password)) {
+      if (crossCutting.isNull(user) || !user.verifyPassword(password)) {
         return res.status(statusCodes.OK).json({
           code: statusCodes.OK,
           ok: false,
@@ -114,7 +114,7 @@ export default {
           });
         }
 
-        var userId = helpersExtension.uuidv4();
+        var userId = crossCutting.uuidv4();
         var fName = detailInfos.firstName || "";
         var lName = detailInfos.lastName || "";
         var alias = detailInfos.aliasName || fName + " " + lName;
@@ -127,8 +127,8 @@ export default {
           status: status || ACCOUNT_STATUS.ACTIVE.TEXT,
           loginAttemptCount: 0,
           email: usernameDecrypt,
-          phone: helpersExtension.isNotNull(phone) ? phone : 0,
-          oneTimePassword: helpersExtension.isNotNull(oneTimePassword)
+          phone: crossCutting.isNotNull(phone) ? phone : 0,
+          oneTimePassword: crossCutting.isNotNull(oneTimePassword)
             ? oneTimePassword
             : false,
           secret_2fa: encrypt.aes.encrypt(encrypt.otplib.generateKey()),
@@ -362,7 +362,7 @@ export default {
             responseUserValidate(res, user);
           } else {
             // Register new account
-            var userId = helpersExtension.uuidv4();
+            var userId = crossCutting.uuidv4();
             var fName = detailInfos.firstName || "";
             var lName = detailInfos.lastName || "";
             var alias = detailInfos.aliasName || fName + " " + lName;
@@ -371,7 +371,7 @@ export default {
               _id: userId,
               username: username,
               password: encrypt.rsa.encrypt(
-                helpersExtension.generatePassword(8)
+                crossCutting.generatePassword(8)
               ),
               role: ROLE.USER.name,
               status: ACCOUNT_STATUS.ACTIVE.TEXT,

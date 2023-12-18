@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 import encryptHelper from "../utils/encrypt.helper.js";
 import { ROLE } from "../constant/role.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
-import { helpersExtension } from "../utils/helpersExtension.js";
+import { crossCutting } from "../utils/crossCutting.js";
 import bcrypt from "bcrypt";
 
 //Define collection and schema for Business
 var userSchema = new mongoose.Schema(
   {
-    _id: { type: String, default: helpersExtension.uuidv4() },
+    _id: { type: String, default: crossCutting.uuidv4() },
     username: {
       type: String,
       required: true,

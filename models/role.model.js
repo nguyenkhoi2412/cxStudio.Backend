@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import { helpersExtension } from "../utils/helpersExtension.js";
+import { crossCutting } from "../utils/crossCutting.js";
 
 //Define collection and schema for Business
 var roleSchema = new mongoose.Schema(
   {
-    _id: { type: String, default: helpersExtension.uuidv4() },
+    _id: { type: String, default: crossCutting.uuidv4() },
     name: {
       type: Object,
       required: true,

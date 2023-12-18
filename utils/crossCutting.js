@@ -1,6 +1,6 @@
 import path from "path";
 
-export class helpersExtension {
+export class crossCutting {
   //#region generate
   static generateKey = (pre) => {
     return `${this.isNotNull(pre) ? pre + "_" : ""}${
@@ -282,9 +282,9 @@ export class arrayExtension {
 //#region string
 export class stringExtension {
   static render = (value, langCode = "", defaultValue = "Noname") => {
-    return helpersExtension.isNotNull(value)
+    return crossCutting.isNotNull(value)
       ? langCode !== ""
-        ? helpersExtension.isNotNull(value[langCode])
+        ? crossCutting.isNotNull(value[langCode])
           ? value[langCode]
           : defaultValue
         : value

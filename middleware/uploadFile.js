@@ -1,8 +1,8 @@
 import util from "util";
 import {
-  helpersExtension,
+  crossCutting,
   stringExtension,
-} from "../utils/helpersExtension.js";
+} from "../utils/crossCutting.js";
 import variables from "../shared/variables.js";
 import multer from "multer";
 import * as mime from "mime-types";
@@ -36,7 +36,7 @@ const multerStorage = multer.diskStorage({
     // cb(null, uploadFolder);
   },
   filename: (req, file, cb) => {
-    let filename = helpersExtension.generateKey(
+    let filename = crossCutting.generateKey(
       new Date().toISOString().replace(/[:-]/gi, "")
     );
 
@@ -50,7 +50,7 @@ const multerFileFilter = (req, file, cb) => {
   var filetypes = /jpeg|jpg|png/;
   var acceptUpload = true;
 
-  if (!helpersExtension.acceptFileExtension(file, filetypes)) {
+  if (!crossCutting.acceptFileExtension(file, filetypes)) {
     acceptUpload = false;
     cb("File upload only supports the following filetypes - " + filetypes);
   }
