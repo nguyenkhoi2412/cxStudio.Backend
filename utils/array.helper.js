@@ -1,3 +1,5 @@
+import { objectHelper } from "./object.helper.js";
+
 export class arrayHelper {
   static insert = (arr, index, ...items) => {
     return [
@@ -31,7 +33,7 @@ export class arrayHelper {
 
   static delete = (arr, objItems, field = "_id") => {
     return objItems.length
-      ? objectExtension.diffArrayObjects(arr, objItems) // deleteMany
+      ? objectHelper.diffArrayObjects(arr, objItems) // deleteMany
       : arr.filter((item) => {
           // deleteOne
           return item[field] !== objItems[field];
