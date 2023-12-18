@@ -1,8 +1,6 @@
 import util from "util";
-import {
-  crossCutting,
-  stringExtension,
-} from "../utils/crossCutting.js";
+import { crossCutting } from "../utils/crossCutting.js";
+import { stringHelper } from "../utils/string.helper.js";
 import variables from "../shared/variables.js";
 import multer from "multer";
 import * as mime from "mime-types";
@@ -58,7 +56,7 @@ const multerFileFilter = (req, file, cb) => {
   const fileSize = parseInt(req.headers["content-length"]);
   if (fileSize > maxSize) {
     acceptUpload = false;
-    cb("File too large - max size is " + stringExtension.formatBytes(maxSize));
+    cb("File too large - max size is " + stringHelper.formatBytes(maxSize));
   }
 
   if (acceptUpload) return cb(null, true);
