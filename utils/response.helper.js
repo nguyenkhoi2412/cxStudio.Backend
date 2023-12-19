@@ -4,7 +4,6 @@ import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 export default {
   DEFAULT: (res, err, data, additionalData = {}) => {
     const code = statusCodes.OK;
-
     // error
     if (err) {
       return res.status(statusCodes.NO_CONTENT).send({
@@ -41,7 +40,7 @@ export default {
     }
 
     // not found
-    if (!data) {
+    if (!data || data === undefined) {
       return res.status(code).json({
         code: code,
         ok: true,

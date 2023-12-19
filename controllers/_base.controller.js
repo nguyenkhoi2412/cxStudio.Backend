@@ -1,39 +1,22 @@
 import asyncHandler from "express-async-handler";
 import response from "../utils/response.helper.js";
-import encrypt from "../utils/encrypt.helper.js";
-import { crossCutting } from "../utils/crossCutting.js";
-import cache from "../utils/cache/index.js";
 import CommonService from "../services/_common.service.js";
 
 class BaseController {
   static GET_BY_PAGING = asyncHandler(async (req, res, ModelSchema) => {
-    const { pageno, pagesize } = req.params;
-    const { sortCriteria, filterCriteria } = encrypt.aes.decrypt(
-      req.params.query
-    );
-
-    const skip = !crossCutting.isNotNull(pageno) ? 1 : parseInt(pageno) - 1; // pageno
-    const limit = !crossCutting.isNotNull(pagesize) ? 1000 : parseInt(pagesize); // pagesize
-    const sortInfos = crossCutting.isNotNull(sortCriteria)
-      ? sortCriteria
-      : { created_at: -1 }; //default with sort created_at asc: 1/desc: -1
-
-    const filterInfos = crossCutting.isNotNull(filterCriteria)
-      ? filterCriteria
-      : {};
-
-    // get data with pageno
-    await ModelSchema.countDocuments(filterInfos, (err, count) => {
-      ModelSchema.find(filterInfos)
-        .sort(sortInfos)
-        .skip(limit * skip)
-        .limit(limit)
-        .exec((err, rs) => response.DEFAULT(res, err, rs, { total: count }));
-    });
+    await CommonService.getByPaging(req.params, ModelSchema)
+      .then((rs) => {
+        return response.DEFAULT(res, null, rs.data, {
+          total: rs.total,
+        });
+      })
+      .catch((err) => {
+        return response.DEFAULT(res, err, null);
+      });
   });
 
   static GET_BY_ID = asyncHandler(async (req, res, ModelSchema) => {
-    CommonService.getByFilter(req.params, ModelSchema)
+    await CommonService.getByFilter(req.params, ModelSchema)
       .then((rs) => {
         return response.DEFAULT(res, null, rs);
       })
@@ -43,7 +26,7 @@ class BaseController {
   });
 
   static GET_BY_FILTER = asyncHandler(async (req, res, ModelSchema) => {
-    CommonService.getByFilter(req.params, ModelSchema)
+    await CommonService.getByFilter(req.params, ModelSchema)
       .then((rs) => {
         return response.DEFAULT(res, null, rs);
       })
