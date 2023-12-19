@@ -12,9 +12,6 @@ import roleRouters from "#routes/role.routes";
 import industryRouters from "#routes/industry.routes";
 import siteRoutes from "#routes/site.routes";
 import workspaceRoutes from "#routes/workspace.routes";
-import supplierRoutes from "#routes/supplier.routes";
-import categoryRoutes from "#routes/category.routes";
-import articleRoutes from "#routes/article.routes";
 
 export default (app) => {
   //#region Request API callback generate
@@ -68,8 +65,4 @@ export default (app) => {
   app.use("/api/industry", industryRouters);
   app.use("/api/site", siteRoutes);
   app.use("/api/workspace", workspaceRoutes);
-
-  app.use("/api/supplier", supplierRoutes);
-  app.use("/api/category", categoryRoutes);
-  app.use("/api/article", articleRoutes);
 };
