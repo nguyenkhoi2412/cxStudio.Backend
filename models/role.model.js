@@ -4,7 +4,7 @@ import { crossCutting } from "../utils/crossCutting.js";
 //Define collection and schema for Business
 var roleSchema = new mongoose.Schema(
   {
-    _id: { type: String, default: crossCutting.uuidv4() },
+    _id: { type: String, required: true },
     name: {
       type: Object,
       required: true,
@@ -34,19 +34,19 @@ var roleSchema = new mongoose.Schema(
 );
 
 //#region queries
-roleSchema.query.byFilter = function (filterInfos) {
-  return this.find(filterInfos).lean();
-};
+// roleSchema.query.byFilter = function (filterInfos) {
+//   return this.find(filterInfos).lean();
+// };
 
-roleSchema.query.byType = function (typeId) {
-  return this.where({ type: typeId }).lean();
-};
+// roleSchema.query.byType = function (typeId) {
+//   return this.where({ type: typeId }).lean();
+// };
 
-roleSchema.query.byName = function (name) {
-  return this.findOne({
-    name: { $regex: new RegExp(name, "i") }, //make case-insensitive queries
-  }).lean();
-};
+// roleSchema.query.byName = function (name) {
+//   return this.findOne({
+//     name: { $regex: new RegExp(name, "i") }, //make case-insensitive queries
+//   }).lean();
+// };
 //#endregion
 
 const Role = mongoose.model("roles", roleSchema);

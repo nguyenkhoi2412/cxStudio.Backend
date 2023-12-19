@@ -6,34 +6,31 @@ import cache from "../utils/cache/index.js";
 import CommonService from "../services/_common.service.js";
 
 class BaseController {
-  // static GET_BY_PAGING = asyncHandler(async (req, res, ModelSchema) => {
-  //   const { pageno, pagesize } = req.params;
-  //   const { sortCriteria, filterCriteria } = encrypt.aes.decrypt(
-  //     req.params.query
-  //   );
+  static GET_BY_PAGING = asyncHandler(async (req, res, ModelSchema) => {
+    const { pageno, pagesize } = req.params;
+    const { sortCriteria, filterCriteria } = encrypt.aes.decrypt(
+      req.params.query
+    );
 
-  //   const skip = !crossCutting.isNotNull(pageno) ? 1 : parseInt(pageno) - 1; // pageno
-  //   const limit = !crossCutting.isNotNull(pagesize)
-  //     ? 1000
-  //     : parseInt(pagesize); // pagesize
-  //   const sortInfos = crossCutting.isNotNull(sortCriteria)
-  //     ? sortCriteria
-  //     : { created_at: -1 }; //default with sort created_at asc: 1/desc: -1
+    const skip = !crossCutting.isNotNull(pageno) ? 1 : parseInt(pageno) - 1; // pageno
+    const limit = !crossCutting.isNotNull(pagesize) ? 1000 : parseInt(pagesize); // pagesize
+    const sortInfos = crossCutting.isNotNull(sortCriteria)
+      ? sortCriteria
+      : { created_at: -1 }; //default with sort created_at asc: 1/desc: -1
 
-  //   const filterInfos = crossCutting.isNotNull(filterCriteria)
-  //     ? filterCriteria
-  //     : {};
+    const filterInfos = crossCutting.isNotNull(filterCriteria)
+      ? filterCriteria
+      : {};
 
-  //   // get data with pageno
-  //   await ModelSchema.countDocuments(filterInfos, (err, count) => {
-  //     ModelSchema.find()
-  //       .byFilter(filterInfos)
-  //       .sort(sortInfos)
-  //       .skip(limit * skip)
-  //       .limit(limit)
-  //       .exec((err, rs) => response.DEFAULT(res, err, rs, { total: count }));
-  //   });
-  // });
+    // get data with pageno
+    await ModelSchema.countDocuments(filterInfos, (err, count) => {
+      ModelSchema.find(filterInfos)
+        .sort(sortInfos)
+        .skip(limit * skip)
+        .limit(limit)
+        .exec((err, rs) => response.DEFAULT(res, err, rs, { total: count }));
+    });
+  });
 
   static GET_BY_ID = asyncHandler(async (req, res, ModelSchema) => {
     CommonService.getByFilter(req.params, ModelSchema)

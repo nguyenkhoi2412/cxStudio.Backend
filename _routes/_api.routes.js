@@ -4,12 +4,12 @@ import encryptHelper from "../utils/encrypt.helper.js";
 import captcha from "../utils/captcha.js";
 import variables from "../shared/variables.js";
 import cache from "../utils/cache/cache.instance.js";
-import response from "../utils/response.helper.js";
 
 import fileRoutes from "#routes/file.routes";
 import authRoutes from "#routes/auth.routes";
 import userRoutes from "#routes/user.routes";
 import roleRouters from "#routes/role.routes";
+import industryRouters from "#routes/industry.routes";
 import siteRoutes from "#routes/site.routes";
 import workspaceRoutes from "#routes/workspace.routes";
 import supplierRoutes from "#routes/supplier.routes";
@@ -65,7 +65,7 @@ export default (app) => {
   app.use("/api/user", userRoutes);
   app.use("/api/file", fileRoutes);
   app.use("/api/role", roleRouters);
-
+  app.use("/api/industry", industryRouters);
   app.use("/api/site", siteRoutes);
   app.use("/api/workspace", workspaceRoutes);
 
