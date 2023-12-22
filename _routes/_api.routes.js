@@ -19,7 +19,7 @@ export default (app) => {
   app.get("/api/captcha/test/:width?/:height?/:colortext?/", (req, res) => {
     const width = parseInt(req.params.width) || 150;
     const height = parseInt(req.params.height) || 50;
-    const colortext = crossCutting.isNotNull(req.params.colortext)
+    const colortext = crossCutting.check.isNotNull(req.params.colortext)
       ? req.params.colortext
       : "#000";
 
@@ -40,7 +40,7 @@ export default (app) => {
     var length = parseInt(req.params.length) || 1024;
     var length_aes = length / 16;
     res.send({
-      password: crossCutting.generatePassword(length),
+      password: crossCutting.generate.password(length),
       aes: {
         salt_key: encryptHelper.aes.generateKey(length_aes * 2),
       },

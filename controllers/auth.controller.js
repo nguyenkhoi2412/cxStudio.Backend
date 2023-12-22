@@ -44,7 +44,7 @@ export default {
 
     UserService.findByUser(username).then((user) => {
       // validate username/password
-      if (crossCutting.isNull(user) || !user.verifyPassword(password)) {
+      if (crossCutting.check.isNull(user) || !user.verifyPassword(password)) {
         return res.status(statusCodes.OK).json({
           code: statusCodes.OK,
           ok: false,
@@ -114,7 +114,7 @@ export default {
           });
         }
 
-        var userId = crossCutting.uuidv4();
+        var userId = crossCutting.generate.uuidv4();
         var fName = detailInfos.firstName || "";
         var lName = detailInfos.lastName || "";
         var alias = detailInfos.aliasName || fName + " " + lName;
@@ -127,8 +127,8 @@ export default {
           status: status || ACCOUNT_STATUS.ACTIVE.TEXT,
           loginAttemptCount: 0,
           email: usernameDecrypt,
-          phone: crossCutting.isNotNull(phone) ? phone : 0,
-          oneTimePassword: crossCutting.isNotNull(oneTimePassword)
+          phone: crossCutting.check.isNotNull(phone) ? phone : 0,
+          oneTimePassword: crossCutting.check.isNotNull(oneTimePassword)
             ? oneTimePassword
             : false,
           secret_2fa: encrypt.aes.encrypt(encrypt.otplib.generateKey()),
@@ -362,7 +362,7 @@ export default {
             responseUserValidate(res, user);
           } else {
             // Register new account
-            var userId = crossCutting.uuidv4();
+            var userId = crossCutting.generate.uuidv4();
             var fName = detailInfos.firstName || "";
             var lName = detailInfos.lastName || "";
             var alias = detailInfos.aliasName || fName + " " + lName;
@@ -370,9 +370,7 @@ export default {
             var userData = new User({
               _id: userId,
               username: username,
-              password: encrypt.rsa.encrypt(
-                crossCutting.generatePassword(8)
-              ),
+              password: encrypt.rsa.encrypt(crossCutting.generate.password(8)),
               role: ROLE.USER.name,
               status: ACCOUNT_STATUS.ACTIVE.TEXT,
               loginAttemptCount: 0,

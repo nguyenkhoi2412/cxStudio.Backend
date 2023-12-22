@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { crossCutting } from "../utils/crossCutting.js";
 
 //Define collection and schema for Business
 var industriesSchema = new mongoose.Schema(

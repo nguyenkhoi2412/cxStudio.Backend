@@ -40,7 +40,7 @@ class WorkspaceService extends CommonService {
     return new Promise(async (resolve, reject) => {
       const ModelSchema = new Workspace({
         ...params,
-        _id: crossCutting.uuidv4(),
+        _id: crossCutting.generate.uuidv4(),
         team_members: [
           {
             user: params.currentuser_id,

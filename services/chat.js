@@ -1,4 +1,3 @@
-import { crossCutting } from "../utils/crossCutting.js";
 import encryptHelper from "../utils/encrypt.helper.js";
 
 export default class ChatService {

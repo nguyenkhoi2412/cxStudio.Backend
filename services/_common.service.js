@@ -14,7 +14,7 @@ class CommonService {
       // findById
       const { id } = params;
 
-      if (crossCutting.isNotNull(id)) {
+      if (crossCutting.check.isNotNull(id)) {
         // check data from cache
         if (await cache.has(id)) {
           resolve(await cache.get(id));
@@ -46,23 +46,23 @@ class CommonService {
   static getByPaging = async (params, ModelSchema) => {
     return new Promise(async (resolve, reject) => {
       const { pageno, pagesize, query } = params;
-      const { sortCriteria, filterCriteria } = crossCutting.isNotNull(query)
+      const { sortCriteria, filterCriteria } = crossCutting.check.isNotNull(query)
         ? encrypt.aes.decrypt(query)
         : {
             sortCriteria: null,
             filterCriteria: null,
           };
 
-      const skip = !crossCutting.isNotNull(pageno) ? 0 : parseInt(pageno) - 1; // pageno
-      const limit = !crossCutting.isNotNull(pagesize)
+      const skip = !crossCutting.check.isNotNull(pageno) ? 0 : parseInt(pageno) - 1; // pageno
+      const limit = !crossCutting.check.isNotNull(pagesize)
         ? 1000
         : parseInt(pagesize); // pagesize
 
-      const sortInfos = crossCutting.isNotNull(sortCriteria)
+      const sortInfos = crossCutting.check.isNotNull(sortCriteria)
         ? sortCriteria
         : { created_at: -1 }; //default with sort created_at asc: 1/desc: -1
 
-      const filterInfos = crossCutting.isNotNull(filterCriteria)
+      const filterInfos = crossCutting.check.isNotNull(filterCriteria)
         ? filterCriteria
         : {};
 

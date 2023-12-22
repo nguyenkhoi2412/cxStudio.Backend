@@ -1,6 +1,5 @@
 import util from "util";
-import { crossCutting } from "../utils/crossCutting.js";
-import { stringHelper } from "../utils/string.helper.js";
+import { crossCutting, string } from "../utils/crossCutting.js";
 import variables from "../shared/variables.js";
 import multer from "multer";
 import * as mime from "mime-types";
@@ -34,7 +33,7 @@ const multerStorage = multer.diskStorage({
     // cb(null, uploadFolder);
   },
   filename: (req, file, cb) => {
-    let filename = crossCutting.generateKey(
+    let filename = crossCutting.generate.key(
       new Date().toISOString().replace(/[:-]/gi, "")
     );
 
@@ -48,7 +47,7 @@ const multerFileFilter = (req, file, cb) => {
   var filetypes = /jpeg|jpg|png/;
   var acceptUpload = true;
 
-  if (!crossCutting.acceptFileExtension(file, filetypes)) {
+  if (!crossCutting.check.acceptFileExtension(file, filetypes)) {
     acceptUpload = false;
     cb("File upload only supports the following filetypes - " + filetypes);
   }
@@ -56,7 +55,7 @@ const multerFileFilter = (req, file, cb) => {
   const fileSize = parseInt(req.headers["content-length"]);
   if (fileSize > maxSize) {
     acceptUpload = false;
-    cb("File too large - max size is " + stringHelper.formatBytes(maxSize));
+    cb("File too large - max size is " + string.formatBytes(maxSize));
   }
 
   if (acceptUpload) return cb(null, true);

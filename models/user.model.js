@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 //Define collection and schema for Business
 var userSchema = new mongoose.Schema(
   {
-    _id: { type: String, default: crossCutting.uuidv4() },
+    _id: { type: String, default: crossCutting.generate.uuidv4() },
     username: {
       type: String,
       required: true,
