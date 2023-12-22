@@ -24,6 +24,7 @@ var workspaceSchema = new mongoose.Schema(
         role: { type: String },
       },
     ],
+    industry_related: { type: String, ref: "industries" },
     is_active: {
       type: Boolean, //! DATATYPES
       default: true,
