@@ -15,7 +15,7 @@ export const crossCutting = {
       );
     },
     key: (pre) => {
-      return `${this.isNotNull(pre) ? pre + "_" : ""}${
+      return `${this.check.isNotNull(pre) ? pre + "_" : ""}${
         new Date().getTime() + this.randomNumber()
       }`;
     },
@@ -57,7 +57,7 @@ export const crossCutting = {
   check: {
     isNotNull: (value) => {
       return (
-        value !== null && value !== undefined && !this.object.isEmpty(value)
+        value !== null && value !== undefined && !object.isEmpty(value)
       );
     },
     isNull: (value) => {
