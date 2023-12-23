@@ -15,8 +15,8 @@ export const crossCutting = {
       );
     },
     key: (pre) => {
-      return `${this.check.isNotNull(pre) ? pre + "_" : ""}${
-        new Date().getTime() + this.randomNumber()
+      return `${crossCutting.check.isNotNull(pre) ? pre + "_" : ""}${
+        new Date().getTime() + crossCutting.generate.randomNumber()
       }`;
     },
     password: (length = 8) => {
@@ -61,7 +61,7 @@ export const crossCutting = {
       );
     },
     isNull: (value) => {
-      return !this.check.isNotNull(value);
+      return !crossCutting.check.isNotNull(value);
     },
     acceptFileExtension: (file, filetypes = /jpeg|jpg|png/) => {
       var mimetype = filetypes.test(file.mimetype);
@@ -331,7 +331,7 @@ export const array = {
     }
 
     tempItem.map((item) => {
-      tree = this.update(tree, item);
+      tree = crossCutting.array.update(tree, item);
     });
 
     return tree;
