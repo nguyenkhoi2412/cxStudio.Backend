@@ -40,19 +40,19 @@ var workspaceSchema = new mongoose.Schema(
 );
 
 //#region queries
-workspaceSchema.query.byFilter = function (filterInfos) {
-  return this.find(filterInfos)
-    .lean()
-    .populate({ path: "team_members.user", select: "_id email detailInfos" });
-};
+// workspaceSchema.query.byFilter = function (filterInfos) {
+//   return this.find(filterInfos)
+//     .lean()
+//     .populate({ path: "team_members.user", select: "_id email detailInfos" });
+// };
 
-workspaceSchema.query.bySite = function (siteId) {
-  return this.find({
-    site_id: siteId,
-  })
-    .lean()
-    .populate({ path: "team_members.user", select: "_id email detailInfos" });
-};
+// workspaceSchema.query.bySite = function (siteId) {
+//   return this.find({
+//     site_id: siteId,
+//   })
+//     .lean()
+//     .populate({ path: "team_members.user", select: "_id email detailInfos" });
+// };
 //#endregion
 
 //#region use middleware

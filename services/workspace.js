@@ -25,6 +25,10 @@ class WorkspaceService extends CommonService {
         .populate({
           path: "team_members.user",
           select: "_id email detailInfos",
+        })
+        .populate({
+          path: "industry_related",
+          select: "_id name",
         });
 
       await cache.set(id, data);
@@ -59,6 +63,10 @@ class WorkspaceService extends CommonService {
         .populate({
           path: "team_members.user",
           select: "_id email detailInfos",
+        })
+        .populate({
+          path: "industry_related",
+          select: "_id name",
         });
 
       resolve(workspaceData);

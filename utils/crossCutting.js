@@ -16,7 +16,7 @@ export const crossCutting = {
     },
     key: (pre) => {
       return `${crossCutting.check.isNotNull(pre) ? pre + "_" : ""}${
-        new Date().getTime() + crossCutting.generate.randomNumber()
+        new Date().getTime() + crossCutting.generate.number()
       }`;
     },
     password: (length = 8) => {
