@@ -56,9 +56,7 @@ export const crossCutting = {
   //#region check
   check: {
     isNotNull: (value) => {
-      return (
-        value !== null && value !== undefined && !object.isEmpty(value)
-      );
+      return value !== null && value !== undefined && !object.isEmpty(value);
     },
     isNull: (value) => {
       return !crossCutting.check.isNotNull(value);
@@ -74,6 +72,17 @@ export const crossCutting = {
   },
   //#endregion
   //#region simulate
+  debounce: (func, wait = 400) => {
+    let timeout;
+    return function (...args) {
+      const context = this;
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        timeout = null;
+        func.apply(context, args);
+      }, wait);
+    };
+  },
   simulateNetworkRequest(timer = 2000) {
     return new Promise((resolve) => setTimeout(resolve, timer));
   },
@@ -81,15 +90,6 @@ export const crossCutting = {
 };
 
 export const string = {
-  render: (value, langCode = "", defaultValue = "-") => {
-    return crossCutting.check.isNotNull(value)
-      ? langCode !== ""
-        ? crossCutting.check.isNotNull(value[langCode])
-          ? value[langCode]
-          : defaultValue
-        : value
-      : defaultValue;
-  },
   stripedHtml: (text) => {
     text = text.replace(/[<|>]/gi, "");
 
@@ -251,14 +251,20 @@ export const object = {
 };
 
 export const array = {
-  insert: (arr, index, ...items) => {
+  /**
+   * Insert new item into an array
+   * @params array: original array
+   * @params index: index position append new item
+   * @params items: item insert
+   */
+  insert: (currentArray, index, ...items) => {
     return [
       // part of the array before the specified index
-      ...arr.slice(0, index),
+      ...currentArray.slice(0, index),
       // inserted items
       ...items,
       // part of the array after the specified index
-      ...arr.slice(index),
+      ...currentArray.slice(index + 1, currentArray.length),
     ];
   },
   update: (arr, newItem, field = "_id") => {
