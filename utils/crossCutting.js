@@ -257,15 +257,8 @@ export const array = {
    * @params index: index position append new item
    * @params items: item insert
    */
-  insert: (currentArray, index, ...items) => {
-    return [
-      // part of the array before the specified index
-      ...currentArray.slice(0, index),
-      // inserted items
-      ...items,
-      // part of the array after the specified index
-      ...currentArray.slice(index + 1, currentArray.length),
-    ];
+  insert: (currentArray, index, items) => {
+    return currentArray.splice(index + 1, 0, ...items);
   },
   update: (arr, newItem, field = "_id") => {
     var itemField = Array.isArray(newItem) ? newItem[0] : newItem;
