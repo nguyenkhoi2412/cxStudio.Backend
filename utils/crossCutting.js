@@ -27,15 +27,16 @@ export const crossCutting = {
         "@$!%*?&",
         "1234567890",
       ];
-      for (let j = 0; j < chars.length; j++) {
+      const charLength = chars.length;
+      for (let j = 0; j < charLength; j++) {
         password += chars[j].charAt(
           Math.floor(Math.random() * chars[j].length)
         );
       }
-      if (length > chars.length) {
-        length = length - chars.length;
+      if (length > charLength) {
+        length = length - charLength;
         for (let i = 0; i < length; i++) {
-          const index = Math.floor(Math.random() * chars.length);
+          const index = Math.floor(Math.random() * charLength);
           password += chars[index].charAt(
             Math.floor(Math.random() * chars[index].length)
           );
@@ -408,8 +409,9 @@ export const array = {
     let arrMap = new Map(arr.map((item) => [item[idField], item]));
     let tree = [];
     let tempItem = [];
+    let arrLength = arr.length;
 
-    for (let i = 0; i < arr.length; i++) {
+    for (let i = 0; i < arrLength; i++) {
       let item = arr[i];
 
       if (item[parentField] !== "") {
@@ -458,11 +460,12 @@ export const array = {
         return acc;
       }, 0)
     ),
-  chunks: (currentAray, chunk_size) => {
+  chunks: (currentArray, chunk_size) => {
     var results = [];
+    var arrayLength = currentArray;
 
-    while (currentAray.length) {
-      results.push(currentAray.splice(0, chunk_size));
+    while (arrayLength) {
+      results.push(currentArray.splice(0, chunk_size));
     }
 
     return results;
