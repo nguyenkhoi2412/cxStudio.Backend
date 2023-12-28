@@ -72,6 +72,7 @@ export const crossCutting = {
     },
     isEquals: (a, b) => {
       if (a === b) return true;
+      if (JSON.stringify(a) === JSON.stringify(b)) return true;
       if (typeof a === "function" && typeof b === "function") return true;
 
       if (a instanceof Date && b instanceof Date)
