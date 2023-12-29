@@ -495,6 +495,9 @@ export const array = {
     }
 
     return {
+      isChanged:
+        rsAdd?.length > 0 || rsUpdated?.length > 0 || rsRemoved?.length > 0,
+      originalList: current,
       newList: tempArray,
       inserted: rsAdd,
       updated: rsUpdated,
