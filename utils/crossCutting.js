@@ -76,6 +76,9 @@ export const crossCutting = {
       return mimetype && extname;
     },
     isEquals: (a, b) => {
+      if (crossCutting.check.isNull(a) && crossCutting.check.isNull(b))
+        return true;
+
       if (a === b) return true;
       if (JSON.stringify(a) === JSON.stringify(b)) return true;
       if (typeof a === "function" && typeof b === "function") return true;
@@ -222,21 +225,17 @@ export const object = {
     return rs;
   },
 
-  isEmpty: (value) => {
-    return (
-      (Array.isArray(value) || value === Object(value)) &&
-      !Object.keys(value).length
-    );
-    // let isE =
-    //   obj === null || obj === undefined || !(Object.keys(obj) || obj).length;
-    // if (isE) return true;
+  isEmpty: (obj) => {
+    let isE =
+      obj === null || obj === undefined || !(Object.keys(obj) || obj).length;
+    if (isE) return true;
 
-    // for (var prop in obj) {
-    //   if (Object.prototype.hasOwnProperty.call(obj, prop)) {
-    //     return false;
-    //   }
-    // }
-    // return true;
+    for (var prop in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+        return false;
+      }
+    }
+    return true;
   },
 
   isEquals: (a, b) => {
