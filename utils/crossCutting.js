@@ -108,16 +108,18 @@ export const crossCutting = {
   //#region check
   check: {
     isNotNull: (value) => {
-      return (
-        value !== null &&
-        value !== undefined &&
-        (typeof value === "string"
-          ? !string.isEmptyOrWhitespace(value)
-          : !object.isEmpty(value))
-      );
+      return !crossCutting.check.isNull(value);
     },
     isNull: (value) => {
-      return !crossCutting.check.isNotNull(value);
+      return (
+        value === null ||
+        value === undefined ||
+        (typeof value === "string"
+          ? string.isEmptyOrWhitespace(value) // check string is EMPTY
+          : Array.isArray(value)
+          ? array.isEmpty(value) // check Array is EMPTY
+          : object.isEmpty(value)) // check Object is EMPTY
+      );
     },
     isEquals: (a, b) => {
       if (crossCutting.check.isNull(a) && crossCutting.check.isNull(b))
@@ -653,6 +655,19 @@ export const array = {
   },
   isEquals: (a, b) => {
     return crossCutting.check.isEquals(a, b);
+  },
+  isEmpty: (array) => {
+    //If  not an array, return FALSE.
+    if (!Array.isArray(array)) {
+      return false;
+    }
+    //If it is an array, check its length property
+    if (array?.length === 0) {
+      //Return TRUE if the array is empty
+      return true;
+    }
+    //Otherwise, return FALSE.
+    return false;
   },
   /**
    * array.orderBy
