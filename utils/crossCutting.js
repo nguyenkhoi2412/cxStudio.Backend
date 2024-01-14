@@ -1,5 +1,6 @@
 import path from "path";
 
+//* ==============================|| CROSSCUTTING ||============================== //
 export const crossCutting = {
   //#region generate
   generate: {
@@ -27,20 +28,24 @@ export const crossCutting = {
         "@$!%*?&",
         "1234567890",
       ];
-      const charLength = chars.length;
-      for (let j = 0; j < charLength; j++) {
-        password += chars[j].charAt(
-          Math.floor(Math.random() * chars[j].length)
-        );
-      }
-      if (length > charLength) {
-        length = length - charLength;
-        for (let i = 0; i < length; i++) {
-          const index = Math.floor(Math.random() * charLength);
+      const charsLength = chars.length;
+      let j = 0;
+      do {
+        const charsJ = chars[j];
+        const charsJLen = charsJ.length;
+        password += charsJ.charAt(Math.floor(Math.random() * charsJLen));
+        j++;
+      } while (j < charsLength);
+      if (length > charsLength) {
+        length = length - charsLength;
+        let i = 0;
+        do {
+          const index = Math.floor(Math.random() * charsLength);
           password += chars[index].charAt(
             Math.floor(Math.random() * chars[index].length)
           );
-        }
+          i++;
+        } while (i < length);
       }
       return password
         .split("")
@@ -52,6 +57,52 @@ export const crossCutting = {
     number: (min = 1, max = 100) => {
       return min + Math.random() * (max - min);
     },
+    color: (color = "") => {
+      switch (color) {
+        //* Generate light color
+        case "light":
+          var letters = "BCDEF".split("");
+          var letterLen = letters.length;
+          var color = "#";
+          var i = 0;
+          while (i < 6) {
+            color += letters[Math.floor(Math.random() * letterLen)];
+            i++;
+          }
+          return color;
+
+        //* Generate dark color
+        case "dark":
+          var lum = -0.25;
+          var hex = String(
+            "#" + Math.random().toString(16).slice(2, 8).toUpperCase()
+          ).replace(/[^0-9a-f]/gi, "");
+          if (hex.length < 6) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+          }
+          var rgb = "#",
+            c,
+            i = 0;
+          while (i < 3) {
+            c = parseInt(hex.substr(i * 2, 2), 16);
+            c = Math.round(Math.min(Math.max(0, c + c * lum), 255)).toString(
+              16
+            );
+            rgb += ("00" + c).substr(c.length);
+
+            i++;
+          }
+          return rgb;
+
+        default:
+          return (
+            "#" +
+            Math.floor(Math.random() * 16777215)
+              .toString(16)
+              .padStart(6, "0")
+          );
+      }
+    },
   },
   //#endregion
   //#region check
@@ -60,20 +111,13 @@ export const crossCutting = {
       return (
         value !== null &&
         value !== undefined &&
-        !string.isEmptyOrWhitespace(value) &&
-        !object.isEmpty(value)
+        (typeof value === "string"
+          ? !string.isEmptyOrWhitespace(value)
+          : !object.isEmpty(value))
       );
     },
     isNull: (value) => {
       return !crossCutting.check.isNotNull(value);
-    },
-    acceptFileExtension: (file, filetypes = /jpeg|jpg|png/) => {
-      var mimetype = filetypes.test(file.mimetype);
-      var extname = filetypes.test(
-        path.extname(file.originalname).toLowerCase()
-      );
-
-      return mimetype && extname;
     },
     isEquals: (a, b) => {
       if (crossCutting.check.isNull(a) && crossCutting.check.isNull(b))
@@ -107,6 +151,14 @@ export const crossCutting = {
         // Object.is(a, b)
       );
     },
+    acceptFileExtension: (file, filetypes = /jpeg|jpg|png/) => {
+      var mimetype = filetypes.test(file.mimetype);
+      var extname = filetypes.test(
+        path.extname(file.originalname).toLowerCase()
+      );
+
+      return mimetype && extname;
+    },
   },
   //#endregion
   //#region simulate
@@ -121,12 +173,13 @@ export const crossCutting = {
       }, wait);
     };
   },
-  simulateNetworkRequest(timer = 2000) {
+  simulateNetworkRequest: (timer = 2000) => {
     return new Promise((resolve) => setTimeout(resolve, timer));
   },
   //#endregion
 };
 
+//* ==============================|| STRING ||============================== //
 export const string = {
   /**
    * isEmptyOrWhitespace(' '); // true
@@ -197,6 +250,7 @@ export const string = {
   },
 };
 
+//* ==============================|| OBJECT ||============================== //
 export const object = {
   // getValue: (object, keys) =>
   //   keys.split(".").reduce((o, k) => (o || {})[k], object),
@@ -319,36 +373,48 @@ export const object = {
       const hasSameLength = firstLenght === secondLenght;
       if (!hasSameLength) return newObj;
       let hasChange = false;
-      for (let index = 0; index < baseObj.length; index += 1) {
-        const element1 = baseObj[index];
-        const element2 = newObj[index];
+      let indexArr = 0;
+      do {
+        const element1 = baseObj[indexArr];
+        const element2 = newObj[indexArr];
         const changed = object.getDiff(element1, element2);
         if (changed) {
           hasChange = true;
         }
-      }
+
+        indexArr++;
+      } while (indexArr < firstLenght);
+
       return hasChange ? newObj : null;
     }
     if (isArray1 || isArray2) return newObj;
     const keys1 = Object.keys(baseObj);
     const keys2 = Object.keys(newObj);
-    const hasSameKeys = keys1.length === keys2.length;
+    const keys1Len = keys1.length;
+    const keys2Len = keys2.length;
+    const hasSameKeys = keys1Len === keys2Len;
     if (!hasSameKeys) {
       const retObj = { ...newObj };
-      for (let index = 0; index < keys1.length; index += 1) {
-        const key = keys1[index];
+      let indexKey = 0;
+      do {
+        const key = keys1[indexKey];
         if (!keys2.includes(key)) {
           retObj[key] = null;
           // eslint-disable-next-line no-continue
           continue;
         }
         delete retObj[key];
-      }
+
+        indexKey++;
+      } while (indexKey < keys1Len);
+
       return retObj;
     }
     let hasChange = false;
     const retObj = {};
-    for (let index = 0; index < keys1.length; index += 1) {
+
+    let index = 0;
+    do {
       const key = keys1[index];
       const element1 = baseObj[key];
       const element2 = newObj[key];
@@ -359,11 +425,29 @@ export const object = {
       if (changed) {
         retObj[key] = changed;
       }
-    }
+      index++;
+    } while (index < keys1Len);
+
     return hasChange ? retObj : null;
+  },
+
+  // Check if the input is a json object (whether startsWidth '{' and endsWidth '}') or not
+  isJsonObject: (text) => {
+    let str = String(text).trim();
+
+    if (!str.startsWith("{") || !str.endsWith("}")) return false;
+
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+
+    return true;
   },
 };
 
+//* ==============================|| ARRAY ||============================== //
 export const array = {
   /**
    * Insert new item into an array
@@ -371,8 +455,12 @@ export const array = {
    * @params index: index position append new item
    * @params items: item insert
    */
-  insert: (currentArray, index, ...items) => {
-    return currentArray.splice(index + 1, 0, ...items);
+  insert: (currentArray, index, items) => {
+    return [
+      ...currentArray.slice(0, index),
+      ...items,
+      ...currentArray.slice(index),
+    ];
   },
   update: (arr, newItem, field = "_id") => {
     var itemField = Array.isArray(newItem) ? newItem[0] : newItem;
@@ -394,20 +482,22 @@ export const array = {
   },
   delete: (arr, objItems) => {
     let tempArray = [...arr];
-    if (typeof objItems === "object") {
-      // Find index from objItems
-      let indexItem = array.findIndex(tempArray, objItems);
-      tempArray.splice(indexItem, 1);
+    if (Array.isArray(objItems)) {
+      // delete multiple objectItems
+      var itemLength = objItems?.length || 0;
+      let i = 0;
+      do {
+        let indexItem = array.findIndex(tempArray, objItems[i]);
+        tempArray.splice(indexItem, 1);
+
+        i++;
+      } while (i < itemLength);
       return tempArray;
     }
 
-    // delete multiple objectItems
-    var itemLength = objItems?.length || 0;
-    for (let i = 0; i < itemLength; i++) {
-      let indexItem = array.findIndex(tempArray, objItems[i]);
-      tempArray.splice(indexItem, 1);
-    }
-
+    // Find index from objItems
+    let indexItem = array.findIndex(tempArray, objItems);
+    tempArray.splice(indexItem, 1);
     return tempArray;
   },
   removeDuplicate: (currentArray) => {
@@ -477,6 +567,11 @@ export const array = {
         return acc;
       }, {})
     ),
+  // Check if the input is a json array (whether startsWidth '[' and endsWidth ']') or not
+  isJsonArray: (text) => {
+    let str = String(text).trim();
+    return str.startsWith("[") && str.endsWith("]");
+  },
   mergeArrayObjects: (current, newArray, field = "_id") => {
     const rsAdd = newArray.filter(
       ({ [field]: id1 }) => !current.some(({ [field]: id2 }) => id2 === id1)
@@ -498,10 +593,13 @@ export const array = {
     }
 
     // Update data for current array
-    if (rsUpdated?.length > 0) {
-      for (var i = 0; i < rsUpdated.length; i++) {
+    const rsUpdatedLen = rsUpdated?.length;
+    if (rsUpdatedLen > 0) {
+      let i = 0;
+      do {
         tempArray = array.update(tempArray, rsUpdated[i], field);
-      }
+        i++;
+      } while (i < rsUpdatedLen);
     }
 
     // Insert new item for current array
@@ -525,8 +623,8 @@ export const array = {
     let tree = [];
     let tempItem = [];
     let arrLength = arr.length;
-
-    for (let i = 0; i < arrLength; i++) {
+    let i = 0;
+    do {
       let item = arr[i];
 
       if (item[parentField] !== "") {
@@ -543,7 +641,9 @@ export const array = {
       } else {
         tree.push(item);
       }
-    }
+
+      i++;
+    } while (i < arrLength);
 
     tempItem.map((item) => {
       tree = crossCutting.array.update(tree, item);
@@ -577,7 +677,7 @@ export const array = {
     ),
   chunks: (currentArray, chunk_size) => {
     var results = [];
-    var arrayLength = currentArray;
+    var arrayLength = currentArray.length;
 
     while (arrayLength) {
       results.push(currentArray.splice(0, chunk_size));
@@ -602,4 +702,255 @@ export const array = {
       },
       [[], []]
     ),
+};
+
+export const loop = {
+  forEach: (arr, func, type = "doWhile", conditionBreak = null) => {
+    if (typeof func !== "function") return;
+
+    // const isBreak = (index) => conditionBreak && eval(conditionBreak);
+    const arrLength = arr.length;
+    let index = 0;
+
+    var loop = {
+      doWhile: () => {
+        do {
+          const item = arr[index];
+          func(item, index);
+
+          index++;
+          // if (isBreak(index)) break;
+        } while (index < arrLength);
+      },
+      while: () => {
+        while (index < arrLength) {
+          const item = arr[index];
+          func(item, index);
+
+          index++;
+          // if (isBreak(index)) break;
+        }
+      },
+      for: () => {
+        for (let i = 0; i < arrLength; i++) {
+          const item = arr[i];
+          func(item, i);
+        }
+      },
+      forEach: () => {
+        arr.forEach((item, i) => {
+          func(item, i);
+        });
+      },
+    };
+
+    // callback function with type
+    loop[type || "doWhile"]();
+  },
+};
+
+//* ==============================|| DATETIME ||============================== //
+export const datetime = {
+  diffInDays: (startDateVal, endDateVal) => {
+    var startDate = new Date(startDateVal); //Default date format
+    var endDate = new Date(endDateVal);
+
+    // One day in milliseconds
+    const oneDay = 1000 * 60 * 60 * 24;
+
+    // Calculating the time difference between two dates
+    const diffInTime = endDate.getTime() - startDate.getTime();
+
+    // Calculating the no. of days between two dates
+    const diffInDays = Math.round(diffInTime / oneDay);
+
+    return diffInDays;
+  },
+
+  getUtcDateTime: (isoDate, locales = "en") => {
+    const date = new Date(isoDate);
+    // let d = Date.UTC(
+    //   date.getFullYear(),
+    //   date.getMonth(),
+    //   date.getDate(),
+    //   date.getHours(),
+    //   date.getMinutes(),
+    //   date.getSeconds()
+    // );
+
+    const localTime = date.toLocaleTimeString(locales, {
+      timeStyle: "short",
+    });
+    const utcTime = date.getUTCHours() + ":" + date.getUTCMinutes();
+    const data = {
+      toISOString: isoDate,
+      toUTCString: new Date(date.toUTCString().slice(0, -4)).toString(), // ignore the timezone
+      local: {
+        date: date.toLocaleDateString(locales),
+        time: localTime,
+      },
+      utc: {
+        time: utcTime,
+      },
+    };
+
+    return data;
+
+    // var curLocalDate = new Date(datetime);
+    // var curlLocalMiliSec = curLocalDate.getTime();
+    // var utcOffsetInMin = curLocalDate.getTimezoneOffset();
+    // var utcOffsetInMiliSec = utcOffsetInMin * 60 * 1000;
+
+    // var utcTime = new Date(curlLocalMiliSec + utcOffsetInMiliSec);
+
+    // var utcHour = utcTime.getHours();
+    // var utcMinutes = utcTime.getMinutes();
+
+    // return {
+    //   localTime: curLocalDate.getHours() + ":" + curLocalDate.getMinutes(),
+    //   utcTime: utcHour + ":" + utcMinutes,
+    // };
+  },
+
+  /**
+   * Check date input is valid?
+   * isDateValid('December 17, 1995 03:24:00'); // true
+   * isDateValid('1995-12-17T03:24:00'); // true
+   * isDateValid(1995, 11, 17); // true
+   * isDateValid('1995-12-17 T03:24:00'); // false
+   * isDateValid('Duck'); // false
+   * isDateValid(1995, 11, 17, 'Duck'); // false
+   * isDateValid({}); // false
+   */
+  isDateValid: (...val) => !Number.isNaN(new Date(...val).valueOf()),
+
+  /**
+   * Check days of work in week
+   *
+   */
+  isWeekday: (date) => date.getDay() % 6 !== 0,
+
+  /**
+   * toTimestamp(new Date('2024-01-04')); // 1704326400
+   */
+  toTimestamp: (date) => Math.floor(date.getTime() / 1000),
+
+  /**
+   * fromTimestamp(1704326400); // 2024-01-04T00:00:00.000Z
+   */
+  fromTimestamp: (timestamp) => new Date(timestamp * 1000),
+
+  /**
+   * daysAgo(20); // 2023-12-17 (if current date is 2024-01-06)
+   */
+  daysAgo: (n) => {
+    let d = new Date();
+    d.setDate(d.getDate() - Math.abs(n));
+    return d;
+  },
+
+  /**
+   * daysFromToday(20); 2024-01-26 (if current date is 2024-01-06)
+   */
+  daysFromToday: (n) => {
+    let d = new Date();
+    d.setDate(d.getDate() + Math.abs(n));
+    return d;
+  },
+
+  /**
+   * dayOfYear(new Date('2024-09-28')); // 272
+   */
+  dayOfYear: (date) =>
+    Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86_400_000),
+
+  /**
+   * quarterOfYear(new Date('2024-09-28')); // 3
+   */
+  weekOfYear: (date) => {
+    const startOfYear = new Date(date.getFullYear(), 0, 1);
+    startOfYear.setDate(startOfYear.getDate() + (startOfYear.getDay() % 7));
+    return Math.round((date - startOfYear) / 604_800_000);
+  },
+
+  /**
+   * weekOfYear(new Date('2021-06-18')); // 23
+   */
+  quarterOfYear: (date) => Math.ceil((date.getMonth() + 1) / 3),
+
+  /**
+   * daysInMonth(2020, 12)); // 31
+   * daysInMonth(2024, 2)); // 29
+   */
+  daysInMonth: (year, month) => new Date(year, month, 0).getDate(),
+
+  /**
+   * const dates = [
+   *  new Date('2017-05-13'),
+   *  new Date('2018-03-12'),
+   *  new Date('2016-01-10'),
+   *  new Date('2016-01-09')
+   * ];
+   * minDate(...dates); // 2016-01-09
+   * maxDate(...dates); // 2018-03-12
+   */
+  minDate: (...dates) => new Date(Math.min(...dates)),
+  maxDate: (...dates) => new Date(Math.max(...dates)),
+
+  /**
+   * monthOfYear(new Date('2024-09-28')); // 9
+   */
+  monthOfYear: (date) => date.getMonth() + 1,
+
+  //#region add time todate
+  /**
+   * addSecondsToDate(new Date('2020-10-19 12:00:00'), 10); // 2020-10-19 12:00:10
+   */
+  addSecondsToDate: (date, n) => {
+    const d = new Date(date);
+    d.setTime(d.getTime() + n * 1000);
+    return d;
+  },
+
+  /**
+   * addMinutesToDate('2020-10-19 12:00:00', 10); // 2020-10-19 12:10:00
+   */
+  addMinutesToDate: (date, n) => {
+    const d = new Date(date);
+    d.setTime(d.getTime() + n * 60_000);
+    return d;
+  },
+
+  /**
+   * addHoursToDate('2020-10-19 12:00:00', 10); // 2020-10-19 22:00:00
+   */
+  addHoursToDate: (date, n) => {
+    const d = new Date(date);
+    d.setTime(d.getTime() + n * 3_600_000);
+    return d;
+  },
+
+  /**
+   * addDaysToDate('2020-10-19 12:00:00', 10); // 2020-10-29 12:00:00
+   */
+  addDaysToDate: (date, n) => {
+    const d = new Date(date);
+    d.setDate(d.getDate() + n);
+    return d;
+  },
+
+  /**
+   * addWeekDays('2020-10-05', 5); // 2020-10-12
+   */
+  addWeekDays: (date, n) => {
+    const s = Math.sign(n);
+    const d = new Date(date);
+    return Array.from({ length: Math.abs(n) }).reduce((currentDate) => {
+      currentDate = addDaysToDate(currentDate, s);
+      while (!datetime.isWeekday(currentDate))
+        currentDate = addDaysToDate(currentDate, s);
+      return currentDate;
+    }, d);
+  },
+  //#endregion
 };
