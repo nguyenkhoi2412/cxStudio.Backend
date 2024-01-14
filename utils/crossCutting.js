@@ -720,7 +720,13 @@ export const array = {
 };
 
 export const loop = {
-  forEach: (arr, func, type = "doWhile", conditionBreak = null) => {
+  /**
+   * < 1001 => forEach
+   * < 10000 => do...while
+   * 10000 ~ 2000000 => while
+   * > 2000000 => for
+   */
+  forEach: (arr, func, type = "auto", conditionBreak = null) => {
     if (typeof func !== "function") return;
 
     // const isBreak = (index) => conditionBreak && eval(conditionBreak);
@@ -760,7 +766,23 @@ export const loop = {
     };
 
     // callback function with type
-    loop[type || "doWhile"]();
+    if (type === "auto") {
+      if (arrLength < 1001) {
+        loop["forEach"]();
+      }
+
+      if (arrLength > 1000 && arrLength < 10001) {
+        loop["doWhile"]();
+      }
+
+      if (arrLength > 10000 && arrLength < 2000000) {
+        loop["while"]();
+      }
+
+      if (arrLength >= 2000000) {
+        loop["for"]();
+      }
+    } else loop[type || "doWhile"]();
   },
 };
 
