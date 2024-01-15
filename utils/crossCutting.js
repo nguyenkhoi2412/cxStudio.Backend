@@ -735,10 +735,10 @@ export const array = {
 
 export const loop = {
   /**
-   * <= 3000 => forEach
-   * <= 10000 => do...while
-   * 10001 ~ 2000000 => while
-   * > 2000000 => for
+   * use loop increase performance depend on array's length
+   * @param arr
+   * @param func callback function
+   * @param type doWhile, while, for, forEach
    */
   every: (arr, func, type = "auto", conditionBreak = null) => {
     if (typeof func !== "function") return;
@@ -781,19 +781,9 @@ export const loop = {
 
     // callback function with type
     if (type === "auto") {
-      if (arrLength <= 3000) {
-        loop["forEach"]();
-      }
-
-      if (arrLength > 3000 && arrLength <= 10000) {
-        loop["doWhile"]();
-      }
-
-      if (arrLength > 10000 && arrLength <= 2000000) {
+      if (arrLength <= 2000000) {
         loop["while"]();
-      }
-
-      if (arrLength > 2000000) {
+      } else {
         loop["for"]();
       }
     } else loop[type || "doWhile"]();
