@@ -433,6 +433,20 @@ export const object = {
     return hasChange ? retObj : null;
   },
 
+  /**
+   * const obj = { a: 1, b: '2', c: 3 };
+   * pick(obj, ['a', 'c']); // { 'a': 1, 'c': 3 }
+   */
+  pick: (obj, arr) =>
+    Object.fromEntries(Object.entries(obj).filter(([k]) => arr.includes(k))),
+
+  /**
+   * const obj = { a: 1, b: '2', c: 3 };
+   * omit(obj, ['b']); // { 'a': 1, 'c': 3 }
+   */
+  omit: (obj, arr) =>
+    Object.fromEntries(Object.entries(obj).filter(([k]) => !arr.includes(k))),
+
   // Check if the input is a json object (whether startsWidth '{' and endsWidth '}') or not
   isJsonObject: (text) => {
     let str = String(text).trim();
