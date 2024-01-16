@@ -781,7 +781,7 @@ export const loop = {
 
     // callback function with type
     if (type === "auto") {
-      if (arrLength <= 2000000) {
+      if (arrLength <= 1000000) {
         loop["while"]();
       } else {
         loop["for"]();
