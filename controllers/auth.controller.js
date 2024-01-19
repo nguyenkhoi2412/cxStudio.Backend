@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { ROLE } from "../constant/role.js";
+import storageHandler from "../constant/storageHandler.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import User from "../models/user.model.js";
 import { crossCutting } from "../utils/crossCutting.js";
@@ -38,6 +39,26 @@ export default {
 
   //   });
   // }),
+  // signout clear cookie
+  SIGN_OUT: asyncHandler(async (req, res) => {
+    const isProduction = process.env.NODE_ENV === "production";
+    const options = {
+      httpOnly: true,
+      secure: isProduction,
+    };
+
+    return res
+      .clearCookie(storageHandler.AUTH.ACCESS_TOKEN, options)
+      .clearCookie(storageHandler.AUTH.REFRESH_TOKEN, options)
+      .clearCookie(storageHandler.AUTH.VERIFIED_2FA, options)
+      .status(200)
+      .json({
+        code: 200,
+        ok: true,
+        message: "Successfully logged out 😏 🍀",
+      });
+  }),
+
   //validate function to retrieve user by username & password
   VALIDATE_USER: asyncHandler(async (req, res) => {
     var { username, password } = req.params;
@@ -77,8 +98,7 @@ export default {
       delete userResponse.password;
       delete userResponse.secret_2fa;
 
-      // sessionHandler.setCookie(res, "access_token", "abcdrf#@$@#$");
-      response.DEFAULT(res, null, {
+      response.SECURE_COOKIE(res, {
         verified_token: !user.oneTimePassword,
         currentUser: userResponse,
         access_token: jwt.token,
@@ -296,7 +316,8 @@ export default {
   }),
   // refreshtoken function to retrieve new token
   REFRESH_TOKEN: asyncHandler(async (req, res) => {
-    const refreshToken = req.body.refresh_token;
+    const refreshToken =
+      req.cookies && req.cookies[storageHandler.AUTH.REFRESH_TOKEN];
 
     try {
       jwt.verify(
@@ -544,7 +565,7 @@ const responseUserValidate = (res, user) => {
   delete userResponse.secret_2fa;
   delete userResponse.oneTimePassword;
 
-  response.DEFAULT(res, null, {
+  response.SECURE_COOKIE(res, {
     verified_token: !user.oneTimePassword,
     currentUser: userResponse,
     access_token: jwtResponse.token,

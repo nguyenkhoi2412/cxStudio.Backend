@@ -1,4 +1,5 @@
 import { ROLE } from "../constant/role.js";
+import stored from "../constant/storageHandler.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 import jwt from "jsonwebtoken";
@@ -20,8 +21,8 @@ const catchError = (err, res) => {
 };
 
 const verifyTokenJWT = (req, res, next) => {
-  const authHeader = req.headers["authorization"]; // || req.headers["x-access-token"];
-  const token = authHeader && authHeader.split(" ")[1];
+  // const authHeader = req.headers["authorization"]; // || req.headers["x-access-token"];
+  const token = req.cookies && req.cookies[stored.AUTH.ACCESS_TOKEN];
 
   if (token !== null && token !== undefined) {
     jwt.verify(token, process.env.JWT_TOKEN, (error, decoded) => {

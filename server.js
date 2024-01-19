@@ -5,6 +5,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 // import csrf from "csurf";
 import dbService from "./config/dbService.js";
 import cache from "./config/cacheService.js";
@@ -58,6 +59,7 @@ dbService.connect((err) => {
 //#endregion
 
 //#region Middleware
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));

@@ -1,11 +1,12 @@
 import express from "express";
 import auth from "../controllers/auth.controller.js";
 import verifyTokenJWT from "../middleware/authJwt.js";
+import response from "../utils/response.helper.js";
 const routerAuth = express.Router();
 
 //#region AUTHENTICATION
-// GET: api/auth/findByUser
-// routerAuth.route("/findbyuser").get(auth.FIND_BY_USER);
+// GET: api/auth/signout
+routerAuth.route("/signout").get(verifyTokenJWT, auth.SIGN_OUT);
 
 // GET: api/auth/refreshtoken
 routerAuth.route("/refreshtoken").get(auth.REFRESH_TOKEN);
@@ -31,6 +32,11 @@ routerAuth
 routerAuth
   .route("/secure_2fa/validate")
   .post(verifyTokenJWT, auth.VALIDATE_SECURE_2FA);
+
+// GET: api/auth/secure
+routerAuth.route("/secure").get((req, res) => {
+  response.DEFAULT(res, null, req.cookies);
+});
 //#endregion
 
 //#endregion AUTHENTICATION EXTERNAL

@@ -4,6 +4,7 @@ import encryptHelper from "../utils/encrypt.helper.js";
 import captcha from "../utils/captcha.js";
 import variables from "../shared/variables.js";
 import cache from "../utils/cache/cache.instance.js";
+import response from "../utils/response.helper.js";
 
 import fileRoutes from "#routes/file.routes";
 import authRoutes from "#routes/auth.routes";
@@ -55,6 +56,12 @@ export default (app) => {
     cache.clearCache();
     res.send(`Clear All Cached Datas`);
   });
+
+  // read cookie
+  app.get("/api/cookie/get", (req, res) => {
+    response.DEFAULT(res, null, req.cookies);
+  });
+
   // put the HTML file containing your form in a directory named "public" (relative to where this script is located)
   app.use("/" + variables.DIR_UPLOADS, express.static(variables.DIR_UPLOADS)); // public access folder upload
   app.use("/undefined", (req, res) => {});

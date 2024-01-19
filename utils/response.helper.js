@@ -1,5 +1,7 @@
-import variables from "../shared/variables.js";
+import _globalVars from "../shared/variables.js";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
+import { crossCutting } from "./crossCutting.js";
+import storageHandler from "../constant/storageHandler.js";
 
 export default {
   DEFAULT: (res, err, data, additionalData = {}) => {
@@ -14,10 +16,8 @@ export default {
     }
 
     const method = res.req.method;
-    const dataLength =
-      data === null || data === undefined || data.length === undefined
-        ? 1
-        : data.length;
+    const dataIsNull = crossCutting.check.isNull(data);
+    const dataLength = dataIsNull ? 0 : Array.isArray(data) ? data.length : 1;
     let messageOk = dataLength + " record(s) ";
 
     switch (method) {
@@ -40,7 +40,7 @@ export default {
     }
 
     // not found
-    if (!data || data === undefined) {
+    if (dataIsNull) {
       return res.status(code).json({
         code: code,
         ok: true,
@@ -61,6 +61,38 @@ export default {
     };
 
     res.status(code).json(mergedData);
+  },
+  SECURE_COOKIE: (res, data) => {
+    const code = statusCodes.OK;
+    const isProduction = process.env.NODE_ENV === "production";
+    var date = new Date();
+    date.setTime(
+      date.getTime() +
+        (process.env.COOKIE_EXPIRES || _globalVars.COOKIE_EXPIRES) *
+          60 *
+          60 *
+          1000
+    ); // 6 hours
+
+    const options = {
+      httpOnly: true,
+      secure: isProduction,
+      // expires: date,
+      maxAge: date,
+      sameSite: "strict", // lax/none
+    };
+
+    res
+      .cookie(storageHandler.AUTH.ACCESS_TOKEN, data.access_token, options)
+      .cookie(storageHandler.AUTH.REFRESH_TOKEN, data.refresh_token, options)
+      .cookie(storageHandler.AUTH.VERIFIED_2FA, data.verified_token, options)
+      .status(code)
+      .json({
+        code: code,
+        ok: true,
+        message: "Authentication success",
+        rs: data,
+      });
   },
   UPLOAD_FILE: (req, res, err) => {
     // error
@@ -110,12 +142,12 @@ export default {
     if (dataLength > 1) {
       data.forEach((item, index) => {
         dataFileNames.push(
-          variables.DIR_UPLOADS + "/" + identifyfolder + "/" + item.filename
+          _globalVars.DIR_UPLOADS + "/" + identifyfolder + "/" + item.filename
         );
       });
     } else {
       dataFileNames.push(
-        variables.DIR_UPLOADS + "/" + identifyfolder + "/" + data.filename
+        _globalVars.DIR_UPLOADS + "/" + identifyfolder + "/" + data.filename
       );
     }
 
