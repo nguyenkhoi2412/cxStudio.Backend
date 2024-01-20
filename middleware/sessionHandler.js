@@ -39,7 +39,7 @@ export default {
 
     return parsedCookies;
   },
-  clearCookie: (req, res) => {
+  clearCookies: (req, res) => {
     // We extract the raw cookies from the request headers
     const rawCookies = req.headers.cookie.split("; ");
     const isProduction = process.env.NODE_ENV === "production";

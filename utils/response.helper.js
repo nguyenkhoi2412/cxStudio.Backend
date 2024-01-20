@@ -81,6 +81,10 @@ export default {
       data.verified_token
     );
 
+    delete data.access_token;
+    delete data.refresh_token;
+    delete data.verified_token
+
     res.status(code).json({
       code: code,
       ok: true,

@@ -48,7 +48,7 @@ export default {
       secure: isProduction,
     };
 
-    sessionHandler.clearCookie(req, res);
+    sessionHandler.clearCookies(req, res);
 
     return res.status(200).json({
       code: 200,
