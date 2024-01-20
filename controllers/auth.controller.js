@@ -301,23 +301,14 @@ export default {
             });
           }
 
-          // create new access token
-          const jwtToken = jwt.sign(
-            { data: decoded.data },
-            process.env.JWT_TOKEN,
-            {
-              expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired, // 6 hours
-            }
-          );
+          const data = JSON.parse(decoded.data);
 
-          res.status(statusCodes.OK).json({
-            code: statusCodes.OK,
-            ok: true,
-            message: "ok",
-            rs: {
-              access_token: jwtToken,
-            },
-          });
+          // get user by username
+          User.findOne()
+            .byUsername(data.username)
+            .then((user) => {
+              responseUserValidate(res, user, true);
+            });
         }
       );
     } catch (err) {
