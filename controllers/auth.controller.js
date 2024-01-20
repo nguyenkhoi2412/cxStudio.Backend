@@ -72,36 +72,7 @@ export default {
         });
       }
 
-      // check user status?
-      if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
-        return res.status(statusCodes.OK).json({
-          code: statusCodes.LOCKED,
-          ok: false,
-          message: "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
-          rs: {},
-        });
-      }
-
-      let userResponse = {
-        ...user.toJSON(),
-        isAdmin: user.role === ROLE.ADMIN.name,
-        isSupervisor: user.role === ROLE.SUPERVISOR.name,
-        isUser: user.role === ROLE.USER.name,
-        isVisitor: user.role === ROLE.VISITOR.name,
-      };
-
-      let jwt = UserService.jwtSignTokenForUser(userResponse);
-
-      // remove secure data
-      delete userResponse.password;
-      delete userResponse.secret_2fa;
-
-      response.SECURE_COOKIE(res, {
-        verified_token: !user.oneTimePassword,
-        currentUser: userResponse,
-        access_token: jwt.token,
-        refresh_token: jwt.refreshToken,
-      });
+      responseUserValidate(res, user);
     });
   }),
   //saveUser function to save new user
