@@ -1,9 +1,9 @@
 export default {
   AUTH: {
-    UID: "_db_uid",
-    CURRENT_USER: "_db_currentuser",
-    ACCESS_TOKEN: "_db_accesstoken",
-    REFRESH_TOKEN: "_db_refreshtoken",
-    VERIFIED_2FA: "_db_verified_2fa",
+    UID: "__Securedb_uid",
+    CURRENT_USER: "__Securedb_currentuser",
+    ACCESS_TOKEN: "__Securedb_accesstoken",
+    REFRESH_TOKEN: "__Securedb_refreshtoken",
+    VERIFIED_2FA: "__Securedb_verified_2fa",
   },
 };

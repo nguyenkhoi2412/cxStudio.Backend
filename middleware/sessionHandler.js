@@ -2,7 +2,7 @@ import _globalVars from "../shared/variables.js";
 
 export default {
   // sentCookie creates a cookie which expires after one day
-  setCookie: (res, name, value) => {
+  setCookie: (res, name, value, sameSite = "strict") => {
     // Our token expires after one day: 24 * 60 * 60 * 1000
     var date = new Date();
     date.setTime(
@@ -19,7 +19,7 @@ export default {
       // maxAge: date,
       // You can't access these tokens in the client's javascript
       httpOnly: true,
-      sameSite: "none", // strict/lax/none
+      sameSite: sameSite, // strict/lax/none
       // Forces to use https in production
       secure: true,
     });

@@ -78,7 +78,8 @@ export default {
     sessionHandler.setCookie(
       res,
       storaged.AUTH.VERIFIED_2FA,
-      data.verified_token
+      data.verified_token,
+      "lax"
     );
 
     delete data.access_token;
