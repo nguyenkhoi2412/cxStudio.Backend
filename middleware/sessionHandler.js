@@ -1,11 +1,22 @@
+import _globalVars from "../shared/variables.js";
+
 export default {
   // sentCookie creates a cookie which expires after one day
   setCookie: (res, name, value) => {
-    // Our token expires after one day: 24 * 60 * 60
-    const oneDayToSeconds = process.env.TOKEN_EXPIRESIN * 60 * 60;
+    // Our token expires after one day: 24 * 60 * 60 * 1000
+    var date = new Date();
+    date.setTime(
+      date.getTime() +
+        (process.env.TOKEN_EXPIRESIN || _globalVars.TOKEN_EXPIRESIN) *
+          60 *
+          60 *
+          1000
+    ); // 6 hours
+
     res.clearCookie(name);
     res.cookie(name, value, {
-      maxAge: oneDayToSeconds,
+      expires: date,
+      // maxAge: date,
       // You can't access these tokens in the client's javascript
       httpOnly: true,
       sameSite: "strict", // lax/none

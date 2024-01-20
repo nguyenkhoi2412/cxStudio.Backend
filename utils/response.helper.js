@@ -1,5 +1,6 @@
 import _globalVars from "../shared/variables.js";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
+import sessionHandler from "../middleware/sessionHandler.js";
 import { crossCutting } from "./crossCutting.js";
 import storageHandler from "../constant/storageHandler.js";
 
@@ -64,35 +65,28 @@ export default {
   },
   SECURE_COOKIE: (res, data) => {
     const code = statusCodes.OK;
-    const isProduction = process.env.NODE_ENV === "production";
-    var date = new Date();
-    date.setTime(
-      date.getTime() +
-        (process.env.COOKIE_EXPIRES || _globalVars.COOKIE_EXPIRES) *
-          60 *
-          60 *
-          1000
-    ); // 6 hours
+    sessionHandler.setCookie(
+      res,
+      storageHandler.AUTH.ACCESS_TOKEN,
+      data.access_token
+    );
+    sessionHandler.setCookie(
+      res,
+      storageHandler.AUTH.REFRESH_TOKEN,
+      data.refresh_token
+    );
+    sessionHandler.setCookie(
+      res,
+      storageHandler.AUTH.VERIFIED_2FA,
+      data.verified_token
+    );
 
-    const options = {
-      httpOnly: true,
-      secure: isProduction,
-      // expires: date,
-      maxAge: date,
-      sameSite: "strict", // lax/none
-    };
-
-    res
-      .cookie(storageHandler.AUTH.ACCESS_TOKEN, data.access_token, options)
-      .cookie(storageHandler.AUTH.REFRESH_TOKEN, data.refresh_token, options)
-      .cookie(storageHandler.AUTH.VERIFIED_2FA, data.verified_token, options)
-      .status(code)
-      .json({
-        code: code,
-        ok: true,
-        message: "Authentication success",
-        rs: data,
-      });
+    res.status(code).json({
+      code: code,
+      ok: true,
+      message: "Authentication success",
+      rs: data,
+    });
   },
   UPLOAD_FILE: (req, res, err) => {
     // error
