@@ -12,6 +12,7 @@ import jwt from "jsonwebtoken";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 import bcrypt from "bcrypt";
 import UserService from "../services/user.js";
+import sessionHandler from "../middleware/sessionHandler.js";
 
 const expired = 60 * 60; // 1 hours
 
@@ -47,16 +48,13 @@ export default {
       secure: isProduction,
     };
 
-    return res
-      .clearCookie(storageHandler.AUTH.ACCESS_TOKEN, options)
-      .clearCookie(storageHandler.AUTH.REFRESH_TOKEN, options)
-      .clearCookie(storageHandler.AUTH.VERIFIED_2FA, options)
-      .status(200)
-      .json({
-        code: 200,
-        ok: true,
-        message: "Successfully logged out 😏 🍀",
-      });
+    sessionHandler.clearCookie(req, res);
+
+    return res.status(200).json({
+      code: 200,
+      ok: true,
+      message: "Successfully logged out 😏 🍀",
+    });
   }),
 
   //validate function to retrieve user by username & password
