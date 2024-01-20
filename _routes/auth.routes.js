@@ -2,6 +2,7 @@ import express from "express";
 import auth from "../controllers/auth.controller.js";
 import verifyTokenJWT from "../middleware/authJwt.js";
 import response from "../utils/response.helper.js";
+import sessionHandler from "../middleware/sessionHandler.js";
 const routerAuth = express.Router();
 
 //#region AUTHENTICATION
@@ -35,7 +36,7 @@ routerAuth
 
 // GET: api/auth/secure
 routerAuth.route("/secure").get((req, res) => {
-  response.DEFAULT(res, null, req.cookies);
+  response.DEFAULT(res, null, sessionHandler.getCookie(req));
 });
 //#endregion
 

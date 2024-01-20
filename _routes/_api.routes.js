@@ -54,20 +54,26 @@ export default (app) => {
 
   //#region storage
   // clear cache.flushAll()
+  app.get("/clearallcache", (req, res) => {
+    cache.clearCache();
+    sessionHandler.clearCookies(req, res);
+    res.send(`All cached/cookie cleared`);
+  });
+
   app.get("/api/cache/clearall", (req, res) => {
     cache.clearCache();
-    res.send(`Clear All Cached Datas`);
+    res.send(`All cached cleared`);
   });
 
   // read cookie
   app.get("/api/cookie/get", (req, res) => {
-    response.DEFAULT(res, null, req.cookies);
+    response.DEFAULT(res, null, sessionHandler.getCookie(req));
   });
 
   // clear all cookie
   app.get("/api/cookie/clearlall", (req, res) => {
     sessionHandler.clearCookies(req, res);
-    res.send(`Clear All Cookies Datas`);
+    res.send(`All cookies cleared`);
   });
   //#endregion
 

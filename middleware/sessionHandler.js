@@ -1,4 +1,6 @@
 import _globalVars from "../shared/variables.js";
+import { crossCutting } from "../utils/crossCutting.js";
+import encryptHelper from "../utils/encrypt.helper.js";
 
 export default {
   // sentCookie creates a cookie which expires after one day
@@ -13,6 +15,8 @@ export default {
           1000
     ); // 6 hours
 
+    value = encryptHelper.base64.encrypt(value + "");
+
     res.clearCookie(name);
     res.cookie(name, value, {
       expires: date,
@@ -21,20 +25,33 @@ export default {
       httpOnly: true,
       sameSite: sameSite, // strict/lax/none
       // Forces to use https in production
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
+      signed: true,
     });
   },
   // returns an object with the cookies' name as keys
-  getCookie: (req) => {
+  getCookie: (req, name = "") => {
     // We extract the raw cookies from the request headers
-    const rawCookies = req.headers.cookie.split("; ");
-    // rawCookies = ['myapp=secretcookie, 'analytics_cookie=beacon;']
+    // const rawCookies = req.headers.cookie.split("; ");
+    // // rawCookies = ['myapp=secretcookie, 'analytics_cookie=beacon;']
 
+    // const parsedCookies = {};
+    // rawCookies.forEach((rawCookie) => {
+    //   const parsedCookie = rawCookie.split("=");
+    //   // parsedCookie = ['myapp', 'secretcookie'], ['analytics_cookie', 'beacon']
+    //   parsedCookies[parsedCookie[0]] = parsedCookie[1];
+    // });
+
+    if (crossCutting.check.isNotNull(name)) {
+      return encryptHelper.base64.decrypt(req.signedCookies[name]);
+    }
+
+    // We extract the raw cookies from the request headers
+    const rawCookies = req.signedCookies;
     const parsedCookies = {};
-    rawCookies.forEach((rawCookie) => {
-      const parsedCookie = rawCookie.split("=");
-      // parsedCookie = ['myapp', 'secretcookie'], ['analytics_cookie', 'beacon']
-      parsedCookies[parsedCookie[0]] = parsedCookie[1];
+    console.log;
+    Object.keys(rawCookies).filter((key) => {
+      parsedCookies[key] = encryptHelper.base64.decrypt(rawCookies[key]);
     });
 
     return parsedCookies;

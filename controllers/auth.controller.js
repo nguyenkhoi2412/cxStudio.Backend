@@ -286,7 +286,7 @@ export default {
   // refreshtoken function to retrieve new token
   REFRESH_TOKEN: asyncHandler(async (req, res) => {
     const refreshToken =
-      req.cookies && req.cookies[storaged.AUTH.REFRESH_TOKEN];
+      req.signedCookies && req.signedCookies[storaged.AUTH.REFRESH_TOKEN];
 
     try {
       jwt.verify(

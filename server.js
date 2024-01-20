@@ -59,7 +59,7 @@ dbService.connect((err) => {
 //#endregion
 
 //#region Middleware
-app.use(cookieParser());
+app.use(cookieParser(process.env.SALT_AES));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));

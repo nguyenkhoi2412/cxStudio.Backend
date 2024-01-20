@@ -3,6 +3,7 @@ import stored from "../constant/storage.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 import jwt from "jsonwebtoken";
+import sessionHandler from "./sessionHandler.js";
 import User from "../models/user.model.js";
 const { TokenExpiredError } = jwt;
 
@@ -22,7 +23,7 @@ const catchError = (err, res) => {
 
 const verifyTokenJWT = (req, res, next) => {
   // const authHeader = req.headers["authorization"]; // || req.headers["x-access-token"];
-  const token = req.cookies && req.cookies[stored.AUTH.ACCESS_TOKEN];
+  const token = sessionHandler.getCookie(req, stored.AUTH.ACCESS_TOKEN);
 
   if (token !== null && token !== undefined) {
     jwt.verify(token, process.env.JWT_TOKEN, (error, decoded) => {
