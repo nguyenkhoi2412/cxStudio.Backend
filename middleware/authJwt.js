@@ -1,5 +1,5 @@
 import { ROLE } from "../constant/role.js";
-import stored from "../constant/storageHandler.js";
+import stored from "../constant/storage.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 import jwt from "jsonwebtoken";

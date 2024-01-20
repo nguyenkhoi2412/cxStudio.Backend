@@ -2,7 +2,7 @@ import _globalVars from "../shared/variables.js";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 import sessionHandler from "../middleware/sessionHandler.js";
 import { crossCutting } from "./crossCutting.js";
-import storageHandler from "../constant/storageHandler.js";
+import storaged from "../constant/storage.js";
 
 export default {
   DEFAULT: (res, err, data, additionalData = {}) => {
@@ -67,23 +67,23 @@ export default {
     const code = statusCodes.OK;
     sessionHandler.setCookie(
       res,
-      storageHandler.AUTH.ACCESS_TOKEN,
+      storaged.AUTH.ACCESS_TOKEN,
       data.access_token
     );
     sessionHandler.setCookie(
       res,
-      storageHandler.AUTH.REFRESH_TOKEN,
+      storaged.AUTH.REFRESH_TOKEN,
       data.refresh_token
     );
     sessionHandler.setCookie(
       res,
-      storageHandler.AUTH.VERIFIED_2FA,
+      storaged.AUTH.VERIFIED_2FA,
       data.verified_token
     );
 
     delete data.access_token;
     delete data.refresh_token;
-    delete data.verified_token
+    delete data.verified_token;
 
     res.status(code).json({
       code: code,

@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { ROLE } from "../constant/role.js";
-import storageHandler from "../constant/storageHandler.js";
+import storaged from "../constant/storage.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
 import User from "../models/user.model.js";
 import { crossCutting } from "../utils/crossCutting.js";
@@ -315,7 +315,7 @@ export default {
   // refreshtoken function to retrieve new token
   REFRESH_TOKEN: asyncHandler(async (req, res) => {
     const refreshToken =
-      req.cookies && req.cookies[storageHandler.AUTH.REFRESH_TOKEN];
+      req.cookies && req.cookies[storaged.AUTH.REFRESH_TOKEN];
 
     try {
       jwt.verify(
