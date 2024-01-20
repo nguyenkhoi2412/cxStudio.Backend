@@ -41,14 +41,14 @@ export default {
   },
   clearCookies: (req, res) => {
     // We extract the raw cookies from the request headers
-    const rawCookies = req.headers.cookie.split("; ");
+    const rawCookies = req.headers.cookie?.split("; ");
     const isProduction = process.env.NODE_ENV === "production";
     const options = {
       httpOnly: true,
       secure: isProduction,
     };
 
-    rawCookies.forEach((rawCookie) => {
+    rawCookies?.forEach((rawCookie) => {
       const parsedCookie = rawCookie.split("=");
       res.clearCookie(parsedCookie[0], options);
     });
