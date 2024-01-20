@@ -419,18 +419,7 @@ export default {
 
         //* verified success
         if (verified) {
-          let userResponse = { ...user.toJSON() };
-          let jwtResponse = UserService.jwtSignTokenForUser(userResponse);
-
-          res.status(statusCodes.OK).json({
-            code: statusCodes.OK,
-            ok: verified,
-            message: "ok",
-            rs: {
-              access_token: jwtResponse.token,
-              verified_token: true,
-            },
-          });
+          responseUserValidate(res, user, true);
         } else {
           res.status(statusCodes.OK).json({
             code: statusCodes.OK,
@@ -508,7 +497,7 @@ export default {
 };
 
 //#region SUPPORT FOR RESPONSE
-const responseUserValidate = (res, user) => {
+const responseUserValidate = (res, user, verified_token = null) => {
   // check user status?
   if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
     return res.status(statusCodes.OK).json({
@@ -527,7 +516,10 @@ const responseUserValidate = (res, user) => {
     isVisitor: user.role === ROLE.VISITOR.name,
   };
 
-  let jwtResponse = UserService.jwtSignTokenForUser(userResponse);
+  let jwtResponse = UserService.jwtSignTokenForUser(
+    userResponse,
+    verified_token
+  );
 
   // remove secure data
   delete userResponse.password;
@@ -535,7 +527,7 @@ const responseUserValidate = (res, user) => {
   delete userResponse.oneTimePassword;
 
   response.SECURE_COOKIE(res, {
-    verified_token: !user.oneTimePassword,
+    verified_token: verified_token || !user.oneTimePassword,
     currentUser: userResponse,
     access_token: jwtResponse.token,
     refresh_token: jwtResponse.refreshToken,

@@ -24,12 +24,12 @@ class UserService {
   /*
    * jwtSignTokenForUser
    */
-  static jwtSignTokenForUser = (userResponse) => {
+  static jwtSignTokenForUser = (userResponse, verified_token = null) => {
     const dataJwtToken = {
       username: userResponse.username,
       role: userResponse.role,
       status: userResponse.status,
-      verified_token: !userResponse.oneTimePassword,
+      verified_token: verified_token || !userResponse.oneTimePassword,
     };
 
     // create access token

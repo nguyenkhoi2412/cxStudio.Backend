@@ -19,9 +19,9 @@ export default {
       // maxAge: date,
       // You can't access these tokens in the client's javascript
       httpOnly: true,
-      sameSite: "strict", // lax/none
+      sameSite: "none", // strict/lax/none
       // Forces to use https in production
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      secure: true,
     });
   },
   // returns an object with the cookies' name as keys
