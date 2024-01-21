@@ -908,6 +908,11 @@ export const datetime = {
   fromTimestamp: (timestamp) => new Date(timestamp * 1000),
 
   /**
+   * getTimeFromDate(new Date()); // '08:38:00'
+   */
+  getTimeFromDate: (date) => date.toTimeString().slice(0, 8),
+
+  /**
    * daysAgo(20); // 2023-12-17 (if current date is 2024-01-06)
    */
   daysAgo: (n) => {

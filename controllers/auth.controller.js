@@ -285,8 +285,10 @@ export default {
   }),
   // refreshtoken function to retrieve new token
   REFRESH_TOKEN: asyncHandler(async (req, res) => {
-    const refreshToken =
-      req.signedCookies && req.signedCookies[storaged.AUTH.REFRESH_TOKEN];
+    const refreshToken = sessionHandler.getCookie(
+      req,
+      storaged.AUTH.REFRESH_TOKEN
+    );
 
     try {
       jwt.verify(
@@ -302,12 +304,13 @@ export default {
           }
 
           const data = JSON.parse(decoded.data);
+          const { exp } = decoded;
 
           // get user by username
           User.findOne()
             .byUsername(data.username)
             .then((user) => {
-              responseUserValidate(res, user, true);
+              responseUserValidate(res, user, true, exp);
             });
         }
       );
@@ -488,7 +491,12 @@ export default {
 };
 
 //#region SUPPORT FOR RESPONSE
-const responseUserValidate = (res, user, verified_token = null) => {
+const responseUserValidate = (
+  res,
+  user,
+  verified_token = null,
+  expiresIn = null
+) => {
   // check user status?
   if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
     return res.status(statusCodes.OK).json({
@@ -509,7 +517,8 @@ const responseUserValidate = (res, user, verified_token = null) => {
 
   let jwtResponse = UserService.jwtSignTokenForUser(
     userResponse,
-    verified_token
+    verified_token,
+    expiresIn
   );
 
   // remove secure data

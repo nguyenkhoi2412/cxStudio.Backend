@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import encryptHelper from "../utils/encrypt.helper.js";
+import { datetime } from "../utils/crossCutting.js";
 import jwt from "jsonwebtoken";
 import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
 
@@ -24,7 +25,11 @@ class UserService {
   /*
    * jwtSignTokenForUser
    */
-  static jwtSignTokenForUser = (userResponse, verified_token = null) => {
+  static jwtSignTokenForUser = (
+    userResponse,
+    verified_token = null,
+    expiresInRefresshToken = null
+  ) => {
     const dataJwtToken = {
       username: userResponse.username,
       role: userResponse.role,
@@ -32,14 +37,16 @@ class UserService {
       verified_token: verified_token || !userResponse.oneTimePassword,
     };
 
-    // create access token
+    const expiresInRefeshToken =
+      expiresInRefresshToken != null
+        ? expiresInRefresshToken - datetime.toTimestamp(new Date())
+        : parseInt(process.env.TOKEN_EXPIRESIN) * expired;
+
     const jwtToken = jwt.sign(
       { data: JSON.stringify(dataJwtToken) },
       process.env.JWT_TOKEN,
       {
-        expiresIn: dataJwtToken.verified_token
-          ? parseInt(process.env.TOKEN_EXPIRESIN) * expired // 6 hours
-          : 900, // 15 min use for login
+        expiresIn: expiresInRefeshToken, // 6 hour use for login
       }
     );
 
@@ -48,7 +55,7 @@ class UserService {
       { data: JSON.stringify(dataJwtToken) },
       process.env.JWT_REFRESH_TOKEN,
       {
-        expiresIn: parseInt(process.env.TOKEN_EXPIRESIN) * expired * 6, // 24 hours
+        expiresIn: expiresInRefeshToken, // 6 hours
       }
     );
 

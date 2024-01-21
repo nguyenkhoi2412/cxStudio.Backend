@@ -7,7 +7,7 @@ const routerAuth = express.Router();
 
 //#region AUTHENTICATION
 // GET: api/auth/signout
-routerAuth.route("/signout").get(verifyTokenJWT, auth.SIGN_OUT);
+routerAuth.route("/signout").get(auth.SIGN_OUT);
 
 // GET: api/auth/refreshtoken
 routerAuth.route("/refreshtoken").get(auth.REFRESH_TOKEN);
