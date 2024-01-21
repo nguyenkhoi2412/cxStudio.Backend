@@ -57,6 +57,7 @@ export default (app) => {
   app.get("/clearallcache", (req, res) => {
     cache.clearCache();
     sessionHandler.clearCookies(req, res);
+    sessionHandler.clearSessions(req);
     res.send(`All cached/cookie cleared`);
   });
 

@@ -15,6 +15,7 @@ export const crossCutting = {
         }
       );
     },
+    sessionId: Math.random().toString(36).substring(2),
     key: (pre) => {
       return `${crossCutting.check.isNotNull(pre) ? pre + "_" : ""}${
         new Date().getTime() + crossCutting.generate.number()

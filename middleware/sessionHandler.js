@@ -2,6 +2,9 @@ import _globalVars from "../shared/variables.js";
 import { crossCutting } from "../utils/crossCutting.js";
 import encryptHelper from "../utils/encrypt.helper.js";
 
+// save sessions
+const sessions = {};
+
 export default {
   // sentCookie creates a cookie which expires after one day
   setCookie: (res, name, value, sameSite = "strict") => {
@@ -42,14 +45,17 @@ export default {
     //   parsedCookies[parsedCookie[0]] = parsedCookie[1];
     // });
 
-    if (crossCutting.check.isNotNull(name)) {
+    if (
+      crossCutting.check.isNotNull(name) &&
+      crossCutting.check.isNotNull(req.signedCookies[name])
+    ) {
       return encryptHelper.base64.decrypt(req.signedCookies[name]);
     }
 
     // We extract the raw cookies from the request headers
     const rawCookies = req.signedCookies;
     const parsedCookies = {};
-    console.log;
+
     Object.keys(rawCookies).filter((key) => {
       parsedCookies[key] = encryptHelper.base64.decrypt(rawCookies[key]);
     });
@@ -69,5 +75,25 @@ export default {
       const parsedCookie = rawCookie.split("=");
       res.clearCookie(parsedCookie[0], options);
     });
+  },
+  setSession: (req, valueObj) => {
+    const sessionId = crossCutting.generate.sessionId;
+    const sessionSaved = {
+      _id: sessionId,
+      data: valueObj,
+    };
+
+    req.session = sessionSaved;
+    sessions[sessionId] = req.session;
+  },
+  getSession: (req, sessionId) => {
+    if (sessionId && sessions[sessionId]) {
+      return req.session[sessionId];
+    }
+    return null;
+  },
+  clearSessions: (req) => {
+    sessions = {};
+    req.session = {};
   },
 };
