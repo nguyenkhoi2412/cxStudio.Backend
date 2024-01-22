@@ -19,6 +19,7 @@ export default {
     ); // 6 hours
 
     value = encryptHelper.base64.encrypt(value + "");
+    const isProduction = process.env.NODE_ENV === "production";
 
     res.clearCookie(name);
     res.cookie(name, value, {
@@ -28,7 +29,7 @@ export default {
       httpOnly: true,
       sameSite: sameSite, // strict/lax/none
       // Forces to use https in production
-      secure: process.env.NODE_ENV === "production",
+      secure: true, // isProduction,
       signed: true,
     });
   },
@@ -68,7 +69,7 @@ export default {
     const isProduction = process.env.NODE_ENV === "production";
     const options = {
       httpOnly: true,
-      secure: isProduction,
+      secure: true, //isProduction,
     };
 
     rawCookies?.forEach((rawCookie) => {
