@@ -253,6 +253,36 @@ export const string = {
   },
 };
 
+//* ==============================|| NUMBER ||============================== //
+export const number = {
+  /**
+   * Round decimal number
+   */
+  roundDecimalNumber(number, decimalIndex) {
+    if (typeof number !== "number" || typeof decimalIndex !== "number")
+      return false;
+
+    var signature = number >= 0 ? 1 : -1;
+
+    return (
+      Math.round(number * Math.pow(10, decimalIndex) + signature * 0.0001) /
+      Math.pow(10, decimalIndex)
+    ).toFixed(decimalIndex);
+  },
+
+  toPercentage(number, percentage) {
+    if (number == null || number == "" || number == 0) {
+      return 0;
+    }
+
+    if (percentage == null || percentage == "" || percentage == 0) {
+      return false;
+    }
+
+    return parseFloat((number / 100) * percentage);
+  },
+};
+
 //* ==============================|| OBJECT ||============================== //
 export const object = {
   // getValue: (object, keys) =>
@@ -497,6 +527,10 @@ export const array = {
 
     return itemField;
   },
+
+  /**
+   * Delete item in arrya by item object
+   */
   delete: (arr, objItems) => {
     let tempArray = [...arr];
     if (Array.isArray(objItems)) {
@@ -517,6 +551,21 @@ export const array = {
     tempArray.splice(indexItem, 1);
     return tempArray;
   },
+
+  /**
+   * Remove using filter with callback
+   * How to use it?
+   * removeFilter([2,3,5,6], (item, index) => item === 3) // Returns [3]
+   * removeFilter([2,3,5,6], (_, index) => index < 1) // Returns [5,6]
+   */
+  removeFilter: (arr, func) =>
+    Array.isArray(arr)
+      ? arr.filter(func).reduce((acc, val) => {
+          arr.splice(arr.indexOf(val), 1);
+          return acc.concat(val);
+        }, [])
+      : [],
+
   removeDuplicate: (currentArray) => {
     return [...new Set(currentArray)];
   },
@@ -606,7 +655,7 @@ export const array = {
     let tempArray = [...current];
     // Delete in current
     if (rsRemoved?.length > 0) {
-      tempArray = array.delete(tempArray, rsRemoved, field);
+      tempArray = array.delete(tempArray, rsRemoved);
     }
 
     // Update data for current array
