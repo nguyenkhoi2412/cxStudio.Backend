@@ -313,8 +313,7 @@ export const object = {
   },
 
   isEmpty: (obj) => {
-    let isE =
-      obj === null || obj === undefined || !(Object.keys(obj) || obj).length;
+    let isE = obj === null || obj === undefined || object.sizeOf(obj) === 0;
     if (isE) return true;
 
     for (var prop in obj) {
@@ -327,6 +326,13 @@ export const object = {
 
   isEquals: (a, b) => {
     return crossCutting.check.isEquals(a, b);
+  },
+
+  /**
+   * sizeOf check has data/not
+   */
+  sizeOf: (obj) => {
+    return Array.isArray(obj) ? obj.length : Object.values(obj).length;
   },
 
   //* QUERY
@@ -637,6 +643,22 @@ export const array = {
   isJsonArray: (text) => {
     let str = String(text).trim();
     return str.startsWith("[") && str.endsWith("]");
+  },
+
+  hasAny: (arr, func) =>
+    sizeOf(list) === 0
+      ? false
+      : sizeOf(
+          arr.filter((item, index) => {
+            func(item, index);
+          })
+        ) >= 1,
+
+  /**
+   * sizeOf check has data/not
+   */
+  sizeOf: (arr) => {
+    return Array.isArray(arr) ? arr.length : Object.values(arr).length;
   },
   mergeArrayObjects: (current, newArray, field = "_id") => {
     const rsAdd = newArray.filter(
