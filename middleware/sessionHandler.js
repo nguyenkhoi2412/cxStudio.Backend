@@ -3,7 +3,7 @@ import { crossCutting } from "../utils/crossCutting.js";
 import encryptHelper from "../utils/encrypt.helper.js";
 
 // save sessions
-const sessions = {};
+let sessions = {};
 
 export default {
   // sentCookie creates a cookie which expires after one day

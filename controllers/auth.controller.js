@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import { ROLE } from "../constant/role.js";
 import storaged from "../constant/storage.js";
 import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
+import cache from "../utils/cache/cache.instance.js";
 import User from "../models/user.model.js";
 import { crossCutting } from "../utils/crossCutting.js";
 import { TEMPLATES } from "../shared/templates.js";
@@ -48,7 +49,9 @@ export default {
       secure: isProduction,
     };
 
+    cache.clearCache();
     sessionHandler.clearCookies(req, res);
+    sessionHandler.clearSessions(req);
 
     return res.status(200).json({
       code: 200,
