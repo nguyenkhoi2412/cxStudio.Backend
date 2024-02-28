@@ -28,7 +28,7 @@ class WorkspaceService extends CommonService {
         })
         .populate({
           path: "industry_related",
-          select: "_id name",
+          select: "_id name type",
         });
 
       await cache.set(id, data);

@@ -1,6 +1,6 @@
-import encrypt from "../utils/encrypt.helper.js";
-import { crossCutting } from "../utils/crossCutting.js";
-import cache from "../utils/cache/index.js";
+import encrypt from '../utils/encrypt.helper.js';
+import { crossCutting } from '../utils/crossCutting.js';
+import cache from '../utils/cache/index.js';
 
 class CommonService {
   /**
@@ -46,14 +46,18 @@ class CommonService {
   static getByPaging = async (params, ModelSchema) => {
     return new Promise(async (resolve, reject) => {
       const { pageno, pagesize, query } = params;
-      const { sortCriteria, filterCriteria } = crossCutting.check.isNotNull(query)
+      const { sortCriteria, filterCriteria } = crossCutting.check.isNotNull(
+        query,
+      )
         ? encrypt.aes.decrypt(query)
         : {
             sortCriteria: null,
             filterCriteria: null,
           };
 
-      const skip = !crossCutting.check.isNotNull(pageno) ? 0 : parseInt(pageno) - 1; // pageno
+      const skip = !crossCutting.check.isNotNull(pageno)
+        ? 0
+        : parseInt(pageno) - 1; // pageno
       const limit = !crossCutting.check.isNotNull(pagesize)
         ? 1000
         : parseInt(pagesize); // pagesize

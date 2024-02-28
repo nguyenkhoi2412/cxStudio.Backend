@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 //Define collection and schema for Business
 var industriesSchema = new mongoose.Schema(
@@ -15,16 +15,16 @@ var industriesSchema = new mongoose.Schema(
       required: true,
     },
     type: {
-      type: Number,
+      type: String,
     },
   },
   {
-    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   },
   {
-    collection: "industries",
-  }
+    collection: 'industries',
+  },
 );
 
-const Industry = mongoose.model("industries", industriesSchema);
+const Industry = mongoose.model('industries', industriesSchema);
 export default Industry;
