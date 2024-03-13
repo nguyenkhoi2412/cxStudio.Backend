@@ -1,4 +1,5 @@
-import path from "path";
+import path from 'path';
+import fs from 'fs';
 
 //* ==============================|| CROSSCUTTING ||============================== //
 export const crossCutting = {
@@ -6,28 +7,28 @@ export const crossCutting = {
   generate: {
     uuidv4: () => {
       var dt = new Date().getTime();
-      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
         /[xy]/g,
         function (c) {
           var r = (dt + Math.random() * 16) % 16 | 0;
           dt = Math.floor(dt / 16);
-          return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
-        }
+          return (c == 'x' ? r : (r & 0x3) | 0x8).toString(16);
+        },
       );
     },
     sessionId: Math.random().toString(36).substring(2),
     key: (pre) => {
-      return `${crossCutting.check.isNotNull(pre) ? pre + "_" : ""}${
+      return `${crossCutting.check.isNotNull(pre) ? pre + '_' : ''}${
         new Date().getTime() + crossCutting.generate.number()
       }`;
     },
     password: (length = 8) => {
-      let password = "";
+      let password = '';
       const chars = [
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-        "abcdefghijklmnopqrstuvwxyz",
-        "@$!%*?&",
-        "1234567890",
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        'abcdefghijklmnopqrstuvwxyz',
+        '@$!%*?&',
+        '1234567890',
       ];
       const charsLength = chars.length;
       let j = 0;
@@ -43,28 +44,28 @@ export const crossCutting = {
         do {
           const index = Math.floor(Math.random() * charsLength);
           password += chars[index].charAt(
-            Math.floor(Math.random() * chars[index].length)
+            Math.floor(Math.random() * chars[index].length),
           );
           i++;
         } while (i < length);
       }
       return password
-        .split("")
+        .split('')
         .sort(function () {
           return 0.5 - Math.random();
         })
-        .join("");
+        .join('');
     },
     number: (min = 1, max = 100) => {
       return min + Math.random() * (max - min);
     },
-    color: (color = "") => {
+    color: (color = '') => {
       switch (color) {
         //* Generate light color
-        case "light":
-          var letters = "BCDEF".split("");
+        case 'light':
+          var letters = 'BCDEF'.split('');
           var letterLen = letters.length;
-          var color = "#";
+          var color = '#';
           var i = 0;
           while (i < 6) {
             color += letters[Math.floor(Math.random() * letterLen)];
@@ -73,23 +74,23 @@ export const crossCutting = {
           return color;
 
         //* Generate dark color
-        case "dark":
+        case 'dark':
           var lum = -0.25;
           var hex = String(
-            "#" + Math.random().toString(16).slice(2, 8).toUpperCase()
-          ).replace(/[^0-9a-f]/gi, "");
+            '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
+          ).replace(/[^0-9a-f]/gi, '');
           if (hex.length < 6) {
             hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
           }
-          var rgb = "#",
+          var rgb = '#',
             c,
             i = 0;
           while (i < 3) {
             c = parseInt(hex.substr(i * 2, 2), 16);
             c = Math.round(Math.min(Math.max(0, c + c * lum), 255)).toString(
-              16
+              16,
             );
-            rgb += ("00" + c).substr(c.length);
+            rgb += ('00' + c).substr(c.length);
 
             i++;
           }
@@ -97,10 +98,10 @@ export const crossCutting = {
 
         default:
           return (
-            "#" +
+            '#' +
             Math.floor(Math.random() * 16777215)
               .toString(16)
-              .padStart(6, "0")
+              .padStart(6, '0')
           );
       }
     },
@@ -115,7 +116,7 @@ export const crossCutting = {
       return (
         value === null ||
         value === undefined ||
-        (typeof value === "string"
+        (typeof value === 'string'
           ? string.isEmptyOrWhitespace(value) // check string is EMPTY
           : Array.isArray(value)
           ? array.isEmpty(value) // check Array is EMPTY
@@ -128,12 +129,12 @@ export const crossCutting = {
 
       if (a === b) return true;
       if (JSON.stringify(a) === JSON.stringify(b)) return true;
-      if (typeof a === "function" && typeof b === "function") return true;
+      if (typeof a === 'function' && typeof b === 'function') return true;
 
       if (a instanceof Date && b instanceof Date)
         return a.getTime() === b.getTime();
 
-      if (!a || !b || (typeof a !== "object" && typeof b !== "object"))
+      if (!a || !b || (typeof a !== 'object' && typeof b !== 'object'))
         return a === b;
 
       if (a.prototype !== b.prototype) return false;
@@ -157,7 +158,7 @@ export const crossCutting = {
     acceptFileExtension: (file, filetypes = /jpeg|jpg|png/) => {
       var mimetype = filetypes.test(file.mimetype);
       var extname = filetypes.test(
-        path.extname(file.originalname).toLowerCase()
+        path.extname(file.originalname).toLowerCase(),
       );
 
       return mimetype && extname;
@@ -189,36 +190,36 @@ export const string = {
    * isEmptyOrWhitespace('\t\n\r'); // true
    */
   isEmptyOrWhitespace: (value) =>
-    typeof value === "string" && /^\s*$/.test(value),
+    typeof value === 'string' && /^\s*$/.test(value),
 
   stripedHtml: (text) => {
-    text = text.replace(/[<|>]/gi, "");
+    text = text.replace(/[<|>]/gi, '');
 
     if (
-      text.toLowerCase().indexOf("javascript") > -1 ||
-      text.toLowerCase().indexOf("&lt;") > -1 ||
-      text.toLowerCase().indexOf("&gt;") > -1
+      text.toLowerCase().indexOf('javascript') > -1 ||
+      text.toLowerCase().indexOf('&lt;') > -1 ||
+      text.toLowerCase().indexOf('&gt;') > -1
     ) {
-      text = text.replace(/[javascript|&lt;|&gt;]/gi, "");
+      text = text.replace(/[javascript|&lt;|&gt;]/gi, '');
     }
 
     return text;
   },
-  numberWithSympol: (value, dot = ",", decimal_point = 0) => {
+  numberWithSympol: (value, dot = ',', decimal_point = 0) => {
     let valueCheck = isNaN(value) ? 0 : parseFloat(value);
 
     return valueCheck
       .toFixed(decimal_point)
-      .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1" + dot);
+      .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + dot);
   },
   compactNumber: (value) => {
-    const suffixes = ["", "k", "m", "b", "t"];
-    const suffixNum = Math.floor(("" + value).length / 3);
+    const suffixes = ['', 'k', 'm', 'b', 't'];
+    const suffixNum = Math.floor(('' + value).length / 3);
 
     let shortValue = parseFloat(
       (suffixNum != 0 ? value / Math.pow(1000, suffixNum) : value).toPrecision(
-        2
-      )
+        2,
+      ),
     );
 
     if (shortValue % 1 != 0) {
@@ -228,8 +229,8 @@ export const string = {
     return shortValue + suffixes[suffixNum];
   },
   formatBytes: (bytes) => {
-    var sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-    if (bytes == 0) return "0 Byte";
+    var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes == 0) return '0 Byte';
     var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
     return Math.round(bytes / Math.pow(1024, i), 2) + sizes[i];
   },
@@ -259,7 +260,7 @@ export const number = {
    * Round decimal number
    */
   roundDecimalNumber(number, decimalIndex) {
-    if (typeof number !== "number" || typeof decimalIndex !== "number")
+    if (typeof number !== 'number' || typeof decimalIndex !== 'number')
       return false;
 
     var signature = number >= 0 ? 1 : -1;
@@ -271,11 +272,11 @@ export const number = {
   },
 
   toPercentage(number, percentage) {
-    if (number == null || number == "" || number == 0) {
+    if (number == null || number == '' || number == 0) {
       return 0;
     }
 
-    if (percentage == null || percentage == "" || percentage == 0) {
+    if (percentage == null || percentage == '' || percentage == 0) {
       return false;
     }
 
@@ -300,10 +301,10 @@ export const object = {
   getValue: (obj, ...selectors) => {
     const rs = [...selectors].map((item) =>
       item
-        .replace(/\[([^\[\]]*)\]/g, ".$1.")
-        .split(".")
-        .filter((t) => t !== "")
-        .reduce((prev, cur) => prev && prev[cur], obj)
+        .replace(/\[([^\[\]]*)\]/g, '.$1.')
+        .split('.')
+        .filter((t) => t !== '')
+        .reduce((prev, cur) => prev && prev[cur], obj),
     );
     if (rs?.length === 1) {
       return rs[0];
@@ -340,7 +341,7 @@ export const object = {
     url +
     Object.keys(params)
       .map((key) => params[key])
-      .join("&"),
+      .join('&'),
 
   createQueryString: (url, queryObject) => {
     // url +
@@ -351,31 +352,31 @@ export const object = {
       .filter(
         (key) =>
           queryObject[key] &&
-          !(Array.isArray(queryObject[key]) && !queryObject[key].length)
+          !(Array.isArray(queryObject[key]) && !queryObject[key].length),
       )
       .map((key) => {
         return Array.isArray(queryObject[key])
           ? queryObject[key]
               .map(
                 (item) =>
-                  `${encodeURIComponent(key)}=${encodeURIComponent(item)}`
+                  `${encodeURIComponent(key)}=${encodeURIComponent(item)}`,
               )
-              .join("&")
+              .join('&')
           : `${encodeURIComponent(key)}=${encodeURIComponent(
-              queryObject[key]
+              queryObject[key],
             )}`;
       })
-      .join("&");
-    return url + (queryString ? `?${queryString}` : "");
+      .join('&');
+    return url + (queryString ? `?${queryString}` : '');
   },
 
-  queryStringToObject: (queryString = "", options = {}) => {
+  queryStringToObject: (queryString = '', options = {}) => {
     let queryObject = {};
     queryString &&
-      decodeURIComponent(queryString.replace("?", ""))
-        .split("&")
+      decodeURIComponent(queryString.replace('?', ''))
+        .split('&')
         .map((itemString) => {
-          let [itemKey, itemValue] = itemString.split("=");
+          let [itemKey, itemValue] = itemString.split('=');
           if (options.hasOwnProperty(itemKey)) {
             if (!queryObject[itemKey] && Array.isArray(options[itemKey])) {
               queryObject[itemKey] = [];
@@ -383,7 +384,7 @@ export const object = {
             Array.isArray(options[itemKey])
               ? queryObject[itemKey].push(itemValue)
               : (queryObject[itemKey] =
-                  typeof options[itemKey] === "number"
+                  typeof options[itemKey] === 'number'
                     ? parseInt(itemValue)
                     : itemValue);
           }
@@ -393,8 +394,8 @@ export const object = {
 
   //* GET DIFF/COMPARE
   getDiff: (baseObj, newObj) => {
-    const isNativeType1 = typeof baseObj !== "object";
-    const isNativeType2 = typeof newObj !== "object";
+    const isNativeType1 = typeof baseObj !== 'object';
+    const isNativeType2 = typeof newObj !== 'object';
     if (isNativeType1 && isNativeType2) {
       return baseObj === newObj ? null : newObj;
     }
@@ -488,7 +489,7 @@ export const object = {
   isJsonObject: (text) => {
     let str = String(text).trim();
 
-    if (!str.startsWith("{") || !str.endsWith("}")) return false;
+    if (!str.startsWith('{') || !str.endsWith('}')) return false;
 
     try {
       JSON.parse(str);
@@ -515,7 +516,7 @@ export const array = {
       ...currentArray.slice(index),
     ];
   },
-  update: (arr, newItem, field = "_id") => {
+  update: (arr, newItem, field = '_id') => {
     var itemField = Array.isArray(newItem) ? newItem[0] : newItem;
 
     if (Array.isArray(arr)) {
@@ -637,12 +638,12 @@ export const array = {
         if (v[prop])
           acc[v[prop]] = acc[v[prop]] ? { ...acc[v[prop]], ...v } : { ...v };
         return acc;
-      }, {})
+      }, {}),
     ),
   // Check if the input is a json array (whether startsWidth '[' and endsWidth ']') or not
   isJsonArray: (text) => {
     let str = String(text).trim();
-    return str.startsWith("[") && str.endsWith("]");
+    return str.startsWith('[') && str.endsWith(']');
   },
 
   hasAny: (arr, func) =>
@@ -651,7 +652,7 @@ export const array = {
       : sizeOf(
           arr.filter((item, index) => {
             func(item, index);
-          })
+          }),
         ) >= 1,
 
   /**
@@ -660,18 +661,18 @@ export const array = {
   sizeOf: (arr) => {
     return Array.isArray(arr) ? arr.length : Object.values(arr).length;
   },
-  mergeArrayObjects: (current, newArray, field = "_id") => {
+  mergeArrayObjects: (current, newArray, field = '_id') => {
     const rsAdd = newArray.filter(
-      ({ [field]: id1 }) => !current.some(({ [field]: id2 }) => id2 === id1)
+      ({ [field]: id1 }) => !current.some(({ [field]: id2 }) => id2 === id1),
     );
     const rsRemoved = current.filter(
-      ({ [field]: id1 }) => !newArray.some(({ [field]: id2 }) => id2 === id1)
+      ({ [field]: id1 }) => !newArray.some(({ [field]: id2 }) => id2 === id1),
     );
     const rsUpdated = newArray.filter(({ [field]: id1, ...rest1 }) =>
       current.some(
         ({ [field]: id2, ...rest2 }) =>
-          id2 === id1 && JSON.stringify(rest1) !== JSON.stringify(rest2)
-      )
+          id2 === id1 && JSON.stringify(rest1) !== JSON.stringify(rest2),
+      ),
     );
 
     let tempArray = [...current];
@@ -705,7 +706,7 @@ export const array = {
       deleted: rsRemoved,
     };
   },
-  buildHierarchy: (array = [], idField = "_id", parentField = "parent") => {
+  buildHierarchy: (array = [], idField = '_id', parentField = 'parent') => {
     let arr = [...array];
     let arrMap = new Map(arr.map((item) => [item[idField], item]));
     let tree = [];
@@ -715,7 +716,7 @@ export const array = {
     do {
       let item = arr[i];
 
-      if (item[parentField] !== "") {
+      if (item[parentField] !== '') {
         let parentItem = arrMap.get(item[parentField]);
 
         if (parentItem) {
@@ -768,13 +769,13 @@ export const array = {
       props.reduce((acc, prop, i) => {
         if (acc === 0) {
           const [p1, p2] =
-            orders && orders[i] === "desc"
+            orders && orders[i] === 'desc'
               ? [b[prop], a[prop]]
               : [a[prop], b[prop]];
           acc = p1 > p2 ? 1 : p1 < p2 ? -1 : 0;
         }
         return acc;
-      }, 0)
+      }, 0),
     ),
 
   /**
@@ -826,7 +827,7 @@ export const array = {
         acc[fn(val, i, arr) ? 0 : 1].push(val);
         return acc;
       },
-      [[], []]
+      [[], []],
     ),
 };
 
@@ -837,8 +838,8 @@ export const loop = {
    * @param func callback function
    * @param type doWhile, while, for, forEach
    */
-  every: (arr, func, type = "auto", conditionBreak = null) => {
-    if (typeof func !== "function") return;
+  every: (arr, func, type = 'auto', conditionBreak = null) => {
+    if (typeof func !== 'function') return;
 
     // const isBreak = (index) => conditionBreak && eval(conditionBreak);
     const arrLength = arr.length;
@@ -877,13 +878,13 @@ export const loop = {
     };
 
     // callback function with type
-    if (type === "auto") {
+    if (type === 'auto') {
       if (arrLength <= 1000000) {
-        loop["while"]();
+        loop['while']();
       } else {
-        loop["for"]();
+        loop['for']();
       }
-    } else loop[type || "doWhile"]();
+    } else loop[type || 'doWhile']();
   },
 };
 
@@ -905,7 +906,7 @@ export const datetime = {
     return diffInDays;
   },
 
-  getUtcDateTime: (isoDate, locales = "en") => {
+  getUtcDateTime: (isoDate, locales = 'en') => {
     const date = new Date(isoDate);
     // let d = Date.UTC(
     //   date.getFullYear(),
@@ -917,9 +918,9 @@ export const datetime = {
     // );
 
     const localTime = date.toLocaleTimeString(locales, {
-      timeStyle: "short",
+      timeStyle: 'short',
     });
-    const utcTime = date.getUTCHours() + ":" + date.getUTCMinutes();
+    const utcTime = date.getUTCHours() + ':' + date.getUTCMinutes();
     const data = {
       toISOString: isoDate,
       toUTCString: new Date(date.toUTCString().slice(0, -4)).toString(), // ignore the timezone
@@ -1097,3 +1098,11 @@ export const datetime = {
   },
   //#endregion
 };
+
+//* ==============================|| DIRECTORY FS ||============================== //
+export const directory = {
+  createDirIfNotExists: (dir) =>
+    !fs.existsSync(dir) ? fs.mkdirSync(dir) : undefined,
+};
+
+export const file = {};
