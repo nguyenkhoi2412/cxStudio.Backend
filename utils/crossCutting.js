@@ -838,14 +838,14 @@ export const loop = {
    * @param func callback function
    * @param type doWhile, while, for, forEach
    */
-  every: (arr, func, type = 'auto', conditionBreak = null) => {
+  forEach: (arr, func, type = 'auto', conditionBreak = null) => {
     if (typeof func !== 'function') return;
 
     // const isBreak = (index) => conditionBreak && eval(conditionBreak);
     const arrLength = arr.length;
     let index = 0;
 
-    var loop = {
+    const loop = {
       doWhile: () => {
         do {
           const item = arr[index];
