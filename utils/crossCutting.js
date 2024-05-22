@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import encrypt from './encrypt.helper.js';
 
 //* ==============================|| CROSSCUTTING ||============================== //
 export const crossCutting = {
@@ -13,7 +14,7 @@ export const crossCutting = {
           var r = (dt + Math.random() * 16) % 16 | 0;
           dt = Math.floor(dt / 16);
           return (c == 'x' ? r : (r & 0x3) | 0x8).toString(16);
-        },
+        }
       );
     },
     sessionId: Math.random().toString(36).substring(2),
@@ -28,7 +29,7 @@ export const crossCutting = {
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
         'abcdefghijklmnopqrstuvwxyz',
         '@$!%*?&',
-        '1234567890',
+        '1234567890'
       ];
       const charsLength = chars.length;
       let j = 0;
@@ -44,7 +45,7 @@ export const crossCutting = {
         do {
           const index = Math.floor(Math.random() * charsLength);
           password += chars[index].charAt(
-            Math.floor(Math.random() * chars[index].length),
+            Math.floor(Math.random() * chars[index].length)
           );
           i++;
         } while (i < length);
@@ -77,7 +78,7 @@ export const crossCutting = {
         case 'dark':
           var lum = -0.25;
           var hex = String(
-            '#' + Math.random().toString(16).slice(2, 8).toUpperCase(),
+            '#' + Math.random().toString(16).slice(2, 8).toUpperCase()
           ).replace(/[^0-9a-f]/gi, '');
           if (hex.length < 6) {
             hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
@@ -88,7 +89,7 @@ export const crossCutting = {
           while (i < 3) {
             c = parseInt(hex.substr(i * 2, 2), 16);
             c = Math.round(Math.min(Math.max(0, c + c * lum), 255)).toString(
-              16,
+              16
             );
             rgb += ('00' + c).substr(c.length);
 
@@ -104,7 +105,7 @@ export const crossCutting = {
               .padStart(6, '0')
           );
       }
-    },
+    }
   },
   //#endregion
   //#region check
@@ -158,11 +159,11 @@ export const crossCutting = {
     acceptFileExtension: (file, filetypes = /jpeg|jpg|png/) => {
       var mimetype = filetypes.test(file.mimetype);
       var extname = filetypes.test(
-        path.extname(file.originalname).toLowerCase(),
+        path.extname(file.originalname).toLowerCase()
       );
 
       return mimetype && extname;
-    },
+    }
   },
   //#endregion
   //#region simulate
@@ -179,8 +180,50 @@ export const crossCutting = {
   },
   simulateNetworkRequest: (timer = 2000) => {
     return new Promise((resolve) => setTimeout(resolve, timer));
-  },
+  }
   //#endregion
+};
+
+//* ==============================|| HELPERS ||============================== //
+export const helper = {
+  paging: (params) => {
+    const { pageno, pagesize } = params;
+
+    const skip = !crossCutting.check.isNotNull(pageno)
+      ? 0
+      : parseInt(pageno) - 1; // pageno
+    const limit = !crossCutting.check.isNotNull(pagesize)
+      ? 1000
+      : parseInt(pagesize); // pagesize
+
+    let query = null;
+    if (params.hasOwnProperty('query'))
+      query = encrypt.aes.decrypt(params.query);
+    else {
+      query = { $sort: { created_at: -1 } };
+    }
+
+    // const { sortCriteria, filterCriteria } = crossCutting.check.isNotNull(query)
+    //   ? encrypt.aes.decrypt(query)
+    //   : {
+    //       sortCriteria: null,
+    //       filterCriteria: null
+    //     };
+
+    // const sortInfos = crossCutting.check.isNotNull(sortCriteria)
+    //   ? sortCriteria
+    //   : { created_at: -1 }; //default with sort created_at asc: 1/desc: -1
+
+    // const filterInfos = crossCutting.check.isNotNull(filterCriteria)
+    //   ? filterCriteria
+    //   : {};
+
+    return {
+      skip: skip * limit || 0,
+      limit: limit,
+      queryCriteria: query
+    };
+  }
 };
 
 //* ==============================|| STRING ||============================== //
@@ -218,8 +261,8 @@ export const string = {
 
     let shortValue = parseFloat(
       (suffixNum != 0 ? value / Math.pow(1000, suffixNum) : value).toPrecision(
-        2,
-      ),
+        2
+      )
     );
 
     if (shortValue % 1 != 0) {
@@ -251,7 +294,7 @@ export const string = {
     }
 
     return `${number}th`;
-  },
+  }
 };
 
 //* ==============================|| NUMBER ||============================== //
@@ -281,7 +324,7 @@ export const number = {
     }
 
     return parseFloat((number / 100) * percentage);
-  },
+  }
 };
 
 //* ==============================|| OBJECT ||============================== //
@@ -304,7 +347,7 @@ export const object = {
         .replace(/\[([^\[\]]*)\]/g, '.$1.')
         .split('.')
         .filter((t) => t !== '')
-        .reduce((prev, cur) => prev && prev[cur], obj),
+        .reduce((prev, cur) => prev && prev[cur], obj)
     );
     if (rs?.length === 1) {
       return rs[0];
@@ -352,18 +395,18 @@ export const object = {
       .filter(
         (key) =>
           queryObject[key] &&
-          !(Array.isArray(queryObject[key]) && !queryObject[key].length),
+          !(Array.isArray(queryObject[key]) && !queryObject[key].length)
       )
       .map((key) => {
         return Array.isArray(queryObject[key])
           ? queryObject[key]
               .map(
                 (item) =>
-                  `${encodeURIComponent(key)}=${encodeURIComponent(item)}`,
+                  `${encodeURIComponent(key)}=${encodeURIComponent(item)}`
               )
               .join('&')
           : `${encodeURIComponent(key)}=${encodeURIComponent(
-              queryObject[key],
+              queryObject[key]
             )}`;
       })
       .join('&');
@@ -498,7 +541,7 @@ export const object = {
     }
 
     return true;
-  },
+  }
 };
 
 //* ==============================|| ARRAY ||============================== //
@@ -513,7 +556,7 @@ export const array = {
     return [
       ...currentArray.slice(0, index),
       ...items,
-      ...currentArray.slice(index),
+      ...currentArray.slice(index)
     ];
   },
   update: (arr, newItem, field = '_id') => {
@@ -524,7 +567,7 @@ export const array = {
         if (item[field] === itemField[field]) {
           return {
             ...item,
-            ...itemField,
+            ...itemField
           };
         }
 
@@ -638,7 +681,7 @@ export const array = {
         if (v[prop])
           acc[v[prop]] = acc[v[prop]] ? { ...acc[v[prop]], ...v } : { ...v };
         return acc;
-      }, {}),
+      }, {})
     ),
   // Check if the input is a json array (whether startsWidth '[' and endsWidth ']') or not
   isJsonArray: (text) => {
@@ -652,7 +695,7 @@ export const array = {
       : sizeOf(
           arr.filter((item, index) => {
             func(item, index);
-          }),
+          })
         ) >= 1,
 
   /**
@@ -663,16 +706,16 @@ export const array = {
   },
   mergeArrayObjects: (current, newArray, field = '_id') => {
     const rsAdd = newArray.filter(
-      ({ [field]: id1 }) => !current.some(({ [field]: id2 }) => id2 === id1),
+      ({ [field]: id1 }) => !current.some(({ [field]: id2 }) => id2 === id1)
     );
     const rsRemoved = current.filter(
-      ({ [field]: id1 }) => !newArray.some(({ [field]: id2 }) => id2 === id1),
+      ({ [field]: id1 }) => !newArray.some(({ [field]: id2 }) => id2 === id1)
     );
     const rsUpdated = newArray.filter(({ [field]: id1, ...rest1 }) =>
       current.some(
         ({ [field]: id2, ...rest2 }) =>
-          id2 === id1 && JSON.stringify(rest1) !== JSON.stringify(rest2),
-      ),
+          id2 === id1 && JSON.stringify(rest1) !== JSON.stringify(rest2)
+      )
     );
 
     let tempArray = [...current];
@@ -703,7 +746,7 @@ export const array = {
       newList: tempArray,
       inserted: rsAdd,
       updated: rsUpdated,
-      deleted: rsRemoved,
+      deleted: rsRemoved
     };
   },
   buildHierarchy: (array = [], idField = '_id', parentField = 'parent') => {
@@ -722,7 +765,7 @@ export const array = {
         if (parentItem) {
           parentItem = {
             ...parentItem,
-            children: [...parentItem.children, item],
+            children: [...parentItem.children, item]
           };
 
           tempItem.push(parentItem);
@@ -775,7 +818,7 @@ export const array = {
           acc = p1 > p2 ? 1 : p1 < p2 ? -1 : 0;
         }
         return acc;
-      }, 0),
+      }, 0)
     ),
 
   /**
@@ -827,8 +870,8 @@ export const array = {
         acc[fn(val, i, arr) ? 0 : 1].push(val);
         return acc;
       },
-      [[], []],
-    ),
+      [[], []]
+    )
 };
 
 export const loop = {
@@ -874,7 +917,7 @@ export const loop = {
         arr.forEach((item, i) => {
           func(item, i);
         });
-      },
+      }
     };
 
     // callback function with type
@@ -885,7 +928,7 @@ export const loop = {
         loop['for']();
       }
     } else loop[type || 'doWhile']();
-  },
+  }
 };
 
 //* ==============================|| DATETIME ||============================== //
@@ -918,7 +961,7 @@ export const datetime = {
     // );
 
     const localTime = date.toLocaleTimeString(locales, {
-      timeStyle: 'short',
+      timeStyle: 'short'
     });
     const utcTime = date.getUTCHours() + ':' + date.getUTCMinutes();
     const data = {
@@ -926,11 +969,11 @@ export const datetime = {
       toUTCString: new Date(date.toUTCString().slice(0, -4)).toString(), // ignore the timezone
       local: {
         date: date.toLocaleDateString(locales),
-        time: localTime,
+        time: localTime
       },
       utc: {
-        time: utcTime,
-      },
+        time: utcTime
+      }
     };
 
     return data;
@@ -1095,14 +1138,14 @@ export const datetime = {
         currentDate = addDaysToDate(currentDate, s);
       return currentDate;
     }, d);
-  },
+  }
   //#endregion
 };
 
 //* ==============================|| DIRECTORY FS ||============================== //
 export const directory = {
   createDirIfNotExists: (dir) =>
-    !fs.existsSync(dir) ? fs.mkdirSync(dir) : undefined,
+    !fs.existsSync(dir) ? fs.mkdirSync(dir) : undefined
 };
 
 export const file = {};
