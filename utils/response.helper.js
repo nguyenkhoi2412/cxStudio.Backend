@@ -1,8 +1,8 @@
-import _globalVars from "../shared/variables.js";
-import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
-import sessionHandler from "../middleware/sessionHandler.js";
-import { crossCutting } from "./crossCutting.js";
-import storaged from "../constant/storage.js";
+import _globalVars from '../shared/variables.js';
+import { HTTP_STATUS as statusCodes } from '../constant/httpStatus.js';
+import sessionHandler from '../middleware/sessionHandler.js';
+import { crossCutting } from './crossCutting.js';
+import storaged from '../constant/storage.js';
 
 export default {
   DEFAULT: (res, err, data, additionalData = {}) => {
@@ -12,31 +12,31 @@ export default {
       return res.status(statusCodes.NO_CONTENT).send({
         code: statusCodes.NO_CONTENT,
         ok: false,
-        message: err.message,
+        message: err.message
       });
     }
 
     const method = res.req.method;
     const dataIsNull = crossCutting.check.isNull(data);
     const dataLength = dataIsNull ? 0 : Array.isArray(data) ? data.length : 1;
-    let messageOk = dataLength + " record(s) ";
+    let messageOk = dataLength + ' record(s) ';
 
     switch (method) {
-      case "POST":
-        messageOk += "inserted.";
+      case 'POST':
+        messageOk += 'inserted.';
         break;
 
-      case "PUT":
-        messageOk += "updated.";
+      case 'PUT':
+        messageOk += 'updated.';
         break;
 
-      case "DELETE":
-        messageOk += "deleted.";
+      case 'DELETE':
+        messageOk += 'deleted.';
         break;
 
       default:
         // is GET
-        messageOk += "founded";
+        messageOk += 'founded';
         break;
     }
 
@@ -45,7 +45,7 @@ export default {
       return res.status(code).json({
         code: code,
         ok: true,
-        message: "Not found!",
+        message: 'Not found!'
       });
     }
 
@@ -53,12 +53,13 @@ export default {
       code: code,
       ok: true,
       message: messageOk,
-      rs: data,
+      rs: data?.data || data,
+      totalCount: data?.totalCount || dataLength
     };
 
     const mergedData = {
       ...responseJson,
-      ...additionalData,
+      ...additionalData
     };
 
     res.status(code).json(mergedData);
@@ -88,8 +89,8 @@ export default {
     res.status(code).json({
       code: code,
       ok: true,
-      message: "Authentication success",
-      rs: data,
+      message: 'Authentication success',
+      rs: data
     });
   },
   UPLOAD_FILE: (req, res, err) => {
@@ -98,7 +99,7 @@ export default {
       return res.status(statusCodes.PRECONDITION_FAILED).send({
         code: err.code,
         ok: false,
-        message: err,
+        message: err
       });
     }
 
@@ -114,7 +115,7 @@ export default {
       return res.status(code).send({
         code: code,
         ok: false,
-        message: "Please upload a file.",
+        message: 'Please upload a file.'
       });
     }
 
@@ -122,16 +123,16 @@ export default {
     // let HOST = res.req.headers["host"];
     const method = res.req.method;
     const dataLength = data.length || 1;
-    let messageOk = dataLength + " file(s) ";
+    let messageOk = dataLength + ' file(s) ';
 
     switch (method) {
-      case "POST":
-        messageOk += "uploaded successfully.";
+      case 'POST':
+        messageOk += 'uploaded successfully.';
         break;
 
       default:
         // is GET
-        messageOk += "founded";
+        messageOk += 'founded';
         break;
     }
 
@@ -140,12 +141,12 @@ export default {
     if (dataLength > 1) {
       data.forEach((item, index) => {
         dataFileNames.push(
-          _globalVars.DIR_UPLOADS + "/" + identifyfolder + "/" + item.filename
+          _globalVars.DIR_UPLOADS + '/' + identifyfolder + '/' + item.filename
         );
       });
     } else {
       dataFileNames.push(
-        _globalVars.DIR_UPLOADS + "/" + identifyfolder + "/" + data.filename
+        _globalVars.DIR_UPLOADS + '/' + identifyfolder + '/' + data.filename
       );
     }
 
@@ -154,10 +155,10 @@ export default {
       ok: true,
       message: messageOk,
       rs: {
-        filenames: dataFileNames,
-      },
+        filenames: dataFileNames
+      }
     };
 
     res.status(code).json(responseJson);
-  },
+  }
 };

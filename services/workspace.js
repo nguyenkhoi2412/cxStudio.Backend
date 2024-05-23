@@ -32,7 +32,10 @@ class WorkspaceService extends CommonService {
         });
 
       await cache.set(id, data);
-      resolve(data);
+      resolve({
+        data: data,
+        totalCount: data.length
+      });
     });
   };
 

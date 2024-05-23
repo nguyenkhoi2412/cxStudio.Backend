@@ -20,22 +20,30 @@ class CommonService {
           resolve(await cache.get(id));
         }
 
-        // get data from db
-        await ModelSchema.findById(id)
-          .lean()
-          .then((rs) => {
-            cache.set(id, rs); //* SAVE CACHE
-            resolve(rs);
+        await ModelSchema.aggregate([
+          {
+            $match: {
+              _id: id
+            }
+          }
+        ]).then((rs) => {
+          const resData = crossCutting.check.isNotNull(rs) ? rs[0] : null;
+          cache.set(id, resData); //* SAVE CACHE
+
+          resolve({
+            data: resData,
+            totalCount: crossCutting.check.isNull(resData) ? 0 : 1
           });
+        });
       } else {
         // filter with query
-        const query = encrypt.aes.decrypt(req.params?.query);
-        await ModelSchema.find(query)
-          .lean()
-          .then((rs) => {
-            cache.set(id, rs); //* SAVE CACHE
-            resolve(rs);
-          });
+        // const query = encrypt.aes.decrypt(req.params?.query);
+        // await ModelSchema.find(query)
+        //   .lean()
+        //   .then((rs) => {
+        //     cache.set(id, rs); //* SAVE CACHE
+        //     resolve(rs);
+        //   });
       }
     });
   };
@@ -45,14 +53,18 @@ class CommonService {
    **/
   static getByPaging = async (params, ModelSchema) => {
     return new Promise(async (resolve, reject) => {
-      const { pageno, pagesize, query } = params;
+      const { pageno, pagesize } = params;
+
+      let query = null;
+      if (params.hasOwnProperty('query')) query = params.query;
+
       const { sortCriteria, filterCriteria } = crossCutting.check.isNotNull(
-        query,
+        query
       )
         ? encrypt.aes.decrypt(query)
         : {
             sortCriteria: null,
-            filterCriteria: null,
+            filterCriteria: null
           };
 
       const skip = !crossCutting.check.isNotNull(pageno)
@@ -70,28 +82,38 @@ class CommonService {
         ? filterCriteria
         : {};
 
-      // get data with pageno
-      // await ModelSchema.countDocuments({}).then((count) => {
-      //   console.log("count", count);
-      //   // ModelSchema.find(filterInfos)
-      //   //   // .sort(sortInfos)
-      //   //   // .skip(limit * skip)
-      //   //   // .limit(limit)
-      //   //   .then((rs) => {
-      //   //     console.log("rs", rs);
-      //   //     response.DEFAULT(res, null, rs, { total: count });
-      //   //   });
-      //   resolve(count);
+      // await Post.aggregate([
+      //   {
+      //     $lookup: {
+      //       from: 'comments',
+      //       localField: '_id',
+      //       foreignField: 'post_ref',
+      //       as: 'comments'
+      //     }
+      //   },
+      //   {
+      //     $match: {
+      //       'post.en': { $regex: `${`xin tôi lời khuyên`}`, $options: 'i' }
+      //     }
+      //   },
+      //   // Skip the specified number of documents based on the offset
+      //   { $skip: skip * limit || 0 },
+      //   { $limit: Number(limit) }
+      // ]).then((rs) => {
+      //   console.log('rsrsrsrs', rs);
       // });
+
+      // get data with pageno
       await ModelSchema.countDocuments(filterInfos).then((count) => {
-        ModelSchema.find(filterInfos)
+        ModelSchema.find()
+          .byFilter(filterInfos)
           .sort(sortInfos)
           .limit(limit)
           .skip(limit * skip)
           .then((rs) => {
             resolve({
               data: [...rs],
-              total: count,
+              countData: count
             });
           });
       });
