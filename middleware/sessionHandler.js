@@ -29,7 +29,7 @@ export default {
       httpOnly: true,
       sameSite: sameSite, // strict/lax/none
       // Forces to use https in production
-      secure: true, // isProduction,
+      secure: isProduction ? true : false, // isProduction,
       signed: true,
     });
   },
