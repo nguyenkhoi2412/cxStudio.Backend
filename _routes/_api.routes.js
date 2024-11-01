@@ -2,7 +2,7 @@ import express from "express";
 import { crossCutting } from "../utils/crossCutting.js";
 import encryptHelper from "../utils/encrypt.helper.js";
 import sessionHandler from "../middleware/sessionHandler.js";
-import captcha from "../utils/captcha.js";
+// import captcha from "../utils/captcha.js";
 import variables from "../shared/variables.js";
 import cache from "../utils/cache/cache.instance.js";
 import response from "../utils/response.helper.js";
@@ -18,24 +18,24 @@ import workspaceRoutes from "#routes/workspace.routes";
 export default (app) => {
   //#region Request API callback generate
   // Human checkable test path, returns image for browser
-  app.get("/api/captcha/test/:width?/:height?/:colortext?/", (req, res) => {
-    const width = parseInt(req.params.width) || 150;
-    const height = parseInt(req.params.height) || 50;
-    const colortext = crossCutting.check.isNotNull(req.params.colortext)
-      ? req.params.colortext
-      : "#000";
+  // app.get("/api/captcha/test/:width?/:height?/:colortext?/", (req, res) => {
+  //   const width = parseInt(req.params.width) || 150;
+  //   const height = parseInt(req.params.height) || 50;
+  //   const colortext = crossCutting.check.isNotNull(req.params.colortext)
+  //     ? req.params.colortext
+  //     : "#000";
 
-    const { image } = captcha(width, height, colortext);
-    res.send(`<img class="generated-captcha" src="${image}">`);
-  });
+  //   const { image } = captcha(width, height, colortext);
+  //   res.send(`<img class="generated-captcha" src="${image}">`);
+  // });
 
-  // Captcha generation, returns PNG data URL and validation text
-  app.get("/api/captcha/:width?/:height?/:colortext?/", (req, res) => {
-    const width = parseInt(req.params.width) || 150;
-    const height = parseInt(req.params.height) || 50;
-    const { image, text } = captcha(width, height);
-    res.send({ image, text });
-  });
+  // // Captcha generation, returns PNG data URL and validation text
+  // app.get("/api/captcha/:width?/:height?/:colortext?/", (req, res) => {
+  //   const width = parseInt(req.params.width) || 150;
+  //   const height = parseInt(req.params.height) || 50;
+  //   const { image, text } = captcha(width, height);
+  //   res.send({ image, text });
+  // });
 
   // Generate SecretKey
   app.get("/api/generate/secretkey/:length?/", (req, res) => {
