@@ -173,6 +173,14 @@ export const crossCutting = {
 
       return true;
     },
+    /**
+     * Check object/array has data/not
+     * @param obj It can be object/array
+     * @returns true/false
+     */
+    sizeOf: (obj) => {
+      return Array.isArray(obj) ? obj.length : Object.values(obj).length;
+    },
     acceptFileExtension: (file, filetypes = /jpeg|jpg|png/) => {
       var mimetype = filetypes.test(file.mimetype);
       var extname = filetypes.test(
@@ -295,7 +303,23 @@ export const number = {
 };
 
 //* ==============================|| OBJECT ||============================== //
-export const object = {};
+export const object = {
+  isEmpty: (obj) => {
+    const isE =
+      obj === null ||
+      obj === undefined ||
+      !Object.keys(obj).length ||
+      crossCutting.check.sizeOf(obj) === 0;
+    if (isE) return true;
+
+    for (const prop in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+        return false;
+      }
+    }
+    return true;
+  }
+};
 
 //* ==============================|| ARRAY ||============================== //
 export const array = {};
