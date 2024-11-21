@@ -1,19 +1,21 @@
-import asyncHandler from "express-async-handler";
-import { ROLE } from "../constant/role.js";
-import storaged from "../constant/storage.js";
-import { ACCOUNT_STATUS } from "../constant/enumAccountStatus.js";
-import cache from "../utils/cache/cache.instance.js";
-import User from "../models/user.model.js";
-import { crossCutting } from "../utils/crossCutting.js";
-import { TEMPLATES } from "../shared/templates.js";
-import encrypt from "../utils/encrypt.helper.js";
-import transportHelper from "../utils/transport.helper.js";
-import response from "../utils/response.helper.js";
-import jwt from "jsonwebtoken";
-import { HTTP_STATUS as statusCodes } from "../constant/httpStatus.js";
-import bcrypt from "bcrypt";
-import UserService from "../services/user.js";
-import sessionHandler from "../middleware/sessionHandler.js";
+import asyncHandler from 'express-async-handler';
+import axios from 'axios';
+import { OAuth2Client } from 'google-auth-library';
+import { ROLE } from '../constant/role.js';
+import storaged from '../constant/storage.js';
+import { ACCOUNT_STATUS } from '../constant/enumAccountStatus.js';
+import cache from '../utils/cache/cache.instance.js';
+import User from '../models/user.model.js';
+import { crossCutting } from '../utils/crossCutting.js';
+import { TEMPLATES } from '../shared/templates.js';
+import encrypt from '../utils/encrypt.helper.js';
+import transportHelper from '../utils/transport.helper.js';
+import response from '../utils/response.helper.js';
+import jwt from 'jsonwebtoken';
+import { HTTP_STATUS as statusCodes } from '../constant/httpStatus.js';
+import bcrypt from 'bcrypt';
+import UserService from '../services/user.js';
+import sessionHandler from '../middleware/sessionHandler.js';
 
 const expired = 60 * 60; // 1 hours
 
@@ -43,10 +45,10 @@ export default {
   // }),
   // signout clear cookie
   SIGN_OUT: asyncHandler(async (req, res) => {
-    const isProduction = process.env.NODE_ENV === "production";
+    const isProduction = process.env.NODE_ENV === 'production';
     const options = {
       httpOnly: true,
-      secure: isProduction,
+      secure: isProduction
     };
 
     cache.clearCache();
@@ -56,7 +58,7 @@ export default {
     return res.status(200).json({
       code: 200,
       ok: true,
-      message: "Successfully logged out 😏 🍀",
+      message: 'Successfully logged out 😏 🍀'
     });
   }),
 
@@ -70,8 +72,8 @@ export default {
         return res.status(statusCodes.OK).json({
           code: statusCodes.OK,
           ok: false,
-          message: "Authentication failed. Incorrect username/password",
-          rs: {},
+          message: 'Authentication failed. Incorrect username/password',
+          rs: {}
         });
       }
 
@@ -88,7 +90,7 @@ export default {
       status,
       oneTimePassword,
       phone,
-      detailInfos,
+      detailInfos
     } = req.body;
 
     const usernameDecrypt = encrypt.rsa.decrypt(username);
@@ -101,15 +103,15 @@ export default {
           return res.status(statusCodes.OK).json({
             code: statusCodes.OK,
             ok: false,
-            message: usernameDecrypt + " is existing in the system.",
-            rs: [],
+            message: usernameDecrypt + ' is existing in the system.',
+            rs: []
           });
         }
 
         var userId = crossCutting.generate.uuidv4();
-        var fName = detailInfos.firstName || "";
-        var lName = detailInfos.lastName || "";
-        var alias = detailInfos.aliasName || fName + " " + lName;
+        var fName = detailInfos.firstName || '';
+        var lName = detailInfos.lastName || '';
+        var alias = detailInfos.aliasName || fName + ' ' + lName;
 
         var userData = new User({
           _id: userId,
@@ -129,9 +131,9 @@ export default {
             lastName: lName,
             aliasName: alias,
             showAlias: false,
-            avatarPath: detailInfos.avatarPath || "",
-            country: detailInfos.country || "",
-          },
+            avatarPath: detailInfos.avatarPath || '',
+            country: detailInfos.country || ''
+          }
         });
 
         // Save the new model instance, passing a callback
@@ -143,7 +145,7 @@ export default {
             firstName: result.detailInfos.firstName,
             lastName: result.detailInfos.lastName,
             fullname:
-              result.detailInfos.firstName + " " + result.detailInfos.lastName,
+              result.detailInfos.firstName + ' ' + result.detailInfos.lastName
           });
         });
       })
@@ -151,7 +153,7 @@ export default {
         return res.status(statusCodes.OK).json({
           code: statusCodes.UNAUTHORIZED,
           ok: false,
-          message: err.message,
+          message: err.message
         });
       });
   }),
@@ -162,7 +164,7 @@ export default {
       currentUsername,
       currentPassword,
       usernameResetPassword,
-      newPassword,
+      newPassword
     } = req.body;
 
     // get user by username
@@ -172,8 +174,8 @@ export default {
         return res.status(statusCodes.OK).json({
           code: statusCodes.OK,
           ok: false,
-          message: "Authentication failed. Incorrect username/password",
-          rs: {},
+          message: 'Authentication failed. Incorrect username/password',
+          rs: {}
         });
       }
 
@@ -190,7 +192,7 @@ export default {
             var newValueUpdate = {
               _id: userReset._id,
               password: hash,
-              updated_at: new Date(),
+              updated_at: new Date()
             };
 
             var filter = { _id: newValueUpdate._id };
@@ -200,7 +202,7 @@ export default {
             User.findOneAndUpdate(filter, updateValues, {
               upsert: true,
               new: true,
-              returnNewDocument: true,
+              returnNewDocument: true
             }).then((rs) => {
               if (rs) {
                 User.find()
@@ -226,12 +228,12 @@ export default {
         return res.status(statusCodes.OK).json({
           code: statusCodes.LOCKED,
           ok: false,
-          message: "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
-          rs: {},
+          message: 'Authentication failed. ' + ACCOUNT_STATUS[user.status].DESC,
+          rs: {}
         });
       }
 
-      let newPasswordHash = process.env.DEFAULT_PASSWORD || "7654321aA@";
+      let newPasswordHash = process.env.DEFAULT_PASSWORD || '7654321aA@';
       bcrypt.hash(newPasswordHash, 10, function (err, hash) {
         if (err) {
           return next(err);
@@ -241,7 +243,7 @@ export default {
         var newValueUpdate = {
           _id: user._id,
           password: hash,
-          updated_at: new Date(),
+          updated_at: new Date()
         };
 
         var filter = { _id: newValueUpdate._id };
@@ -251,7 +253,7 @@ export default {
         User.findOneAndUpdate(filter, updateValues, {
           upsert: true,
           new: true,
-          returnNewDocument: true,
+          returnNewDocument: true
         }).exec((err, rs) => {
           if (!err && rs) {
             // sent mail recovery password
@@ -260,15 +262,15 @@ export default {
 
             transportHelper.mail.smtp({
               to: user.email,
-              subject: "Recovery password",
+              subject: 'Recovery password',
               text: newPasswordHash,
               html: htmlTemplate
                 .replace(
                   `{{user.givenname}}`,
-                  user.detailInfos.firstname + " " + user.detailInfos.lastname
+                  user.detailInfos.firstname + ' ' + user.detailInfos.lastname
                 )
                 .replace(`{{password}}`, newPasswordHash)
-                .replace(/{{yourBand}}/gi, yourBand),
+                .replace(/{{yourBand}}/gi, yourBand)
             });
 
             // response to client
@@ -276,8 +278,8 @@ export default {
               code: statusCodes.OK,
               ok: true,
               message:
-                "Your password has been reset, please check in your email " +
-                user.email,
+                'Your password has been reset, please check in your email ' +
+                user.email
             });
           } else {
             response.DEFAULT(res, err, rs);
@@ -302,7 +304,7 @@ export default {
             return res.status(statusCodes.UNAUTHORIZED).send({
               code: statusCodes.UNAUTHORIZED,
               ok: false,
-              message: "Unauthorized!",
+              message: 'Unauthorized!'
             });
           }
 
@@ -321,74 +323,107 @@ export default {
       res.status(403).json({
         code: 403,
         ok: false,
-        message: err.message,
+        message: err.message
       });
     }
   }),
   //#endregion
   //#region AUTHENTICATION SOCIAL EXTERNAL
-  SOCIAL: {
-    GOOGLE: asyncHandler(async (req, res) => {
-      // Create an instance of model SomeModel
-      const {
-        username,
-        password,
-        role,
-        status,
-        oneTimePassword,
-        phone,
-        detailInfos,
-      } = encrypt.aes.decrypt(req.params.query);
+  GOOGLE: {
+    VERIFY_TOKEN: asyncHandler(async (req, res) => {
+      try {
+        //   const ticket = await client.verifyIdToken({
+        //     idToken: token,
+        //     audience: CLIENT_ID // Specify the CLIENT_ID
+        //   });
+        //   const payload = ticket.getPayload();
+        //   res.status(200).json({
+        //     code: 200,
+        //     ok: true,
+        //     rs: payload
+        //    });
 
-      // get user by username
-      User.findOne()
-        .byUsername(username)
-        .then((user) => {
-          // if account is already in db
-          if (user) {
-            responseUserValidate(res, user);
-          } else {
-            // Register new account
-            var userId = crossCutting.generate.uuidv4();
-            var fName = detailInfos.firstName || "";
-            var lName = detailInfos.lastName || "";
-            var alias = detailInfos.aliasName || fName + " " + lName;
+        const { access_token } = req.body;
 
-            var userData = new User({
-              _id: userId,
-              username: username,
-              password: encrypt.rsa.encrypt(crossCutting.generate.password(8)),
-              role: ROLE.USER.name,
-              status: ACCOUNT_STATUS.ACTIVE.TEXT,
-              loginAttemptCount: 0,
-              email: username,
-              phone: 0,
-              oneTimePassword: false,
-              secret_2fa: encrypt.aes.encrypt(encrypt.otplib.generateKey()),
+        // check access_token from googleapis by get userInfos
+        await axios
+          .get(`https://www.googleapis.com/oauth2/v3/userinfo/`, {
+            withCredentials: false,
+            headers: { Authorization: `Bearer ${access_token}` }
+          })
+          .then((response) => {
+            const infoGoogle = response.data;
+
+            const userInfo = {
+              username: infoGoogle.email,
               detailInfos: {
-                firstName: fName,
-                lastName: lName,
-                aliasName: alias,
-                showAlias: true,
-                avatarPath: detailInfos.avatarPath || "",
-                country: "",
-              },
-            });
+                firstName: infoGoogle.family_name || '',
+                lastName: infoGoogle.given_name || '',
+                avatarPath: infoGoogle.picture || ''
+              }
+            };
 
-            // Save the new model instance, passing a callback
-            userData.save().then((rsUser) => {
-              responseUserValidate(res, rsUser);
-            });
-          }
-        })
-        .catch((err) => {
-          return res.status(statusCodes.OK).json({
-            code: statusCodes.UNAUTHORIZED,
-            ok: false,
-            message: err.message,
+            // get user by username
+            User.findOne()
+              .byUsername(infoGoogle.email)
+              .then((user) => {
+                // if account is already in db
+                if (user) {
+                  responseUserValidate(res, user);
+                } else {
+                  // Register new account
+                  var userId = crossCutting.generate.uuidv4();
+                  var fName = infoGoogle.family_name || '';
+                  var lName = infoGoogle.given_name || '';
+                  var alias = infoGoogle.aliasName || fName + ' ' + lName;
+
+                  var userData = new User({
+                    _id: userId,
+                    username: infoGoogle.email,
+                    password: encrypt.rsa.encrypt(
+                      crossCutting.generate.password(8)
+                    ),
+                    role: ROLE.USER.name,
+                    status: ACCOUNT_STATUS.ACTIVE.TEXT,
+                    loginAttemptCount: 0,
+                    email: infoGoogle.email,
+                    phone: 0,
+                    oneTimePassword: false,
+                    secret_2fa: encrypt.aes.encrypt(
+                      encrypt.otplib.generateKey()
+                    ),
+                    detailInfos: {
+                      firstName: fName,
+                      lastName: lName,
+                      aliasName: alias,
+                      showAlias: true,
+                      avatarPath: infoGoogle.picture || '',
+                      country: ''
+                    }
+                  });
+
+                  // Save the new model instance, passing a callback
+                  userData.save().then((rsUser) => {
+                    responseUserValidate(res, rsUser);
+                  });
+                }
+              })
+              .catch((err) => {
+                return res.status(statusCodes.OK).json({
+                  code: statusCodes.UNAUTHORIZED,
+                  ok: false,
+                  message: err.message
+                });
+              });
           });
+      } catch (error) {
+        return res.status(statusCodes.OK).json({
+          code: statusCodes.UNAUTHORIZED,
+          ok: false,
+          message: 'Error verifying token: ' + error
         });
-    }),
+      }
+    })
   },
   //#endregion
   //#region SECURE 2FA
@@ -403,8 +438,8 @@ export default {
           return res.status(statusCodes.OK).json({
             code: statusCodes.OK,
             ok: false,
-            message: "User not found",
-            rs: [],
+            message: 'User not found',
+            rs: []
           });
         }
 
@@ -421,8 +456,8 @@ export default {
           res.status(statusCodes.OK).json({
             code: statusCodes.OK,
             ok: false,
-            message: "Your token is invalid or expires.",
-            rs: [],
+            message: 'Your token is invalid or expires.',
+            rs: []
           });
         }
       })
@@ -430,7 +465,7 @@ export default {
         return res.status(statusCodes.UNAUTHORIZED).json({
           code: statusCodes.UNAUTHORIZED,
           ok: false,
-          message: err,
+          message: err
         });
       });
   }),
@@ -446,8 +481,8 @@ export default {
           return res.status(statusCodes.OK).json({
             code: statusCodes.OK,
             ok: false,
-            message: "User not found",
-            rs: [],
+            message: 'User not found',
+            rs: []
           });
         }
 
@@ -475,10 +510,10 @@ export default {
           res.status(statusCodes.OK).json({
             code: statusCodes.OK,
             ok: true,
-            message: "Generate QRCode successful.",
+            message: 'Generate QRCode successful.',
             rs: {
-              qrCode: imageUrl,
-            },
+              qrCode: imageUrl
+            }
           });
         });
       })
@@ -486,10 +521,10 @@ export default {
         return res.status(statusCodes.UNAUTHORIZED).json({
           code: statusCodes.UNAUTHORIZED,
           ok: false,
-          message: err.message,
+          message: err.message
         });
       });
-  }),
+  })
   //#endregion
 };
 
@@ -505,8 +540,8 @@ const responseUserValidate = (
     return res.status(statusCodes.OK).json({
       code: statusCodes.LOCKED,
       ok: false,
-      message: "Authentication failed. " + ACCOUNT_STATUS[user.status].DESC,
-      rs: {},
+      message: 'Authentication failed. ' + ACCOUNT_STATUS[user.status].DESC,
+      rs: {}
     });
   }
 
@@ -515,7 +550,7 @@ const responseUserValidate = (
     isAdmin: user.role === ROLE.ADMIN.name,
     isSupervisor: user.role === ROLE.SUPERVISOR.name,
     isUser: user.role === ROLE.USER.name,
-    isVisitor: user.role === ROLE.VISITOR.name,
+    isVisitor: user.role === ROLE.VISITOR.name
   };
 
   let jwtResponse = UserService.jwtSignTokenForUser(
@@ -533,7 +568,7 @@ const responseUserValidate = (
     verified_token: verified_token || !user.oneTimePassword,
     currentUser: userResponse,
     access_token: jwtResponse.token,
-    refresh_token: jwtResponse.refreshToken,
+    refresh_token: jwtResponse.refreshToken
   });
 };
 //#endregion
