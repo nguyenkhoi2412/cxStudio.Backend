@@ -354,15 +354,6 @@ export default {
           .then((response) => {
             const infoGoogle = response.data;
 
-            const userInfo = {
-              username: infoGoogle.email,
-              detailInfos: {
-                firstName: infoGoogle.family_name || '',
-                lastName: infoGoogle.given_name || '',
-                avatarPath: infoGoogle.picture || ''
-              }
-            };
-
             // get user by username
             User.findOne()
               .byUsername(infoGoogle.email)
