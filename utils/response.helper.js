@@ -69,7 +69,8 @@ export default {
     sessionHandler.setCookie(
       res,
       storaged.AUTH.ACCESS_TOKEN,
-      data.access_token
+      data.access_token,
+      false
     );
     sessionHandler.setCookie(
       res,
