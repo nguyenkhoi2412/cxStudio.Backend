@@ -7,7 +7,7 @@ let sessions = {};
 
 export default {
   // sentCookie creates a cookie which expires after one day
-  setCookie: (res, name, value, sameSite = "strict") => {
+  setCookie: (res, name, value, expired = true, sameSite = "strict") => {
     // Our token expires after one day: 24 * 60 * 60 * 1000
     var date = new Date();
     date.setTime(
@@ -23,7 +23,7 @@ export default {
 
     res.clearCookie(name);
     res.cookie(name, value, {
-      expires: date,
+      expires: expired ? date : false,
       // maxAge: date,
       // You can't access these tokens in the client's javascript
       httpOnly: true,
