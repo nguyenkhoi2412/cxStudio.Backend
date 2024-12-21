@@ -6,7 +6,7 @@ import sessionHandler from '../middleware/sessionHandler.js';
 import variables from '../shared/variables.js';
 import stored from '../constant/storage.js';
 import cache from '../utils/cache/cache.instance.js';
-import response from '../utils/response.helper.js';
+import { ROLE } from '../constant/role.js';
 
 //services
 import UserService from '../services/user.js';
@@ -79,7 +79,13 @@ export default (app) => {
         ok: true,
         rs: {
           ...sessionHandler.getCookie(req),
-          [stored.AUTH.CURRENT_USER]: user
+          [stored.AUTH.CURRENT_USER]: {
+            ...user,
+            isAdmin: user?.role === ROLE.ADMIN.name,
+            isSupervisor: user?.role === ROLE.SUPERVISOR.name,
+            isUser: user?.role === ROLE.USER.name,
+            isVisitor: user?.role === ROLE.VISITOR.name
+          }
         }
       };
 
