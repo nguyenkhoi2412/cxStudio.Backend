@@ -76,8 +76,8 @@ export default {
           rs: {}
         });
       }
-
-      responseUserValidate(res, user);
+      const newUser = user.toObject();
+      responseUserValidate(res, newUser);
     });
   }),
   //saveUser function to save new user
@@ -313,7 +313,7 @@ export default {
           User.findOne()
             .byUsername(data.username)
             .then((user) => {
-              responseUserValidate(res, user, false, true, exp);
+              responseUserValidate(res, user.toObject(), false, true, exp);
             });
         }
       );
@@ -338,7 +338,7 @@ export default {
           .then((user) => {
             // if account is already in db
             if (user) {
-              responseUserValidate(res, user, true);
+              responseUserValidate(res, user.toObject(), true);
             } else {
               // Register new account
               var userId = crossCutting.generate.uuidv4();
@@ -417,7 +417,7 @@ export default {
 
         //* verified success
         if (verified) {
-          responseUserValidate(res, user, false, true);
+          responseUserValidate(res, user.toObject(), false, true);
         } else {
           res.status(statusCodes.OK).json({
             code: statusCodes.OK,

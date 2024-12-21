@@ -84,7 +84,7 @@ userSchema.query.byFilter = function (filterInfos) {
 };
 
 userSchema.query.byUsername = function (username) {
-  return this.where({ username: username }).lean();
+  return this.where({ username: username }); // if use lean(), you can't use methods in this modal
 };
 
 //#endregion

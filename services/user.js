@@ -44,7 +44,7 @@ class UserService {
           const username = encryptHelper.rsa.encrypt(data.username);
           UserService.findByUser(username).then((user) => {
             // remove secure data
-            let newUser = object.omit(user, [
+            let newUser = object.omit(user.toObject(), [
               'password',
               'oneTimePassword',
               'secret_2fa'
