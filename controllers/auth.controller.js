@@ -6,7 +6,7 @@ import storaged from '../constant/storage.js';
 import { ACCOUNT_STATUS } from '../constant/enumAccountStatus.js';
 import cache from '../utils/cache/cache.instance.js';
 import User from '../models/user.model.js';
-import { crossCutting } from '../utils/crossCutting.js';
+import { crossCutting, object } from '../utils/crossCutting.js';
 import { TEMPLATES } from '../shared/templates.js';
 import encrypt from '../utils/encrypt.helper.js';
 import transportHelper from '../utils/transport.helper.js';
@@ -53,7 +53,7 @@ export default {
 
     cache.clearCache();
     sessionHandler.clearCookies(req, res);
-    sessionHandler.clearSessions(req);
+    // sessionHandler.clearSessions(req);
 
     return res.status(200).json({
       code: 200,
@@ -180,50 +180,48 @@ export default {
       }
 
       // check account need to change/reset password existing?
-      UserService.findByUser(req, res, usernameResetPassword).then(
-        (userReset) => {
-          // decrypt & bcrypt password before update
-          let newPasswordHash = encrypt.rsa.decrypt(newPassword);
-          bcrypt.hash(newPasswordHash, 10, function (err, hash) {
-            if (err) {
-              return next(err);
+      UserService.findByUser(usernameResetPassword).then((userReset) => {
+        // decrypt & bcrypt password before update
+        let newPasswordHash = encrypt.rsa.decrypt(newPassword);
+        bcrypt.hash(newPasswordHash, 10, function (err, hash) {
+          if (err) {
+            return next(err);
+          }
+          // update new password
+          var newValueUpdate = {
+            _id: userReset._id,
+            password: hash,
+            updated_at: new Date()
+          };
+
+          var filter = { _id: newValueUpdate._id };
+          var updateValues = { $set: newValueUpdate };
+
+          // Save update
+          User.findOneAndUpdate(filter, updateValues, {
+            upsert: true,
+            new: true,
+            returnNewDocument: true
+          }).then((rs) => {
+            if (rs) {
+              User.find()
+                .byFilter(filter)
+                .then((rsData) => {
+                  response.DEFAULT(res, err, {});
+                });
+            } else {
+              response.DEFAULT(res, err, rs);
             }
-            // update new password
-            var newValueUpdate = {
-              _id: userReset._id,
-              password: hash,
-              updated_at: new Date()
-            };
-
-            var filter = { _id: newValueUpdate._id };
-            var updateValues = { $set: newValueUpdate };
-
-            // Save update
-            User.findOneAndUpdate(filter, updateValues, {
-              upsert: true,
-              new: true,
-              returnNewDocument: true
-            }).then((rs) => {
-              if (rs) {
-                User.find()
-                  .byFilter(filter)
-                  .then((rsData) => {
-                    response.DEFAULT(res, err, {});
-                  });
-              } else {
-                response.DEFAULT(res, err, rs);
-              }
-            });
           });
-        }
-      );
+        });
+      });
     });
   }),
   RECOVERY_PASSWORD: asyncHandler(async (req, res) => {
     const { username } = req.params;
 
     // get user info by username
-    UserService.findByUser(req, res, username).then((user) => {
+    UserService.findByUser(username).then((user) => {
       if (user.status !== ACCOUNT_STATUS.ACTIVE.TEXT) {
         return res.status(statusCodes.OK).json({
           code: statusCodes.LOCKED,
@@ -315,7 +313,7 @@ export default {
           User.findOne()
             .byUsername(data.username)
             .then((user) => {
-              responseUserValidate(res, user, true, exp);
+              responseUserValidate(res, user, false, true, exp);
             });
         }
       );
@@ -330,82 +328,59 @@ export default {
   //#endregion
   //#region AUTHENTICATION SOCIAL EXTERNAL
   GOOGLE: {
-    VERIFY_TOKEN: asyncHandler(async (req, res) => {
+    GET_PROFILE_INFO: asyncHandler(async (req, res) => {
       try {
-        //   const ticket = await client.verifyIdToken({
-        //     idToken: token,
-        //     audience: CLIENT_ID // Specify the CLIENT_ID
-        //   });
-        //   const payload = ticket.getPayload();
-        //   res.status(200).json({
-        //     code: 200,
-        //     ok: true,
-        //     rs: payload
-        //    });
+        const infoGoogle = req.user;
 
-        const { access_token } = req.body;
+        // get user by username
+        User.findOne()
+          .byUsername(infoGoogle.email)
+          .then((user) => {
+            // if account is already in db
+            if (user) {
+              responseUserValidate(res, user, true);
+            } else {
+              // Register new account
+              var userId = crossCutting.generate.uuidv4();
+              var fName = infoGoogle.firstName || '';
+              var lName = infoGoogle.lastName || '';
+              var alias = infoGoogle.displayName || fName + ' ' + lName;
 
-        // check access_token from googleapis by get userInfos
-        await axios
-          .get(`https://www.googleapis.com/oauth2/v3/userinfo/`, {
-            withCredentials: false,
-            headers: { Authorization: `Bearer ${access_token}` }
-          })
-          .then((response) => {
-            const infoGoogle = response.data;
-
-            // get user by username
-            User.findOne()
-              .byUsername(infoGoogle.email)
-              .then((user) => {
-                // if account is already in db
-                if (user) {
-                  responseUserValidate(res, user);
-                } else {
-                  // Register new account
-                  var userId = crossCutting.generate.uuidv4();
-                  var fName = infoGoogle.family_name || '';
-                  var lName = infoGoogle.given_name || '';
-                  var alias = infoGoogle.aliasName || fName + ' ' + lName;
-
-                  var userData = new User({
-                    _id: userId,
-                    username: infoGoogle.email,
-                    password: encrypt.rsa.encrypt(
-                      crossCutting.generate.password(8)
-                    ),
-                    role: ROLE.USER.name,
-                    status: ACCOUNT_STATUS.ACTIVE.TEXT,
-                    loginAttemptCount: 0,
-                    email: infoGoogle.email,
-                    phone: 0,
-                    oneTimePassword: false,
-                    secret_2fa: encrypt.aes.encrypt(
-                      encrypt.otplib.generateKey()
-                    ),
-                    detailInfos: {
-                      firstName: fName,
-                      lastName: lName,
-                      aliasName: alias,
-                      showAlias: true,
-                      avatarPath: infoGoogle.picture || '',
-                      country: ''
-                    }
-                  });
-
-                  // Save the new model instance, passing a callback
-                  userData.save().then((rsUser) => {
-                    responseUserValidate(res, rsUser);
-                  });
+              var userData = new User({
+                _id: userId,
+                username: infoGoogle.email,
+                password: encrypt.rsa.encrypt(
+                  crossCutting.generate.password(8)
+                ),
+                role: ROLE.USER.name,
+                status: ACCOUNT_STATUS.ACTIVE.TEXT,
+                loginAttemptCount: 0,
+                email: infoGoogle.email,
+                phone: 0,
+                oneTimePassword: false,
+                secret_2fa: encrypt.aes.encrypt(encrypt.otplib.generateKey()),
+                detailInfos: {
+                  firstName: fName,
+                  lastName: lName,
+                  aliasName: alias,
+                  showAlias: true,
+                  avatarPath: infoGoogle.image || '',
+                  country: ''
                 }
-              })
-              .catch((err) => {
-                return res.status(statusCodes.OK).json({
-                  code: statusCodes.UNAUTHORIZED,
-                  ok: false,
-                  message: err.message
-                });
               });
+
+              // Save the new model instance, passing a callback
+              userData.save().then((rsUser) => {
+                responseUserValidate(res, rsUser, true);
+              });
+            }
+          })
+          .catch((err) => {
+            return res.status(statusCodes.OK).json({
+              code: statusCodes.UNAUTHORIZED,
+              ok: false,
+              message: err.message
+            });
           });
       } catch (error) {
         return res.status(statusCodes.OK).json({
@@ -442,7 +417,7 @@ export default {
 
         //* verified success
         if (verified) {
-          responseUserValidate(res, user, true);
+          responseUserValidate(res, user, false, true);
         } else {
           res.status(statusCodes.OK).json({
             code: statusCodes.OK,
@@ -523,6 +498,7 @@ export default {
 const responseUserValidate = (
   res,
   user,
+  redirect = false,
   verified_token = null,
   expiresIn = null
 ) => {
@@ -537,7 +513,7 @@ const responseUserValidate = (
   }
 
   let userResponse = {
-    ...user.toJSON(),
+    ...user,
     isAdmin: user.role === ROLE.ADMIN.name,
     isSupervisor: user.role === ROLE.SUPERVISOR.name,
     isUser: user.role === ROLE.USER.name,
@@ -551,15 +527,21 @@ const responseUserValidate = (
   );
 
   // remove secure data
-  delete userResponse.password;
-  delete userResponse.secret_2fa;
-  delete userResponse.oneTimePassword;
+  let newUser = object.omit(userResponse, [
+    'password',
+    'oneTimePassword',
+    'secret_2fa'
+  ]);
 
-  response.SECURE_COOKIE(res, {
-    verified_token: verified_token || !user.oneTimePassword,
-    currentUser: userResponse,
-    access_token: jwtResponse.token,
-    refresh_token: jwtResponse.refreshToken
-  });
+  response.SECURE_COOKIE(
+    res,
+    {
+      verified_token: verified_token || !user.oneTimePassword,
+      currentUser: newUser,
+      access_token: jwtResponse.token,
+      refresh_token: jwtResponse.refreshToken
+    },
+    redirect
+  );
 };
 //#endregion

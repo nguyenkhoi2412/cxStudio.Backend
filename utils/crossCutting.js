@@ -318,7 +318,18 @@ export const object = {
       }
     }
     return true;
-  }
+  },
+  /**
+   * Omit objects name from complex object
+   * @example
+   * const obj = { a: 1, b: '2', c: 3 };
+   * omit(obj, ['b']); // { 'a': 1, 'c': 3 }
+   * @param obj
+   * @param arr
+   * @returns object
+   */
+  omit: (obj, arr) =>
+    Object.fromEntries(Object.entries({...obj}).filter(([k]) => !arr.includes(k)))
 };
 
 //* ==============================|| ARRAY ||============================== //

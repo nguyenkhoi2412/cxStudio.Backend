@@ -1,19 +1,24 @@
-import express from "express";
-import { crossCutting } from "../utils/crossCutting.js";
-import encryptHelper from "../utils/encrypt.helper.js";
-import sessionHandler from "../middleware/sessionHandler.js";
+import express from 'express';
+import { crossCutting } from '../utils/crossCutting.js';
+import encryptHelper from '../utils/encrypt.helper.js';
+import sessionHandler from '../middleware/sessionHandler.js';
 // import captcha from "../utils/captcha.js";
-import variables from "../shared/variables.js";
-import cache from "../utils/cache/cache.instance.js";
-import response from "../utils/response.helper.js";
+import variables from '../shared/variables.js';
+import stored from '../constant/storage.js';
+import cache from '../utils/cache/cache.instance.js';
+import response from '../utils/response.helper.js';
 
-import fileRoutes from "#routes/file.routes";
-import authRoutes from "#routes/auth.routes";
-import userRoutes from "#routes/user.routes";
-import roleRouters from "#routes/role.routes";
-import industryRouters from "#routes/industry.routes";
-import siteRoutes from "#routes/site.routes";
-import workspaceRoutes from "#routes/workspace.routes";
+//services
+import UserService from '../services/user.js';
+
+// Routes
+import fileRoutes from '#routes/file.routes';
+import authRoutes from '#routes/auth.routes';
+import userRoutes from '#routes/user.routes';
+import roleRouters from '#routes/role.routes';
+import industryRouters from '#routes/industry.routes';
+import siteRoutes from '#routes/site.routes';
+import workspaceRoutes from '#routes/workspace.routes';
 
 export default (app) => {
   //#region Request API callback generate
@@ -38,54 +43,65 @@ export default (app) => {
   // });
 
   // Generate SecretKey
-  app.get("/api/generate/secretkey/:length?/", (req, res) => {
+  app.get('/api/generate/secretkey/:length?/', (req, res) => {
     var length = parseInt(req.params.length) || 1024;
     var length_aes = length / 16;
     res.send({
       password: crossCutting.generate.password(length),
       aes: {
-        salt_key: encryptHelper.aes.generateKey(length_aes * 2),
+        salt_key: encryptHelper.aes.generateKey(length_aes * 2)
       },
       rsa: encryptHelper.rsa.generateKey(length),
-      otplib: encryptHelper.otplib.generateKey(),
+      otplib: encryptHelper.otplib.generateKey()
     });
   });
   //#endregion
 
   //#region storage
   // clear cache.flushAll()
-  app.get("/clearallcache", (req, res) => {
+  app.get('/clearallcache', (req, res) => {
     cache.clearCache();
     sessionHandler.clearCookies(req, res);
     sessionHandler.clearSessions(req);
     res.send(`All cached/cookie cleared`);
   });
 
-  app.get("/api/cache/clearall", (req, res) => {
+  app.get('/api/cache/clearall', (req, res) => {
     cache.clearCache();
     res.send(`All cached cleared`);
   });
 
   // read cookie
-  app.get("/api/cookie/get", (req, res) => {
-    response.DEFAULT(res, null, sessionHandler.getCookie(req));
+  app.get('/api/cookie/get', (req, res) => {
+    UserService.findByToken(req).then((user) => {
+      const responseJson = {
+        code: 200,
+        ok: true,
+        rs: {
+          ...sessionHandler.getCookie(req),
+          [stored.AUTH.CURRENT_USER]: user
+        }
+      };
+
+      res.status(200).json(responseJson);
+    });
   });
 
   // clear all cookie
-  app.get("/api/cookie/clearlall", (req, res) => {
+  app.get('/api/cookie/clearlall', (req, res) => {
     sessionHandler.clearCookies(req, res);
     res.send(`All cookies cleared`);
   });
   //#endregion
 
   // put the HTML file containing your form in a directory named "public" (relative to where this script is located)
-  app.use("/" + variables.DIR_UPLOADS, express.static(variables.DIR_UPLOADS)); // public access folder upload
-  app.use("/undefined", (req, res) => {});
-  app.use("/api/auth", authRoutes);
-  app.use("/api/user", userRoutes);
-  app.use("/api/file", fileRoutes);
-  app.use("/api/role", roleRouters);
-  app.use("/api/industry", industryRouters);
-  app.use("/api/site", siteRoutes);
-  app.use("/api/workspace", workspaceRoutes);
+  app.use('/' + variables.DIR_UPLOADS, express.static(variables.DIR_UPLOADS)); // public access folder upload
+  app.use('/undefined', (req, res) => {});
+  app.use('/api/auth', authRoutes);
+  app.use('/api/user', userRoutes);
+  app.use('/api/file', fileRoutes);
+  app.use('/api/role', roleRouters);
+  app.use('/api/industry', industryRouters);
+  app.use('/api/site', siteRoutes);
+  app.use('/api/workspace', workspaceRoutes);
 };

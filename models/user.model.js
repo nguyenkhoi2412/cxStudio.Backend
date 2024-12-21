@@ -84,7 +84,7 @@ userSchema.query.byFilter = function (filterInfos) {
 };
 
 userSchema.query.byUsername = function (username) {
-  return this.where({ username: username });
+  return this.where({ username: username }).lean();
 };
 
 //#endregion

@@ -1,4 +1,5 @@
 import express from 'express';
+import passport from 'passport';
 import auth from '../controllers/auth.controller.js';
 import verifyTokenJWT from '../middleware/authJwt.js';
 import response from '../utils/response.helper.js';
@@ -41,11 +42,17 @@ routerAuth.route('/secure').get((req, res) => {
 //#endregion
 
 //#endregion AUTHENTICATION EXTERNAL
-// POST: api/auth/google/verifytoken
-routerAuth.route('/google/verifytoken').post(auth.GOOGLE.VERIFY_TOKEN);
+routerAuth
+  .route('/google')
+  .get(passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-// GET: api/auth/google
-// routerAuth.route('/google/:query').get(auth.SOCIAL.GOOGLE);
+// GET: api/auth/google/callback
+routerAuth
+  .route('/google/callback')
+  .get(
+    passport.authenticate('google', { failureRedirect: '/' }),
+    auth.GOOGLE.GET_PROFILE_INFO
+  );
 //#endregion
 
 export default routerAuth;

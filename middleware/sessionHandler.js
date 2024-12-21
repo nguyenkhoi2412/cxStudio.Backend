@@ -1,13 +1,13 @@
-import _globalVars from "../shared/variables.js";
-import { crossCutting } from "../utils/crossCutting.js";
-import encryptHelper from "../utils/encrypt.helper.js";
+import _globalVars from '../shared/variables.js';
+import { crossCutting } from '../utils/crossCutting.js';
+import encryptHelper from '../utils/encrypt.helper.js';
 
 // save sessions
 let sessions = {};
 
 export default {
   // sentCookie creates a cookie which expires after one day
-  setCookie: (res, name, value, expired = true, sameSite = "strict") => {
+  setCookie: (res, name, value, expired = true, sameSite = 'strict') => {
     // Our token expires after one day: 24 * 60 * 60 * 1000
     var date = new Date();
     date.setTime(
@@ -18,8 +18,8 @@ export default {
           1000
     ); // 6 hours
 
-    value = encryptHelper.base64.encrypt(value + "");
-    const isProduction = process.env.NODE_ENV === "production";
+    value = encryptHelper.base64.encrypt(value + '');
+    const isProduction = process.env.NODE_ENV === 'production';
 
     res.clearCookie(name);
     res.cookie(name, value, {
@@ -30,11 +30,11 @@ export default {
       sameSite: sameSite, // strict/lax/none
       // Forces to use https in production
       secure: isProduction ? true : false, // isProduction,
-      signed: true,
+      signed: true
     });
   },
   // returns an object with the cookies' name as keys
-  getCookie: (req, name = "") => {
+  getCookie: (req, name = '') => {
     // We extract the raw cookies from the request headers
     // const rawCookies = req.headers.cookie.split("; ");
     // // rawCookies = ['myapp=secretcookie, 'analytics_cookie=beacon;']
@@ -48,32 +48,35 @@ export default {
 
     if (
       crossCutting.check.isNotNull(name) &&
-      crossCutting.check.isNotNull(req.signedCookies[name])
+      crossCutting.check.isNotNull(req?.signedCookies[name])
     ) {
       return encryptHelper.base64.decrypt(req.signedCookies[name]);
     }
 
     // We extract the raw cookies from the request headers
-    const rawCookies = req.signedCookies;
+    const rawCookies = req?.signedCookies;
     const parsedCookies = {};
 
-    Object.keys(rawCookies).filter((key) => {
-      parsedCookies[key] = encryptHelper.base64.decrypt(rawCookies[key]);
-    });
+    rawCookies &&
+      Object.keys(rawCookies).filter((key) => {
+        if (key !== 'connect.sid') {
+          parsedCookies[key] = encryptHelper.base64.decrypt(rawCookies[key]);
+        }
+      });
 
     return parsedCookies;
   },
   clearCookies: (req, res) => {
     // We extract the raw cookies from the request headers
-    const rawCookies = req.headers.cookie?.split("; ");
-    const isProduction = process.env.NODE_ENV === "production";
+    const rawCookies = req.headers.cookie?.split('; ');
+    const isProduction = process.env.NODE_ENV === 'production';
     const options = {
       httpOnly: true,
-      secure: true, //isProduction,
+      secure: true //isProduction,
     };
 
     rawCookies?.forEach((rawCookie) => {
-      const parsedCookie = rawCookie.split("=");
+      const parsedCookie = rawCookie.split('=');
       res.clearCookie(parsedCookie[0], options);
     });
   },
@@ -81,7 +84,7 @@ export default {
     const sessionId = crossCutting.generate.sessionId;
     const sessionSaved = {
       _id: sessionId,
-      data: valueObj,
+      data: valueObj
     };
 
     req.session = sessionSaved;
@@ -95,6 +98,8 @@ export default {
   },
   clearSessions: (req) => {
     sessions = {};
-    req.session = {};
-  },
+    if (req !== null && req.session !== null) {
+      req.session = {};
+    }
+  }
 };

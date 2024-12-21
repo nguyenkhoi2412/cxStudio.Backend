@@ -1,17 +1,20 @@
-import https from "https";
-import http from "http";
-import fs from "fs";
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
+// import https from 'https';
+import http from 'http';
+import fs from 'fs';
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+import passport from 'passport';
+import strategyOauth from './services/passport/strategy-oauth.js';
+import session from 'express-session';
 // import csrf from "csurf";
-import dbService from "./config/dbService.js";
-import cache from "./config/cacheService.js";
-import SocketService from "./services/socket.js";
-import corsOptions from "./config/corsOptions.js";
-import _apiRouters from "#routes/_api.routes";
+import dbService from './config/dbService.js';
+import cache from './config/cacheService.js';
+import SocketService from './services/socket.js';
+import corsOptions from './config/corsOptions.js';
+import _apiRouters from '#routes/_api.routes';
 
 //dotenv config, read data in .env
 dotenv.config();
@@ -19,11 +22,18 @@ dotenv.config();
 const app = express();
 //#region security
 app.use(helmet());
+app.use(
+  session({
+    secret: process.env.SESSION_SECURE, // session secret
+    resave: false,
+    saveUninitialized: false
+  })
+);
 
 //create https
 const options = {
-  key: fs.readFileSync("./cert/key.pem", "utf-8"),
-  cert: fs.readFileSync("./cert/cert.pem", "utf-8"),
+  key: fs.readFileSync('./cert/key.pem', 'utf-8'),
+  cert: fs.readFileSync('./cert/cert.pem', 'utf-8')
 };
 //#endregion
 cache.connect();
@@ -52,8 +62,8 @@ dbService.connect((err) => {
   SocketService.connect(server);
   //#endregion
 
-  app.get("/", (req, res, next) => {
-    res.send("Server started\n");
+  app.get('/', (req, res, next) => {
+    res.send('Server started\n');
   });
 });
 //#endregion
@@ -63,18 +73,22 @@ app.use(cookieParser(process.env.SALT_AES));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(corsOptions));
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+strategyOauth.GOOGLE(passport);
 //#endregion
 
 // handle request url
 app.use((req, res, next) => {
-  const allowedMethods = ["GET", "POST", "PUT", "DELETE"];
+  const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE'];
 
   if (!allowedMethods.includes(req.method)) {
     //* 405 Method Not Allowed
     res.status(405).send({
       code: 405,
       ok: false,
-      message: `Method ${req.method} not allowed.`,
+      message: `Method ${req.method} not allowed.`
     });
   }
 
@@ -89,7 +103,7 @@ app.use((req, res, next) => {
   // }
 
   if (req.url.match(/^\/(css|js|img|font)\/.+/)) {
-    res.set(`Cache-control`, "public, max-age=3600"); // 1 hours
+    res.set(`Cache-control`, 'public, max-age=3600'); // 1 hours
   }
 
   // remove xss from url

@@ -1,7 +1,7 @@
 import _globalVars from '../shared/variables.js';
 import { HTTP_STATUS as statusCodes } from '../constant/httpStatus.js';
 import sessionHandler from '../middleware/sessionHandler.js';
-import { crossCutting } from './crossCutting.js';
+import { crossCutting, object } from './crossCutting.js';
 import storaged from '../constant/storage.js';
 
 export default {
@@ -64,7 +64,7 @@ export default {
 
     res.status(code).json(mergedData);
   },
-  SECURE_COOKIE: (res, data) => {
+  SECURE_COOKIE: (res, data, redirect = false) => {
     const code = statusCodes.OK;
     sessionHandler.setCookie(
       res,
@@ -83,16 +83,22 @@ export default {
       data.verified_token
     );
 
-    delete data.access_token;
-    delete data.refresh_token;
-    delete data.verified_token;
+    if (redirect) {
+      res.redirect(`${process.env.FRONTEND_URL}`);
+    } else {
+      let newData = object.omit(data, [
+        'access_token',
+        'refresh_token',
+        'verified_token'
+      ]);
 
-    res.status(code).json({
-      code: code,
-      ok: true,
-      message: 'Authentication success',
-      rs: data
-    });
+      res.status(code).json({
+        code: code,
+        ok: true,
+        message: 'Authentication success',
+        rs: newData
+      });
+    }
   },
   UPLOAD_FILE: (req, res, err) => {
     // error
