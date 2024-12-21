@@ -55,6 +55,10 @@ export default {
     sessionHandler.clearCookies(req, res);
     // sessionHandler.clearSessions(req);
 
+    req.logout((err) => {
+      req.session.destroy();
+  });
+
     return res.status(200).json({
       code: 200,
       ok: true,
