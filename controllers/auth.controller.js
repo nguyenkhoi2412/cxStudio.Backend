@@ -334,11 +334,11 @@ export default {
   GOOGLE: {
     GET_PROFILE_INFO: asyncHandler(async (req, res) => {
       try {
-        const infoGoogle = req.user;
+        const infoSocial = req.user;
 
         // get user by username
         User.findOne()
-          .byUsername(infoGoogle.email)
+          .byUsername(infoSocial.email)
           .then((user) => {
             // if account is already in db
             if (user) {
@@ -346,20 +346,20 @@ export default {
             } else {
               // Register new account
               var userId = crossCutting.generate.uuidv4();
-              var fName = infoGoogle.firstName || '';
-              var lName = infoGoogle.lastName || '';
-              var alias = infoGoogle.displayName || fName + ' ' + lName;
+              var fName = infoSocial.firstName || '';
+              var lName = infoSocial.lastName || '';
+              var alias = infoSocial.displayName || fName + ' ' + lName;
 
               var userData = new User({
                 _id: userId,
-                username: infoGoogle.email,
+                username: infoSocial.email,
                 password: encrypt.rsa.encrypt(
                   crossCutting.generate.password(8)
                 ),
                 role: ROLE.USER.name,
                 status: ACCOUNT_STATUS.ACTIVE.TEXT,
                 loginAttemptCount: 0,
-                email: infoGoogle.email,
+                email: infoSocial.email,
                 phone: 0,
                 oneTimePassword: false,
                 secret_2fa: encrypt.aes.encrypt(encrypt.otplib.generateKey()),
@@ -368,7 +368,7 @@ export default {
                   lastName: lName,
                   aliasName: alias,
                   showAlias: true,
-                  avatarPath: infoGoogle.image || '',
+                  avatarPath: infoSocial.image || '',
                   country: ''
                 }
               });
