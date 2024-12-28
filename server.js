@@ -77,6 +77,7 @@ app.use(cors(corsOptions));
 app.use(passport.initialize());
 app.use(passport.session());
 strategyOauth.GOOGLE(passport);
+strategyOauth.FACEBOOK(passport);
 //#endregion
 
 // handle request url

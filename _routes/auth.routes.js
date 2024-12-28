@@ -41,7 +41,7 @@ routerAuth.route('/secure').get((req, res) => {
 });
 //#endregion
 
-//#endregion AUTHENTICATION EXTERNAL
+//#endregion AUTHENTICATION SOCIAL MEDIA
 routerAuth
   .route('/google')
   .get(passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -53,6 +53,16 @@ routerAuth
     passport.authenticate('google', { failureRedirect: '/' }),
     auth.GOOGLE.GET_PROFILE_INFO
   );
+
+// routerAuth.route('/facebook').get(passport.authenticate('facebook'));
+
+// // GET: api/auth/facebook/callback
+// routerAuth
+//   .route('/facebook/callback')
+//   .get(
+//     passport.authenticate('facebook', { failureRedirect: '/' }),
+//     auth.GOOGLE.GET_PROFILE_INFO
+//   );
 //#endregion
 
 export default routerAuth;
