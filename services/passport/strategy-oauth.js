@@ -23,7 +23,8 @@ const strategyOauth = {
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
             image: profile.photos[0].value,
-            email: profile.emails[0].value
+            email: profile.emails[0].value,
+            provider: 'google'
           };
           // Use the Google profile info for user management
           return done(null, newUser);
@@ -60,7 +61,8 @@ const strategyOauth = {
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
             image: profile.profileUrl,
-            email: profile.emails && profile.emails[0]?.value
+            email: profile.emails && profile.emails[0]?.value,
+            provider: 'facebook'
           };
           // Use the Google profile info for user management
           return done(null, newUser);

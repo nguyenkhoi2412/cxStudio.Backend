@@ -130,6 +130,7 @@ export default {
             ? oneTimePassword
             : false,
           secret_2fa: encrypt.aes.encrypt(encrypt.otplib.generateKey()),
+          social_provider: "",
           detailInfos: {
             firstName: fName,
             lastName: lName,
@@ -349,6 +350,7 @@ export default {
               var fName = infoSocial.firstName || '';
               var lName = infoSocial.lastName || '';
               var alias = infoSocial.displayName || fName + ' ' + lName;
+              var provider = infoSocial.provider;
 
               var userData = new User({
                 _id: userId,
@@ -363,6 +365,7 @@ export default {
                 phone: 0,
                 oneTimePassword: false,
                 secret_2fa: encrypt.aes.encrypt(encrypt.otplib.generateKey()),
+                social_provider: provider,
                 detailInfos: {
                   firstName: fName,
                   lastName: lName,
