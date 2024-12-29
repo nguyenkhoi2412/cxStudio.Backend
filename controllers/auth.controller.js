@@ -378,7 +378,7 @@ export default {
 
               // Save the new model instance, passing a callback
               userData.save().then((rsUser) => {
-                responseUserValidate(res, rsUser, true);
+                responseUserValidate(res, rsUser.toObject(), true);
               });
             }
           })
