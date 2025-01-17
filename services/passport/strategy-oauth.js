@@ -1,8 +1,9 @@
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
+import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 
 const apiCallback = (name) => {
-  return `${process.env.BACKEND_URL}/api/auth/` + name + `/callback`;
+  return `${process.env.BACKEND_URL}/api/auth/` + name + `/redirect`;
 };
 
 const strategyOauth = {
@@ -49,7 +50,7 @@ const strategyOauth = {
           callbackURL: apiCallback('facebook'),
           profileFields: ['id', 'displayName', 'email'] // Specify fields to retrieve
         },
-        function (accessToken, refreshToken, profile, done) {
+        async (accessToken, refreshToken, profile, done) => {
           console.log('accessToken', accessToken);
           console.log('refreshToken', refreshToken);
           console.log('profile', profile);
@@ -63,6 +64,40 @@ const strategyOauth = {
             image: profile.profileUrl,
             email: profile.emails && profile.emails[0]?.value,
             provider: 'facebook'
+          };
+          // Use the Google profile info for user management
+          return done(null, newUser);
+        }
+      )
+    );
+
+    passport.serializeUser((user, done) => {
+      done(null, user);
+    });
+
+    passport.deserializeUser((user, done) => {
+      done(null, user);
+    });
+  },
+  MICROSOFT: (passport) => {
+    passport.use(
+      new MicrosoftStrategy(
+        {
+          clientID: process.env.MICROSOFT_CLIENT_ID,
+          clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+          scope: ['openid', 'profile', 'email'],
+          callbackURL: apiCallback('microsoft')
+        },
+        async (accessToken, refreshToken, profile, done) => {
+          //get the user data from google
+          const newUser = {
+            googleId: profile.id,
+            displayName: profile.displayName,
+            firstName: profile.name.givenName,
+            lastName: profile.name.familyName,
+            image: profile.photos[0].value,
+            email: profile.emails[0].value,
+            provider: 'google'
           };
           // Use the Google profile info for user management
           return done(null, newUser);

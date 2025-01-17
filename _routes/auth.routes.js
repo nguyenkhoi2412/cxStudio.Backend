@@ -42,13 +42,14 @@ routerAuth.route('/secure').get((req, res) => {
 //#endregion
 
 //#endregion AUTHENTICATION SOCIAL MEDIA
+// GET: api/auth/google
 routerAuth
   .route('/google')
   .get(passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-// GET: api/auth/google/callback
+// GET: api/auth/google/redirect
 routerAuth
-  .route('/google/callback')
+  .route('/google/redirect')
   .get(
     passport.authenticate('google', { failureRedirect: '/' }),
     auth.GOOGLE.GET_PROFILE_INFO
@@ -61,6 +62,19 @@ routerAuth
 //   .route('/facebook/callback')
 //   .get(
 //     passport.authenticate('facebook', { failureRedirect: '/' }),
+//     auth.GOOGLE.GET_PROFILE_INFO
+//   );
+
+// GET: api/auth/microsoft
+// routerAuth
+//   .route('/microsoft')
+//   .get(passport.authenticate('microsoft'));
+
+// // GET: api/auth/microsoft/redirect
+// routerAuth
+//   .route('/microsoft/redirect')
+//   .get(
+//     passport.authenticate('microsoft', { failureRedirect: '/' }),
 //     auth.GOOGLE.GET_PROFILE_INFO
 //   );
 //#endregion
