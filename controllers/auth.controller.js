@@ -1,5 +1,4 @@
 import asyncHandler from 'express-async-handler';
-import axios from 'axios';
 // import { OAuth2Client } from 'google-auth-library';
 import { ROLE } from '../constant/role.js';
 import storaged from '../constant/storage.js';
@@ -16,6 +15,7 @@ import { HTTP_STATUS as statusCodes } from '../constant/httpStatus.js';
 import bcrypt from 'bcrypt';
 import UserService from '../services/user.js';
 import sessionHandler from '../middleware/sessionHandler.js';
+import LogService from '../services/logs.js';
 
 const expired = 60 * 60; // 1 hours
 
@@ -80,6 +80,8 @@ export default {
           rs: {}
         });
       }
+
+      LogService.addLogsUserLogin(user._id);
       const newUser = user.toObject();
       responseUserValidate(res, newUser);
     });
@@ -343,6 +345,7 @@ export default {
           .then((user) => {
             // if account is already in db
             if (user) {
+              LogService.addLogsUserLogin(user._id);
               responseUserValidate(res, user.toObject(), true);
             } else {
               // Register new account
