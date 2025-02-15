@@ -29,19 +29,18 @@ class LogService extends CommonService {
    * @param {*} type use for log many things, default is 1 use for login
    */
   static addLogs = async (userId, type = 1) => {
-    if (process.env.ALLOWED_LOG === false) {
+    if (process.env.ALLOWED_LOG === "false") {
       return null;
     }
 
     return new Promise(async (resolve) => {
-      console.log(process.env.ALLOWED_LOG === false)
-
       this.findByUserId(userId, type).then(async (rsValue) => {
         //* insert new logs if has no value
         if (!rsValue) {
           const ModelSchema = new Logtime({
             // _id: crossCutting.generate.uuidv4(),
             user_ref: userId,
+            type: type,
             logs: [
               {
                 timelog: new Date()
