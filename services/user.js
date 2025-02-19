@@ -75,7 +75,7 @@ class UserService {
 
     const expiresInRefeshToken =
       expiresInRefresshToken != null
-        ? expiresInRefresshToken - datetime.toTimestamp(new Date())
+        ? expiresInRefresshToken - new Date().getTime()
         : parseInt(process.env.TOKEN_EXPIRESIN) * expired;
 
     const jwtToken = jwt.sign(

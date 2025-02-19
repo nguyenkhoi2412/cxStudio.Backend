@@ -329,11 +329,32 @@ export const object = {
    * @returns object
    */
   omit: (obj, arr) =>
-    Object.fromEntries(Object.entries({...obj}).filter(([k]) => !arr.includes(k)))
+    Object.fromEntries(
+      Object.entries({ ...obj }).filter(([k]) => !arr.includes(k))
+    )
 };
 
 //* ==============================|| ARRAY ||============================== //
-export const array = {};
+export const array = {
+  /**
+   * Check is empty
+   * @param array
+   * @returns true/false
+   */
+  isEmpty: (array) => {
+    //If  not an array, return FALSE.
+    if (!Array.isArray(array)) {
+      return false;
+    }
+    //If it is an array, check its length property
+    if (array?.length === 0) {
+      //Return TRUE if the array is empty
+      return true;
+    }
+    //Otherwise, return FALSE.
+    return false;
+  }
+};
 
 export const loop = {
   /**
