@@ -7,24 +7,36 @@ var industriesSchema = new mongoose.Schema(
     name: {
       type: Object,
       required: true,
-      trim: true,
+      trim: true
     },
     lowercase: {
       type: String,
       lowercase: true,
-      required: true,
+      required: true
     },
     type: {
-      type: String,
-    },
+      type: String
+    }
   },
   {
-    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
   },
   {
-    collection: 'industries',
-  },
+    collection: 'industries'
+  }
 );
+
+//#region queries
+industriesSchema.query.byFilter = function (filterInfos) {
+  return this.find(filterInfos).lean();
+};
+
+// siteSchema.query.findByName = function (name) {
+//   return this.findOne({
+//     name: { $regex: new RegExp(name, "i") }, //make case-insensitive queries
+//   }).lean();
+// };
+//#endregion
 
 const Industry = mongoose.model('industries', industriesSchema);
 export default Industry;
