@@ -28,7 +28,7 @@ app.use(
     resave: false,
     saveUninitialized: false, // Only save sessions when modified
     cookie: {
-      maxAge: parstInt(process.env.TOKEN_EXPIRESIN || 6) * 60 * 60 * 1000 // 6 hours
+      maxAge: parseInt(process.env.TOKEN_EXPIRESIN || 6) * 60 * 60 * 1000 // 6 hours
     }
   })
 );
