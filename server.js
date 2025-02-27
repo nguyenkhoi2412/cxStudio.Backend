@@ -26,7 +26,10 @@ app.use(
   session({
     secret: process.env.SESSION_SECURE, // session secret
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false, // Only save sessions when modified
+    cookie: {
+      maxAge: parstInt(process.env.TOKEN_EXPIRESIN || 6) * 60 * 60 * 1000 // 6 hours
+    }
   })
 );
 
