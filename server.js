@@ -16,6 +16,9 @@ import SocketService from './services/socket.js';
 import corsOptions from './config/corsOptions.js';
 import _apiRouters from '#routes/_api.routes';
 
+const expiresInHours = parseInt(process.env.TOKEN_EXPIRESIN) || 8;
+const maxAge = expiresInHours * 60 * 60 * 1000; // Convert hours to ms
+
 //dotenv config, read data in .env
 dotenv.config();
 
@@ -28,7 +31,7 @@ app.use(
     resave: false,
     saveUninitialized: false, // Only save sessions when modified
     cookie: {
-      maxAge: parseInt(process.env.TOKEN_EXPIRESIN || 6) * 60 * 60 * 1000 // 6 hours
+      maxAge: maxAge
     }
   })
 );
